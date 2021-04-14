@@ -1,8 +1,8 @@
-# Funcat
+# Funcat2
 
-[![PyPI](https://img.shields.io/pypi/v/funcat.svg)](https://pypi.python.org/pypi/funcat)
-[![PythonVersion](https://img.shields.io/pypi/pyversions/funcat.svg)](https://pypi.python.org/pypi/funcat)
-[![License](https://img.shields.io/pypi/l/funcat.svg)](https://pypi.python.org/pypi/funcat)
+[![PyPI](https://img.shields.io/pypi/v/funcat2.svg)](https://pypi.python.org/pypi/funcat2)
+[![PythonVersion](https://img.shields.io/pypi/pyversions/funcat2.svg)](https://pypi.python.org/pypi/funcat2)
+[![License](https://img.shields.io/pypi/l/funcat2.svg)](https://pypi.python.org/pypi/funcat2)
 
 Funcat 将同花顺、通达信、文华财经等的公式移植到了 Python 中。
 
@@ -10,13 +10,15 @@ Funcat 将同花顺、通达信、文华财经等的公式移植到了 Python �
 
 苦于 Python 缺乏这种领域特定语言的表达能力，所以用 Python 基于 numpy 实现了一套。
 
+Funcat2增加QUANTAXIS的支持
+
 ## 安装
 ```
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -U funcat
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -U funcat2
 ```
 
 ## notebooks 教程
-- [quick-start](https://github.com/cedricporter/funcat/blob/master/notebooks/funcat-tutorial.ipynb)
+- [quick-start](https://github.com/pchaos/funcat2/blob/master/notebooks/funcat2-tutorial.ipynb)
 
 ## API
 ### 行情变量
@@ -103,7 +105,7 @@ IF(OPEN > CLOSE, OPEN, CLOSE)
 MA(C, 60)  # 60日均线
 ```
 
-其他更多请见：[指标库](https://github.com/cedricporter/funcat/blob/master/funcat/indicators.py)
+其他更多请见：[指标库](https://github.com/pchaos/funcat2/blob/master/funcat2/indicators.py)
 
 
 还有更多的技术指标还在实现中，欢迎提交pr一起实现。
