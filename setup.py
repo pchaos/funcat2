@@ -24,9 +24,9 @@ except:
     install_requires=[str(ir.req) for ir in parse_requirements("requirements.txt", session=False)],
 
 setup(
-    name='funcat',
+    name='funcat2',
     version=version,
-    description='funcat',
+    description='funcat2',
     packages=find_packages(exclude=[]),
     author='Hua Liang',
     url='https://github.com/pchaos/funcat2',
