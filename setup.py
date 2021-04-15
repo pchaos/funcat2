@@ -17,25 +17,29 @@ except ImportError: # for pip <= 9.0.3
 with open(join(dirname(__file__), 'funcat/VERSION.txt'), 'rb') as f:
     version = f.read().decode('ascii').strip()
 
+try: 
+    # AttributeError: 'ParsedRequirement' object has no attribute 'req'
+    install_requires=[str(ir.requirement) for ir in parse_requirements("requirements.txt", session=False)],
+except:
+    install_requires=[str(ir.req) for ir in parse_requirements("requirements.txt", session=False)],
+
 setup(
     name='funcat',
     version=version,
     description='funcat',
     packages=find_packages(exclude=[]),
     author='Hua Liang',
-    url='https://github.com/cedricporter/funcat',
+    url='https://github.com/pchaos/funcat2',
     author_email='et@everet.org',
     license='Apache License v2',
     package_data={'': ['*.*']},
-    install_requires=[str(ir.req) for ir in parse_requirements("requirements.txt", session=False)],
     zip_safe=False,
     classifiers=[
         'Programming Language :: Python',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )
