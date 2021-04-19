@@ -2,7 +2,7 @@
 
 如果是 bug 反馈，烦请在 issue 中描述以下问题：
 
-## 1. funcat 的版本
+## 1. funcat2 的版本
 
 ## 2. Python 的版本
 
