@@ -2,14 +2,13 @@
 import unittest
 from unittest import TestCase
 from funcat import *
-from funcat.data.quantaxis_backend import QuantaxisDataBackend as QDB
 
 
 class TestQuantaxisDataBackend(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         set_data_backend(QuantaxisDataBackend())
-        cls.qdb = QDB()
+        cls.qdb = QuantaxisDataBackend()
 
     def test_stock_basics(self):
         T("20161216")
