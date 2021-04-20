@@ -15,6 +15,7 @@ from .api import *
 from .indicators import *
 
 from .data.tushare_backend import TushareDataBackend
+from .data.quantaxis_backend import QuantaxisDataBackend
 from .context import ExecutionContext as funcat_execution_context
 
 funcat_execution_context(date=20170104,
