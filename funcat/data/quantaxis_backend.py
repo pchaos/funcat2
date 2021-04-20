@@ -90,7 +90,7 @@ class QuantaxisDataBackend(DataBackend):
         """
         start = get_str_date_from_int(start)
         end = get_str_date_from_int(end)
-        df = self.backend.get_k_data("000001", index=True, start=start, end=end)
+        df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day('000001',start,end)
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 

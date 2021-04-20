@@ -14,12 +14,17 @@ class TestQuantaxisDataBackend(TestCase):
     def test_stock_basics(self):
         T("20161216")
         S("000001.XSHG")
-        sb = self.qdb.stock_basics
-        self.assertTrue(len(sb) > 3000, f"股票代码数量：{len(sb)},实际数量应该大于3000只。")
+        data = self.qdb.stock_basics
+        self.assertTrue(len(data) > 3000, f"股票代码数量：{len(data)},实际数量应该大于3000只。")
 
     def test_get_order_book_id_list(self):
-        sb = self.qdb.get_order_book_id_list()
-        self.assertTrue(len(sb) > 3000, f"股票代码数量：{len(sb)},实际数量应该大于3000只。")
+        data = self.qdb.get_order_book_id_list()
+        self.assertTrue(len(data) > 3000, f"股票代码数量：{len(data)},实际数量应该大于3000只。")
+
+    def test_get_trading_dates(self):
+        data = self.qdb.get_trading_dates(20200101, 20210301)
+        self.assertTrue(len(data) > 250, f"股票代码数量：{len(data)},实际数量应该大于3000只。")
+        print(f"交易日期：{data}")
 
 
 if __name__ == '__main__':
