@@ -66,8 +66,7 @@ def get_str_date_from_int(date_int):
     year = date_int // 10000
     month = (date_int % 10000) // 100
     day = date_int % 100
-
-    return "%d-%02d-%02d" % (year, month, day)
+    return f"{year:d}-{month:02d}-{day:02d}"
 
 
 def get_date_from_int(date_int):
