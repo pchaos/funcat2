@@ -16,6 +16,15 @@ class TestQuantaxisDataBackend(TestCase):
         data = self.qdb.stock_basics
         self.assertTrue(len(data) > 3000, f"股票代码数量：{len(data)},实际数量应该大于3000只。")
 
+    def test_get_price(self):
+        data = self.qdb.get_price("000001", 20210101, 20210201, '1d')
+        self.assertTrue(len(data) > 10, f"交易日期数量：{len(data)},实际应该大于10天。")
+        print(data)
+        # index
+        data = self.qdb.get_price("000001", 20210101, 20210201, '1d', is_index=True)
+        self.assertTrue(len(data) > 10, f"交易日期数量：{len(data)},实际应该大于10天。")
+        print(data)
+
     def test_get_order_book_id_list(self):
         data = self.qdb.get_order_book_id_list()
         self.assertTrue(len(data) > 3000, f"股票代码数量：{len(data)},实际数量应该大于3000只。")

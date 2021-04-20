@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import pandas as pd
 from cached_property import cached_property
 
 from .backend import DataBackend
@@ -31,10 +31,36 @@ class QuantaxisDataBackend(DataBackend):
     def convert_code(self, order_book_id):
         return order_book_id.split(".")[0]
 
-    @lru_cache(maxsize=4096)
-    def get_price(self, order_book_id, start, end, freq):
+    # @lru_cache(maxsize=4096)
+    def get_price(self, order_book_id, start, end, freq, is_index=False):
         """
-        :param order_book_id: e.g. 000002.XSHE
+        :param order_book_id: e.g. 000002
+        :param start: 20160101
+        :param end: 20160201
+        :returns:
+        :rtype: numpy.rec.array
+        """
+        if is_index:
+            df=self.get_index_price(order_book_id, start, end, freq)
+        else:
+            df=self.get_stock_price(order_book_id, start, end, freq)
+        if freq[-1] == "m":
+            df["datetime"] = df.apply(
+                lambda row: int(row["date"].split(" ")[0].replace("-", "")) * 1000000 + int(
+                    row["date"].split(" ")[1].replace(":", "")) * 100, axis=1)
+        elif freq in ("1d", "W", "M"):
+            dt = df.index.levels[0].tolist()
+            df["datetime"] = pd.DataFrame({"datetime": [1000000 * (10000 * dt[i].year + 100 * dt[i].month + dt[i].day)
+                                                        for i in range(len(dt))]}, index = df.index)
+            # df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
+            df.reset_index(drop=True, inplace=True)
+            arr = df.to_records()
+        return arr
+
+    @lru_cache(maxsize=4096)
+    def get_stock_price(self, order_book_id, start, end, freq):
+        """
+        :param order_book_id: e.g. 000002
         :param start: 20160101
         :param end: 20160201
         :returns:
@@ -43,31 +69,36 @@ class QuantaxisDataBackend(DataBackend):
         start = get_str_date_from_int(start)
         end = get_str_date_from_int(end)
         code = self.convert_code(order_book_id)
-        is_index = False
-        if ((order_book_id.startswith("0") and order_book_id.endswith(".XSHG")) or
-                (order_book_id.startswith("3") and order_book_id.endswith(".XSHE"))
-        ):
-            is_index = True
         ktype = freq
         if freq[-1] == "m":
             ktype = freq[:-1]
         elif freq == "1d":
             ktype = "D"
         # else W M
+        return self.backend.QA_fetch_stock_day_adv(code, start=start, end=end).data
 
-        df = self.ts.get_k_data(code, start=start, end=end, index=is_index, ktype=ktype)
 
+
+    @lru_cache(maxsize=4096)
+    def get_index_price(self, order_book_id, start, end, freq):
+        """
+        :param order_book_id: e.g. 000002
+        :param start: 20160101
+        :param end: 20160201
+        :returns:
+        :rtype: numpy.rec.array
+        """
+        start = get_str_date_from_int(start)
+        end = get_str_date_from_int(end)
+        code = self.convert_code(order_book_id)
+        ktype = freq
         if freq[-1] == "m":
-            df["datetime"] = df.apply(
-                lambda row: int(row["date"].split(" ")[0].replace("-", "")) * 1000000 + int(
-                    row["date"].split(" ")[1].replace(":", "")) * 100, axis=1)
-        elif freq in ("1d", "W", "M"):
-            df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
+            ktype = freq[:-1]
+        elif freq == "1d":
+            ktype = "D"
+        # else W M
+        return self.backend.QA_fetch_index_day_adv(code, start=start, end=end).data
 
-        del df["code"]
-        arr = df.to_records()
-
-        return arr
 
     @lru_cache()
     def get_order_book_id_list(self):
@@ -77,7 +108,7 @@ class QuantaxisDataBackend(DataBackend):
         info = self.stock_basics
         code_list = info.index.sort_values().tolist()
         order_book_id_list = [
-           code for code, _ in code_list
+            code for code, _ in code_list
         ]
         return order_book_id_list
 
@@ -90,7 +121,7 @@ class QuantaxisDataBackend(DataBackend):
         """
         start = get_str_date_from_int(start)
         end = get_str_date_from_int(end)
-        df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day('000001',start,end)
+        df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day('000001', start, end)
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 
