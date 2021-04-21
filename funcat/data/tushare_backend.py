@@ -65,6 +65,7 @@ class TushareDataBackend(DataBackend):
             df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
 
         del df["code"]
+        # print(f"tushare getprice字段：{df.columns}")
         arr = df.to_records()
 
         return arr
