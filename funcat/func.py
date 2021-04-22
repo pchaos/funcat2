@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-#
 
-from functools import reduce
-
+# from functools import reduce
 import numpy as np
 import talib
 
@@ -18,9 +16,10 @@ from .time_series import (
     ensure_timeseries,
 )
 
-
-class OneArgumentSeries(NumericSeries):
-    func = talib.MA
+class ArgumentSeriesBase(NumericSeries):
+    def getFunc(self):
+        """EXAMPLE: return talib.MA"""
+        raise NotImplementedError
 
     def __init__(self, series, arg):
         if isinstance(series, NumericSeries):
@@ -28,16 +27,38 @@ class OneArgumentSeries(NumericSeries):
 
             try:
                 series[series == np.inf] = np.nan
-                series = self.func(series, arg)
+                # print(f"series type:{type(series)}; self.func: {help(self.func)}")
+                func = self.getFunc()
+                series = func(series, arg)
             except Exception as e:
                 raise FormulaException(e)
-        super(OneArgumentSeries, self).__init__(series)
+        super(ArgumentSeriesBase, self).__init__(series)
         self.extra_create_kwargs["arg"] = arg
+
+# class OneArgumentSeries(NumericSeries):
+class OneArgumentSeries(ArgumentSeriesBase):
+    pass
+    # func = talib.MA
+
+    # def __init__(self, series, arg):
+    #     if isinstance(series, NumericSeries):
+    #         series = series.series
+    #
+    #         try:
+    #             series[series == np.inf] = np.nan
+    #             print(f"series type:{type(series)}; self.func: {help(self.func)}")
+    #             series = self.func(series, arg)
+    #         except Exception as e:
+    #             raise FormulaException(e)
+    #     super(OneArgumentSeries, self).__init__(series)
+    #     self.extra_create_kwargs["arg"] = arg
 
 
 class MovingAverageSeries(OneArgumentSeries):
     """http://www.tadoc.org/indicator/MA.htm"""
-    func = talib.MA
+    # func = talib.MA
+    def getFunc(self):
+        return talib.MA
 
 
 class WeightedMovingAverageSeries(OneArgumentSeries):
@@ -47,7 +68,9 @@ class WeightedMovingAverageSeries(OneArgumentSeries):
 
 class ExponentialMovingAverageSeries(OneArgumentSeries):
     """http://www.fmlabs.com/reference/default.htm?url=ExpMA.htm"""
-    func = talib.EMA
+    # func = talib.EMA
+    def getFunc(self):
+        return talib.EMA
 
 
 class StdSeries(OneArgumentSeries):
@@ -84,6 +107,7 @@ class SMASeries(TwoArgumentSeries):
 
 class SumSeries(NumericSeries):
     """求和"""
+
     def __init__(self, series, period):
         if isinstance(series, NumericSeries):
             series = series.series
