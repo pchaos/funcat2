@@ -63,7 +63,9 @@ class MovingAverageSeries(OneArgumentSeries):
 
 class WeightedMovingAverageSeries(OneArgumentSeries):
     """http://www.tadoc.org/indicator/WMA.htm"""
-    func = talib.WMA
+    # func = talib.WMA
+    def getFunc(self):
+        return talib.WMA
 
 
 class ExponentialMovingAverageSeries(OneArgumentSeries):
@@ -74,7 +76,9 @@ class ExponentialMovingAverageSeries(OneArgumentSeries):
 
 
 class StdSeries(OneArgumentSeries):
-    func = talib.STDDEV
+    # func = talib.STDDEV
+    def getFunc(self):
+        return talib.STDDEV
 
 
 class TwoArgumentSeries(NumericSeries):

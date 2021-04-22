@@ -9,6 +9,8 @@ t0 = time.time() - start
 
 print(t0)
 print(df)
+
+# 老接口
 arr = df.to_records()
 start = time.time()
 df = ts.get_k_data("603488", start='2020-07-14', end='2020-07-16', index=False, ktype='D', autype='qfq')

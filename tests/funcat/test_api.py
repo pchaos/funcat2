@@ -6,7 +6,7 @@ import numpy as np
 
 class TestApi(unittest.TestCase):
     @classmethod
-    def setUp(self) -> None:
+    def setUpClass(cls) -> None:
         from funcat.data.tushare_backend import TushareDataBackend as backend
         # from funcat.data.quantaxis_backend import QuantaxisDataBackend as backend
         set_data_backend(backend())
@@ -45,6 +45,18 @@ class TestApi(unittest.TestCase):
         data = EMA(CLOSE, 5)
         self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
         print(f"EMA5:{data}, EMA 5 长度：{len(data)}")
+
+    def test_ma_ema(self):
+        data = MA(CLOSE, 5)
+        data2 = EMA(CLOSE, 5)
+        self.assertTrue(len(data) == len(data2), "ma ema长度不同")
+        print(f"EMA5:{data}, EMA 5 长度：{len(data)}")
+
+    def test_wma(self):
+        data = WMA(CLOSE, 5)
+        self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
+        print(f"WMA5:{data}, WMA 5 长度：{len(data)}")
+
 
 if __name__ == '__main__':
     unittest.main()
