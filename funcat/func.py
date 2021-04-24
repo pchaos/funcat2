@@ -18,14 +18,19 @@ from .time_series import (
 
 #  ignore pandas warning
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
+
 class ArgumentSeriesBase(NumericSeries):
     def getFunc(self):
-        """EXAMPLE: return talib.MA"""
+        """EXAMPLE:
+        def getFunc(self):
+          return talib.MA
+        """
         raise NotImplementedError
 
 
-# class OneArgumentSeries(NumericSeries):
 class OneArgumentSeries(ArgumentSeriesBase):
     def __init__(self, series, arg):
         if isinstance(series, NumericSeries):
@@ -85,7 +90,8 @@ class StdSeries(OneArgumentSeries):
         return talib.STDDEV
 
 
-class TwoArgumentSeries(NumericSeries):
+class TwoArgumentSeries(ArgumentSeriesBase):
+# class TwoArgumentSeries(NumericSeries):
     func = talib.STDDEV
 
     def __init__(self, series, arg1, arg2):
@@ -94,7 +100,7 @@ class TwoArgumentSeries(NumericSeries):
 
             try:
                 series[series == np.inf] = np.nan
-                series = self.func(series, arg1, arg2)
+                series = self.getFunc()(series, arg1, arg2)
             except Exception as e:
                 raise FormulaException(e)
         super(TwoArgumentSeries, self).__init__(series)
@@ -113,23 +119,39 @@ class SMASeries(TwoArgumentSeries):
         return results
 
 
-class CCISeries(NumericSeries):
-    func = talib.CCI
+class CCISeries(TwoArgumentSeries):
+    def getFunc(self):
+        return talib.CCI
 
     def __init__(self, high, low, close):
         if isinstance(high, NumericSeries) and isinstance(low, NumericSeries) and isinstance(close, NumericSeries):
-            series0 = high.series
             series1 = low.series
             series2 = close.series
 
             try:
-                series0[series0 == np.inf] = np.nan
                 series1[series1 == np.inf] = np.nan
-                series1[series1 == np.inf] = np.nan
-                series = self.func(series0, series1, series2)
+                series2[series2 == np.inf] = np.nan
             except Exception as e:
-                raise FormulaException(e)
-            super(CCISeries, self).__init__(series)
+                    raise FormulaException(e)
+        super(CCISeries, self).__init__(high, series1, series2)
+
+    # def __init__(self, high, low, close):
+    #     if isinstance(high, NumericSeries) and isinstance(low, NumericSeries) and isinstance(close, NumericSeries):
+    #         series0 = high.series
+    #         series1 = low.series
+    #         series2 = close.series
+    #
+    #         try:
+    #             series0[series0 == np.inf] = np.nan
+    #             series1[series1 == np.inf] = np.nan
+    #             series2[series2 == np.inf] = np.nan
+    #             func = self.getFunc()
+    #             # print(func, help(func))
+    #             series = func(series0, series1, series2)
+    #             # series = (self.getFunc())(series0, series1, series2)
+    #         except Exception as e:
+    #             raise FormulaException(e)
+    #         super(CCISeries, self).__init__(series)
 
 
 class SumSeries(NumericSeries):
@@ -209,7 +231,8 @@ def count(cond, n):
     series = cond.series
     size = len(cond.series) - n
     try:
-        result = np.full(size, 0, dtype=np.int)
+        # result = np.full(size, 0, dtype=np.int)
+        result = np.full(size, 0, dtype=int)
     except ValueError as e:
         raise FormulaException(e)
     for i in range(size - 1, 0, -1):
@@ -282,7 +305,6 @@ def llvbars(s, n):
     result = np.argmin(rolling_window(series, n), 1)
 
     return NumericSeries(result)
-
 
 
 @handle_numpy_warning

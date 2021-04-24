@@ -78,6 +78,11 @@ class TestApi(unittest.TestCase):
         self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
         print(f"WMA5:{data}, WMA 5 长度：{len(data)}")
 
+    def test_cci(self):
+        data = CCI(CLOSE, HIGH, LOW)
+        self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
+        print(f"CCI:{data}, CCI 5 长度：{len(data)}")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -4,16 +4,20 @@
 [![PythonVersion](https://img.shields.io/pypi/pyversions/funcat2.svg)](https://pypi.python.org/pypi/funcat2)
 [![License](https://img.shields.io/pypi/l/funcat2.svg)](https://pypi.python.org/pypi/funcat2)
 
+Funcat2保持与funcat兼容;
+
 Funcat 将同花顺、通达信、文华财经等的公式移植到了 Python 中。
 
 同花顺、通达信、文华财经麦语言等公式的表达十分简洁，适合做技术分析。
 
 苦于 Python 缺乏这种领域特定语言的表达能力，所以用 Python 基于 numpy 实现了一套。
 
-Funcat2增加QUANTAXIS的支持
+* Funcat2增加QUANTAXIS的支持
 
 ## 安装
-```
+```bash
+pip install funcat2
+# update funcat2
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -U funcat2
 ```
 
