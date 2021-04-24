@@ -19,9 +19,9 @@ with open(join(dirname(__file__), 'funcat/VERSION.txt'), 'rb') as f:
 
 try: 
     # AttributeError: 'ParsedRequirement' object has no attribute 'req'; for pip >=20.1
-    install_requires=[str(ir.requirement) for ir in parse_requirements("requirements.txt", session=False)],
+    req=[str(ir.requirement) for ir in parse_requirements("requirements.txt", session=False)],
 except:
-    install_requires=[str(ir.req) for ir in parse_requirements("requirements.txt", session=False)],
+    req=[str(ir.req) for ir in parse_requirements("requirements.txt", session=False)],
 
 setup(
     name='funcat2',
@@ -33,6 +33,7 @@ setup(
     author_email='et@everet.org',
     license='Apache License v2',
     package_data={'': ['*.*']},
+    install_requires=req,
     zip_safe=False,
     classifiers=[
         'Programming Language :: Python',

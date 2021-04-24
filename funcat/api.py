@@ -7,6 +7,7 @@ from .func import (
     AbsSeries,
     StdSeries,
     SMASeries,
+    CCISeries,
     MovingAverageSeries,
     WeightedMovingAverageSeries,
     ExponentialMovingAverageSeries,
@@ -17,18 +18,28 @@ from .func import (
     count,
     hhv,
     llv,
+    hhvbars,
+    llvbars,
     Ref,
     iif,
+    ceiling,
+    const,
+    drawnull,
+    zig,
+    troughbars,
 )
 from .context import (
     symbol,
     set_current_security,
+    get_current_security,
     set_current_date,
+    get_current_date,
     set_start_date,
+    get_start_date,
     set_data_backend,
     set_current_freq,
 )
-from .helper import select
+from .helper import select, backtest, zig_helper
 
 
 # create open high low close volume datetime
@@ -45,6 +56,7 @@ MA = MovingAverageSeries
 WMA = WeightedMovingAverageSeries
 EMA = ExponentialMovingAverageSeries
 SMA = SMASeries
+CCI = CCISeries
 
 SUM = SumSeries
 ABS = AbsSeries
@@ -58,7 +70,14 @@ EVERY = every
 COUNT = count
 HHV = hhv
 LLV = llv
+HHVBARS = hhvbars
+LLVBARS = llvbars
 IF = IIF = iif
+CEILING = ceiling
+CONST = const
+DRAWNULL = drawnull
+ZIG = zig  # zig当前以收盘价为准
+TROUGHBARS = troughbars
 
 S = set_current_security
 T = set_current_date
@@ -73,6 +92,7 @@ __all__ = [
     "DATETIME",
 
     "SMA",
+    "CCI",
     "MA",
     "EMA",
     "WMA",
@@ -89,16 +109,28 @@ __all__ = [
     "COUNT",
     "HHV",
     "LLV",
+    "HHVBARS",
+    "LLVBARS",
     "IF", "IIF",
+    "CEILING",
+    "CONST",
+    "DRAWNULL",
+    "ZIG",
+    "TROUGHBARS",
 
     "S",
     "T",
 
     "select",
+    "backtest",
+    "zig_helper",
     "symbol",
     "set_current_security",
+    "get_current_security",
     "set_current_date",
+    "get_current_date",
     "set_start_date",
+    "get_start_date",
     "set_data_backend",
     "set_current_freq",
 ]

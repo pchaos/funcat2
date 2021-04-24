@@ -6,3 +6,4 @@ lxml
 requests
 TA-Lib
 cached-property
+tqdm

@@ -23,6 +23,7 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         print(data)
 
     def test_get_price2(self):
+        """和tushare返回的数据做比对"""
         # index
         data = self.qdb.get_price("000001", 20210101, 20210201, '1d', is_index=True)
         self.assertTrue(len(data) > 10, f"交易日期数量：{len(data)},实际应该大于10天。")

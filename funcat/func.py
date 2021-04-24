@@ -16,11 +16,17 @@ from .time_series import (
     ensure_timeseries,
 )
 
+#  ignore pandas warning
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 class ArgumentSeriesBase(NumericSeries):
     def getFunc(self):
         """EXAMPLE: return talib.MA"""
         raise NotImplementedError
 
+
+# class OneArgumentSeries(NumericSeries):
+class OneArgumentSeries(ArgumentSeriesBase):
     def __init__(self, series, arg):
         if isinstance(series, NumericSeries):
             series = series.series
@@ -28,17 +34,13 @@ class ArgumentSeriesBase(NumericSeries):
             try:
                 series[series == np.inf] = np.nan
                 # print(f"series type:{type(series)}; self.func: {help(self.func)}")
-                func = self.getFunc()
-                series = func(series, arg)
+                # func = self.getFunc()
+                # series = func(series, arg)
+                series = self.getFunc()(series, arg)
             except Exception as e:
                 raise FormulaException(e)
         super(ArgumentSeriesBase, self).__init__(series)
         self.extra_create_kwargs["arg"] = arg
-
-# class OneArgumentSeries(NumericSeries):
-class OneArgumentSeries(ArgumentSeriesBase):
-    pass
-    # func = talib.MA
 
     # def __init__(self, series, arg):
     #     if isinstance(series, NumericSeries):
@@ -56,13 +58,14 @@ class OneArgumentSeries(ArgumentSeriesBase):
 
 class MovingAverageSeries(OneArgumentSeries):
     """http://www.tadoc.org/indicator/MA.htm"""
-    # func = talib.MA
+
     def getFunc(self):
         return talib.MA
 
 
 class WeightedMovingAverageSeries(OneArgumentSeries):
     """http://www.tadoc.org/indicator/WMA.htm"""
+
     # func = talib.WMA
     def getFunc(self):
         return talib.WMA
@@ -70,6 +73,7 @@ class WeightedMovingAverageSeries(OneArgumentSeries):
 
 class ExponentialMovingAverageSeries(OneArgumentSeries):
     """http://www.fmlabs.com/reference/default.htm?url=ExpMA.htm"""
+
     # func = talib.EMA
     def getFunc(self):
         return talib.EMA
@@ -107,6 +111,25 @@ class SMASeries(TwoArgumentSeries):
         for i in range(1, len(series)):
             results[i] = ((n - 1) * results[i - 1] + results[i]) / n
         return results
+
+
+class CCISeries(NumericSeries):
+    func = talib.CCI
+
+    def __init__(self, high, low, close):
+        if isinstance(high, NumericSeries) and isinstance(low, NumericSeries) and isinstance(close, NumericSeries):
+            series0 = high.series
+            series1 = low.series
+            series2 = close.series
+
+            try:
+                series0[series0 == np.inf] = np.nan
+                series1[series1 == np.inf] = np.nan
+                series1[series1 == np.inf] = np.nan
+                series = self.func(series0, series1, series2)
+            except Exception as e:
+                raise FormulaException(e)
+            super(CCISeries, self).__init__(series)
 
 
 class SumSeries(NumericSeries):
@@ -232,6 +255,37 @@ def llv(s, n):
 
 
 @handle_numpy_warning
+def hhvbars(s, n):
+    # TODO lazy compute
+    series = s.series
+    size = len(s.series) - n
+    try:
+        result = np.full(size, 0, dtype=np.float64)
+    except ValueError as e:
+        raise FormulaException(e)
+
+    result = np.argmax(rolling_window(series, n), 1)
+
+    return NumericSeries(result)
+
+
+@handle_numpy_warning
+def llvbars(s, n):
+    # TODO lazy compute
+    series = s.series
+    size = len(s.series) - n
+    try:
+        result = np.full(size, 0, dtype=np.float64)
+    except ValueError as e:
+        raise FormulaException(e)
+
+    result = np.argmin(rolling_window(series, n), 1)
+
+    return NumericSeries(result)
+
+
+
+@handle_numpy_warning
 def iif(condition, true_statement, false_statement):
     series1 = get_series(true_statement)
     series2 = get_series(false_statement)
@@ -241,3 +295,49 @@ def iif(condition, true_statement, false_statement):
     series[cond_series] = series1[cond_series]
 
     return NumericSeries(series)
+
+
+@handle_numpy_warning
+def ceiling(s):
+    series = s.series
+    return NumericSeries(np.ceil(series))
+
+
+@handle_numpy_warning
+def const(s):
+    if isinstance(s, NumericSeries):
+        return NumericSeries(s.series)
+    elif isinstance(s, np.ndarray):
+        return NumericSeries(s)
+    else:
+        return NumericSeries(np.array([s]))
+
+
+@handle_numpy_warning
+def drawnull(s):
+    pass
+
+
+@handle_numpy_warning
+def zig(s, n):
+    series = s.series
+    assert isinstance(series, np.ndarray)
+    z, _ = zig_helper(series, n)
+    return NumericSeries(z)
+
+
+@handle_numpy_warning
+def troughbars(s, n, m):
+    series = s.series
+    assert isinstance(series, np.ndarray)
+    z, peers = zig_helper(series, n)
+    z_in_p = [z[i] for i in peers]
+    count = 0
+    for i in range(len(z_in_p) - 1, 1, -1):
+        if count == m:
+            return i
+
+        if z_in_p[i] < z_in_p[i - 1]:
+            count += 1
+
+    return 0

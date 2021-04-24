@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 
-from __future__ import division
+# from __future__ import division
 
 import six
 import numpy as np
@@ -202,6 +202,8 @@ class TimeSeries(object):
     __nonzero__ = __bool__
 
     def __repr__(self):
+        if len(self.series) == 0:
+            return ''
         return str(self.value)
 
 

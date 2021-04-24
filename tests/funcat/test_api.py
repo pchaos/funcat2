@@ -7,13 +7,23 @@ import numpy as np
 class TestApi(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        from funcat.data.tushare_backend import TushareDataBackend as backend
+        from funcat.data.tushare_backend import TushareDataBackend as BACKEND
         # from funcat.data.quantaxis_backend import QuantaxisDataBackend as backend
-        set_data_backend(backend())
+        set_data_backend(BACKEND())
+        set_start_date(20200101)
         T("20201216")
         S("000001.XSHG")
 
+    def test_T(self):
+
+        # print(f"CLOSE: {help(CLOSE)}")
+        print(f"CLOSE series: {(CLOSE.series)}")
+        print(f"CLOSE value: {(CLOSE.value)}")
+        # print(f"CLOSE: {help(CLOSE.value)}")
+        print(get_start_date(), get_current_date(), get_current_security())
+
     def test_000001(self):
+        set_start_date(20150101)
         T("20161216")
         S("000001.XSHG")
 
@@ -29,9 +39,17 @@ class TestApi(unittest.TestCase):
         assert COUNT(CLOSE > OPEN, 5) == 2
 
     def test_close(self):
+        set_start_date(20150101)
         T("20161216")
-        S("000001.XSHG")
-        self.assertTrue(np.equal(round(CLOSE.value, 2), 3122.98), f"收盘价：{CLOSE}")
+        # S("000002.XSHG")
+        # S("000001.XSHG")
+        c = CLOSE
+        if not c:
+            print("没有数据返回！")
+        print(f"CLOSE: {c} {CLOSE.series}")
+        print(f"CLOSE长度: {c[len(c)]}")
+        print(f"返回数据长度：{len(c)}, {type(c)}, type :{c.dtype}")
+        assert np.equal(round(CLOSE.value, 2), 3122.98), f"收盘价：{CLOSE.value}, {type(CLOSE)}"
 
     def test_ma(self):
         c = C
@@ -50,7 +68,10 @@ class TestApi(unittest.TestCase):
         data = MA(CLOSE, 5)
         data2 = EMA(CLOSE, 5)
         self.assertTrue(len(data) == len(data2), "ma ema长度不同")
-        print(f"EMA5:{data}, EMA 5 长度：{len(data)}")
+        print(f"MA5:{data.series}, MA 5 长度：{len(data)}")
+        print(f"EMA5:{data2}, EMA 5 长度：{len(data2)}")
+        self.assertFalse(data == data2, f"{data}, {data2}")
+        print(f"data == data2,\n{data == data2,}")
 
     def test_wma(self):
         data = WMA(CLOSE, 5)
