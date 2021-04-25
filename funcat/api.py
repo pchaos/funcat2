@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-from .time_series import MarketDataSeries
+from .time_series import MarketDataSeries, NumericSeries
 from .func import (
     SumSeries,
     AbsSeries,
@@ -27,6 +27,7 @@ from .func import (
     drawnull,
     zig,
     troughbars,
+    barslast
 )
 from .context import (
     symbol,
@@ -73,6 +74,7 @@ LLV = llv
 HHVBARS = hhvbars
 LLVBARS = llvbars
 IF = IIF = iif
+BARSLAST=barslast
 CEILING = ceiling
 CONST = const
 DRAWNULL = drawnull
@@ -112,6 +114,7 @@ __all__ = [
     "HHVBARS",
     "LLVBARS",
     "IF", "IIF",
+    "BARSLAST",
     "CEILING",
     "CONST",
     "DRAWNULL",
@@ -133,4 +136,5 @@ __all__ = [
     "get_start_date",
     "set_data_backend",
     "set_current_freq",
+    "NumericSeries",
 ]

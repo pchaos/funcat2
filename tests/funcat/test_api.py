@@ -7,15 +7,19 @@ import numpy as np
 class TestApi(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        from funcat.data.tushare_backend import TushareDataBackend as BACKEND
-        # from funcat.data.quantaxis_backend import QuantaxisDataBackend as backend
-        set_data_backend(BACKEND())
+        cls.setBackend()
         set_start_date(20200101)
         T("20201216")
         S("000001.XSHG")
+        print(get_start_date(), get_current_date(), get_current_security())
+
+    @classmethod
+    def setBackend(cls):
+        from funcat.data.tushare_backend import TushareDataBackend as BACKEND
+        # from funcat.data.quantaxis_backend import QuantaxisDataBackend as backend
+        set_data_backend(BACKEND())
 
     def test_T(self):
-
         # print(f"CLOSE: {help(CLOSE)}")
         print(f"CLOSE series: {(CLOSE.series)}")
         print(f"CLOSE value: {(CLOSE.value)}")
@@ -29,7 +33,8 @@ class TestApi(unittest.TestCase):
 
         assert np.equal(round(CLOSE.value, 2), 3122.98), f"收盘价：{C}"
         assert np.equal(round(OPEN[2].value, 2), 3149.38)
-        assert np.equal(round((CLOSE - OPEN).value, 2), 11.47)
+        assert np.equal(round((CLOSE - OPEN).value, 2),
+                        11.47), f"round((CLOSE - OPEN).value, 2):{round((CLOSE - OPEN).value, 2)}"
         assert np.equal(round((CLOSE - OPEN)[2].value, 2), -8.85)
         assert np.equal(round(((CLOSE / CLOSE[1] - 1) * 100).value, 2), 0.17)
         assert np.equal(round(MA(CLOSE, 60)[2].value, 2), 3131.08)
@@ -40,6 +45,7 @@ class TestApi(unittest.TestCase):
 
     def test_close(self):
         set_start_date(20150101)
+
         T("20161216")
         # S("000002.XSHG")
         # S("000001.XSHG")
@@ -80,8 +86,13 @@ class TestApi(unittest.TestCase):
 
     def test_cci(self):
         data = CCI(CLOSE, HIGH, LOW)
-        self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
+        self.assertTrue(len(data) > 1, "cci个数不大天1！")
         print(f"CCI:{data}, CCI 5 长度：{len(data)}")
+
+    def test_barslast(self):
+        data = BARSLAST(C > 0)
+        assert np.equal(REF(C, data).value, C.value)
+        print(f"BARSLAST:{data}, BARSLAST长度：{len(data)}")
 
 
 if __name__ == '__main__':

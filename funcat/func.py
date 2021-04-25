@@ -19,6 +19,18 @@ from .time_series import (
 #  ignore pandas warning
 import warnings
 
+
+# delete nan of series for error made by some operator
+def filter_begin_nan(series):
+    i = 0
+    for x in series:
+        if np.isnan(x):
+            i += 1
+        else:
+            break
+    return series[i:]
+
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
@@ -42,6 +54,7 @@ class OneArgumentSeries(ArgumentSeriesBase):
                 # func = self.getFunc()
                 # series = func(series, arg)
                 series = self.getFunc()(series, arg)
+                series = filter_begin_nan(series)
             except Exception as e:
                 raise FormulaException(e)
         super(ArgumentSeriesBase, self).__init__(series)
@@ -91,16 +104,15 @@ class StdSeries(OneArgumentSeries):
 
 
 class TwoArgumentSeries(ArgumentSeriesBase):
-# class TwoArgumentSeries(NumericSeries):
-    func = talib.STDDEV
+    # class TwoArgumentSeries(NumericSeries):
 
     def __init__(self, series, arg1, arg2):
         if isinstance(series, NumericSeries):
             series = series.series
-
             try:
                 series[series == np.inf] = np.nan
                 series = self.getFunc()(series, arg1, arg2)
+                series = filter_begin_nan(series)
             except Exception as e:
                 raise FormulaException(e)
         super(TwoArgumentSeries, self).__init__(series)
@@ -132,7 +144,7 @@ class CCISeries(TwoArgumentSeries):
                 series1[series1 == np.inf] = np.nan
                 series2[series2 == np.inf] = np.nan
             except Exception as e:
-                    raise FormulaException(e)
+                raise FormulaException(e)
         super(CCISeries, self).__init__(high, series1, series2)
 
     # def __init__(self, high, low, close):
@@ -202,6 +214,8 @@ def CrossOver(s1, s2):
 
 
 def Ref(s1, n):
+    if isinstance(n, NumericSeries):
+        return s1[int(n.value)]
     return s1[n]
 
 
@@ -363,3 +377,22 @@ def troughbars(s, n, m):
             count += 1
 
     return 0
+
+@handle_numpy_warning
+def barslast(statement):
+    series = get_series(statement)
+    size = len(series)
+    end = size
+    begin = size - 1
+    try:
+        result = np.full(size, 1e16, dtype=np.int64)
+    except ValueError as e:
+        raise FormulaException(e)
+
+    for s in series[::-1]:
+        if s:
+            result[begin:end] = range(0, end - begin)
+            end = begin
+        begin -= 1
+
+    return NumericSeries(result)

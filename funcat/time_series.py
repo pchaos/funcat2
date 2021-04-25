@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-
-# from __future__ import division
 
 import six
 import numpy as np
@@ -206,6 +203,8 @@ class TimeSeries(object):
             return ''
         return str(self.value)
 
+    def __int__(self):
+        return int(self.value)
 
 class NumericSeries(TimeSeries):
     def __init__(self, series=[]):
@@ -218,7 +217,13 @@ class NumericSeries(TimeSeries):
         return self._series
 
     def __getitem__(self, index):
-        assert isinstance(index, int) and index >= 0
+        assert (isinstance(index, int) and index >= 0) \
+               or (isinstance(index, NumericSeries))
+
+        if isinstance(index, NumericSeries):
+            index = int(index.value)
+            assert index >= 0
+
         return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
 
 
@@ -255,6 +260,9 @@ class MarketDataSeries(NumericSeries):
 
     def __getitem__(self, index):
         if isinstance(index, int):
+            assert index >= 0
+        if isinstance(index, NumericSeries):
+            index = int(index.value)
             assert index >= 0
 
         if isinstance(index, six.string_types):
