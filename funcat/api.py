@@ -1,4 +1,15 @@
 # -*- coding: utf-8 -*-
+"""1，HIGH 最高价 返回该周期最高价。 用法：HIGH
+2，H 最高价 返回该周期最高价。 用法： H
+3， LOW 最低价 返回该周期最低价。 用法： LOW
+4， L 最低价 返回该周期最低价。 用法： L
+5、CLOSE 收盘价 返回该周期收盘价。 用法： CLOSE
+6， C 收盘价 返回该周期收盘价。 用法： C
+7， VOL 成交量 返回该周期成交量。 用法： VOL
+8， V 成交量 返回该周期成交量。 用法： V
+9， OPEN 开盘价 返回该周期开盘价。 用法： OPEN
+10，O：开盘价 返回该周期开盘价。 用法： O
+"""
 import numpy as np
 
 from .time_series import MarketDataSeries, NumericSeries
@@ -45,7 +56,8 @@ from .helper import select, backtest, zig_helper
 
 # create open high low close volume datetime
 for name in ["open", "high", "low", "close", "volume", "datetime"]:
-    dtype = np.float64 if name != "datetime" else np.uint64
+    # dtype = np.float64 if name != "datetime" else np.uint64
+    dtype = float if name != "datetime" else int
     cls = type("{}Series".format(name.capitalize()), (MarketDataSeries, ), {"name": name, "dtype": dtype})
     obj = cls(dynamic_update=True)
     for var in [name[0], name[0].upper(), name.upper()]:

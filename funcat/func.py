@@ -15,9 +15,12 @@ from .time_series import (
     get_bars,
     ensure_timeseries,
 )
+from .helper import zig_helper
 
 #  ignore pandas warning
 import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 # delete nan of series for error made by some operator
@@ -29,9 +32,6 @@ def filter_begin_nan(series):
         else:
             break
     return series[i:]
-
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 class ArgumentSeriesBase(NumericSeries):
@@ -267,7 +267,8 @@ def hhv(s, n):
     series = s.series
     size = len(s.series) - n
     try:
-        result = np.full(size, 0, dtype=np.float64)
+        # result = np.full(size, 0, dtype=np.float64)
+        result = np.full(size, 0, dtype=float)
     except ValueError as e:
         raise FormulaException(e)
 
@@ -282,7 +283,8 @@ def llv(s, n):
     series = s.series
     size = len(s.series) - n
     try:
-        result = np.full(size, 0, dtype=np.float64)
+        # result = np.full(size, 0, dtype=np.float64)
+        result = np.full(size, 0, dtype=float)
     except ValueError as e:
         raise FormulaException(e)
 
@@ -293,11 +295,16 @@ def llv(s, n):
 
 @handle_numpy_warning
 def hhvbars(s, n):
+    """HHVBARS 上一高点位置 求上一高点到当前的周期数.
+    用法: HHVBARS(X,N):求N周期内X最高值到当前周期数,N=0表示从第一个有效值开始统计
+    例如:HHVBARS(HIGH,0)求得历史新高到到当前的周期数
+    """
     # TODO lazy compute
     series = s.series
     size = len(s.series) - n
     try:
-        result = np.full(size, 0, dtype=np.float64)
+        # result = np.full(size, 0, dtype=np.float64)
+        result = np.full(size, 0, dtype=float)
     except ValueError as e:
         raise FormulaException(e)
 
@@ -308,11 +315,16 @@ def hhvbars(s, n):
 
 @handle_numpy_warning
 def llvbars(s, n):
+    """LLVBARS 上一低点位置 求上一低点到当前的周期数.
+    用法: LLVBARS(X,N):求N周期内X最低值到当前周期数,N=0表示从第一个有效值开始统计
+    例如:LLVBARS(LOW,20)求得20日最低点到当前的周期数
+    """
     # TODO lazy compute
     series = s.series
     size = len(s.series) - n
     try:
-        result = np.full(size, 0, dtype=np.float64)
+        # result = np.full(size, 0, dtype=np.float64)
+        result = np.full(size, 0, dtype=float)
     except ValueError as e:
         raise FormulaException(e)
 
@@ -323,6 +335,13 @@ def llvbars(s, n):
 
 @handle_numpy_warning
 def iif(condition, true_statement, false_statement):
+    """IF 逻辑判断 根据条件求不同的值。
+用法： IF(X，A，B) 若X不为0则返回A，否则返回B。
+例如： IF(CLOSE>OPEN，HIGH，LOW)表示该周期收阳则返回最高值，否则返回最低值。
+IFF 逻辑判断 根据条件求不同的值。
+用法： IFF(X，A，B) 若X不为0则返回A，否则返回B。
+例如： IFF(CLOSE>OPEN，HIGH，LOW) 表示该周期收阳则返回最高值，否则返回最低值。
+"""
     series1 = get_series(true_statement)
     series2 = get_series(false_statement)
     cond_series, series1, series2 = fit_series(condition.series, series1, series2)
@@ -335,6 +354,9 @@ def iif(condition, true_statement, false_statement):
 
 @handle_numpy_warning
 def ceiling(s):
+    """CEILING 向上舍入 向上舍入。 用法： CEILING(A) 返回沿A数值增大方向最接近的整数。
+例如： CEILING(12.3) 求得13，CEILING(-3.5)求得-3。 FLOOR 向下舍入 向下舍入。 用法： FLOOR(A) 返回沿A数值减小方向最接近的整数。
+"""
     series = s.series
     return NumericSeries(np.ceil(series))
 
@@ -351,11 +373,18 @@ def const(s):
 
 @handle_numpy_warning
 def drawnull(s):
+    """DRAWNULL 无效数 返回无效数。
+用法： DRAWNULL
+例如： IF(CLOSE>REF(CLOSE，1)，CLOSE，DRAWNULL) 表示下跌时分析图上不画线。 BACKSET 向前赋值
+"""
     pass
 
 
 @handle_numpy_warning
 def zig(s, n):
+    """ZIG 之字转向 之字转向。 用法： ZIG(K，N) 当价格变化量超过N%时转向，K表示0:开盘价，1:最高价， 2:最低价，3:收盘价，其余:数组信息
+例如： ZIG(3，5) 表示收盘价的5%的ZIG转向。
+"""
     series = s.series
     assert isinstance(series, np.ndarray)
     z, _ = zig_helper(series, n)
@@ -364,6 +393,10 @@ def zig(s, n):
 
 @handle_numpy_warning
 def troughbars(s, n, m):
+    """TROUGHBARS 波谷位置 前M个ZIG转向波谷到当前距离。
+    用法： TROUGHBARS(K，N，M) 表 示之字转向ZIG(K，N)的前M个波谷到当前的周期数，M必须大于等于1。
+    例如： TROUGH(2，5，2) 表示%5最低价ZIG转向的前2个波谷到当前的周期数。
+    """
     series = s.series
     assert isinstance(series, np.ndarray)
     z, peers = zig_helper(series, n)
@@ -378,14 +411,19 @@ def troughbars(s, n, m):
 
     return 0
 
+
 @handle_numpy_warning
 def barslast(statement):
+    """BARSLAST 上一条件成立位置 上一次条件成立到当前的周期数.
+    用法: BARSLAST(X):上一次X不为0到现在的天数，
+    例如:BARSLAST(CLOSE/REF(CLOSE,1)>=1.
+    """
     series = get_series(statement)
     size = len(series)
     end = size
     begin = size - 1
     try:
-        result = np.full(size, 1e16, dtype=np.int64)
+        result = np.full(size, 1e16, dtype=int)
     except ValueError as e:
         raise FormulaException(e)
 

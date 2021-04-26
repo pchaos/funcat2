@@ -1,14 +1,11 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-
-# from __future__ import division
 
 import inspect
 import datetime
 import functools
 
 import numpy as np
+
 try:
     from functools import lru_cache
 except ImportError:
@@ -88,7 +85,7 @@ def rolling_window(a, window):
     copy from http://stackoverflow.com/questions/6811183/rolling-window-for-1d-arrays-in-numpy
     '''
     shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)
-    strides = a.strides + (a.strides[-1], )
+    strides = a.strides + (a.strides[-1],)
     return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
 
 
@@ -97,4 +94,5 @@ def handle_numpy_warning(func):
     def wrapper(*args, **kwargs):
         with np.errstate(invalid='ignore'):
             return func(*args, **kwargs)
+
     return wrapper

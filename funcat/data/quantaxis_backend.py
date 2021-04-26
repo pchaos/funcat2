@@ -41,6 +41,9 @@ class QuantaxisDataBackend(DataBackend):
         :returns:
         :rtype: numpy.rec.array
         """
+        if order_book_id.endswith(".XSHG") or order_book_id.endswith(".XSHE"):
+            # 判断指数
+            is_index =True
         if is_index:
             df = self.get_index_price(order_book_id, start, end, freq)
         else:
@@ -59,6 +62,7 @@ class QuantaxisDataBackend(DataBackend):
             # del df["code"]
             df = df[['date', 'open', 'close', 'high', 'low', 'volume', 'datetime']]
             df.reset_index(drop=True, inplace=True)
+            # getprice字段：Index(['date', 'open', 'close', 'high', 'low', 'volume', 'datetime'], dtype='object')
             # print(f"quantaxis getprice字段：{df.columns}")
             arr = df.to_records()
         return arr

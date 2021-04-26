@@ -206,6 +206,7 @@ class TimeSeries(object):
     def __int__(self):
         return int(self.value)
 
+
 class NumericSeries(TimeSeries):
     def __init__(self, series=[]):
         super(NumericSeries, self).__init__()
@@ -234,7 +235,8 @@ class DuplicateNumericSeries(NumericSeries):
             val = series[-1]
         except:
             val = series
-        super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
+        # super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
+        super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=float))
 
 
 class MarketDataSeries(NumericSeries):
@@ -243,6 +245,7 @@ class MarketDataSeries(NumericSeries):
     MarketDataSeries 与其他 TimeSeries 最大的区别是，
     其值是通过动态根据当前时间和当前关注的标的更新
     """
+
     def __init__(self, series=None, dynamic_update=False, freq=None):
         super(MarketDataSeries, self).__init__(series)
         self._dynamic_update = dynamic_update

@@ -15,8 +15,8 @@ class TestApi(unittest.TestCase):
 
     @classmethod
     def setBackend(cls):
-        from funcat.data.tushare_backend import TushareDataBackend as BACKEND
-        # from funcat.data.quantaxis_backend import QuantaxisDataBackend as backend
+        # from funcat.data.tushare_backend import TushareDataBackend as BACKEND
+        from funcat.data.quantaxis_backend import QuantaxisDataBackend as BACKEND
         set_data_backend(BACKEND())
 
     def test_T(self):
@@ -93,6 +93,35 @@ class TestApi(unittest.TestCase):
         data = BARSLAST(C > 0)
         assert np.equal(REF(C, data).value, C.value)
         print(f"BARSLAST:{data}, BARSLAST长度：{len(data)}")
+        data2 = BARSLAST(C > LOW)
+        print(f"BARSLAST(C > LOW):{data2}")
+
+
+class TestApiQuantaxis(TestApi):
+    @classmethod
+    def setBackend(cls):
+        from funcat.data.quantaxis_backend import QuantaxisDataBackend as BACKEND
+        set_data_backend(BACKEND())
+        print(BACKEND.__name__)
+
+    def test_close(self):
+        set_start_date(20160101)
+
+        T("20161216")
+        # S("000002.XSHG")
+        # S("000001.XSHG")
+        c = CLOSE
+        if not c:
+            print("没有数据返回！")
+        print(f"CLOSE: {c} {CLOSE.series}")
+        print(f"CLOSE长度: {c[len(c)]}")
+        print(f"返回数据长度：{len(c)}, {type(c)}, type :{c.dtype}, name: {c.name}")
+        # print(dir(c))
+        assert np.equal(round(CLOSE.value, 2), 3122.98), f"收盘价：{CLOSE.value}, {type(CLOSE)}"
+
+        # stock
+        S("000001")
+        assert np.equal(round(CLOSE.value, 2), 9.25), f"收盘价：{CLOSE.value}, {type(CLOSE)}"
 
 
 if __name__ == '__main__':

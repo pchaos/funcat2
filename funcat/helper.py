@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-#
 
-from __future__ import print_function
-
+# from __future__ import print_function
 import datetime
 import numpy as np
 from tqdm import tqdm
