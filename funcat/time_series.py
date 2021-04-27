@@ -257,7 +257,8 @@ class MarketDataSeries(NumericSeries):
             freq = self._freq if self._freq is not None else ExecutionContext.get_current_freq()
             bars = get_bars(freq)
             if len(bars) > 0:
-                self._series = bars[self.name].astype(self.dtype)
+                # self._series = bars[self.name].astype(self.dtype)
+                self._series = bars[self.name]
             else:
                 self._series = bars
 

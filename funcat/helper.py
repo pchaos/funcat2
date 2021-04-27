@@ -3,10 +3,19 @@
 # from __future__ import print_function
 import datetime
 import numpy as np
-from tqdm import tqdm
+import asyncio
+from tqdm.asyncio import tqdm
 
-from .context import ExecutionContext, set_current_security, set_current_date, symbol, get_current_security
+from .context import ExecutionContext, set_current_security, set_current_date, symbol, set_start_date, \
+    get_current_security
 from .utils import getsourcelines, FormulaException, get_int_date
+
+__all__ = ["select",
+           "selectAsync",
+           "suppress_numpy_warn",
+           "backtest",
+           "zig_helper",
+           ]
 
 
 def suppress_numpy_warn(func):
@@ -16,6 +25,7 @@ def suppress_numpy_warn(func):
             return func(*args, **kwargs)
         finally:
             np.seterr(**old_settings)  # reset to default
+
     return wrapper
 
 
@@ -30,29 +40,105 @@ def choose(order_book_id, func, callback):
 
 
 @suppress_numpy_warn
-def select(func, start_date="2016-10-01", end_date=None, callback=print):
+def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+    """异步select"""
+
+    async def achoose(order_book_id_list, func, callback):
+        with tqdm(range(len(order_book_id_list))) as pbar:
+            async for i in pbar:
+                order_book_id = order_book_id_list[i]
+                choose(order_book_id, func, callback)
+                if not (i % 5):
+                    # pbar.update(5)
+                    pbar.set_description(f"{i}")
+
     print(getsourcelines(func))
     start_date = get_int_date(start_date)
     if end_date is None:
         end_date = datetime.date.today()
     end_date = get_int_date(end_date)
     data_backend = ExecutionContext.get_data_backend()
-    order_book_id_list = data_backend.get_order_book_id_list()
+    if len(order_book_id_list) == 0:
+        order_book_id_list = data_backend.get_order_book_id_list()[:300]
     trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
+    set_start_date(trading_dates[0] - 10000)  # 提前一年的数据
+    loop = asyncio.get_event_loop()
     for idx, date in enumerate(reversed(trading_dates)):
         if end_date and date > get_int_date(end_date):
             continue
         if date < get_int_date(start_date):
             break
         set_current_date(str(date))
-        print("[{}]".format(date))
+        print(f"Dealing [{date}]")
+
+        loop.run_until_complete(achoose(order_book_id_list, func, callback))
+    loop.close()
+    print("")
+
+
+@suppress_numpy_warn
+def selectAsync2(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+    """异步select"""
+
+    async def achoose(order_book_id_list, func, callback):
+        with tqdm(range(len(order_book_id_list))) as pbar:
+            async for i in pbar:
+                order_book_id = order_book_id_list[i]
+                choose(order_book_id, func, callback)
+                if not (i % 5):
+                    # pbar.update(5)
+                    pbar.set_description(f"{i}")
+
+    print(getsourcelines(func))
+    start_date = get_int_date(start_date)
+    if end_date is None:
+        end_date = datetime.date.today()
+    end_date = get_int_date(end_date)
+    data_backend = ExecutionContext.get_data_backend()
+    if len(order_book_id_list) == 0:
+        order_book_id_list = data_backend.get_order_book_id_list()[:300]
+    trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
+    set_start_date(trading_dates[0])
+    loop = asyncio.get_event_loop()
+    for idx, date in enumerate(reversed(trading_dates)):
+        if end_date and date > get_int_date(end_date):
+            continue
+        if date < get_int_date(start_date):
+            break
+        set_current_date(str(date))
+        print(f"Dealing [{date}]")
+
+        loop.run_until_complete(achoose(order_book_id_list, func, callback))
+    loop.close()
+    print("")
+
+
+@suppress_numpy_warn
+def select(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+    print(getsourcelines(func))
+    start_date = get_int_date(start_date)
+    if end_date is None:
+        end_date = datetime.date.today()
+    end_date = get_int_date(end_date)
+    data_backend = ExecutionContext.get_data_backend()
+    if len(order_book_id_list) == 0:
+        order_book_id_list = data_backend.get_order_book_id_list()[300]
+    trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
+    set_start_date(trading_dates[0])
+    for idx, date in enumerate(reversed(trading_dates)):
+        if end_date and date > get_int_date(end_date):
+            continue
+        if date < get_int_date(start_date):
+            break
+        set_current_date(str(date))
+        print(f"[{date}]")
 
         order_book_id_list = tqdm(order_book_id_list)
         for order_book_id in order_book_id_list:
             choose(order_book_id, func, callback)
             order_book_id_list.set_description("Processing {}".format(order_book_id))
-
     print("")
+
 
 @suppress_numpy_warn
 def backtest(func_buy, func_sell, func_update, account, start_date="2016-10-01", end_date=None, callback=print):

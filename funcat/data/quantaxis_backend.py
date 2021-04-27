@@ -44,10 +44,13 @@ class QuantaxisDataBackend(DataBackend):
         if order_book_id.endswith(".XSHG") or order_book_id.endswith(".XSHE"):
             # 判断指数
             is_index =True
-        if is_index:
-            df = self.get_index_price(order_book_id, start, end, freq)
-        else:
-            df = self.get_stock_price(order_book_id, start, end, freq)
+        try:
+            if is_index:
+                df = self.get_index_price(order_book_id, start, end, freq)
+            else:
+                df = self.get_stock_price(order_book_id, start, end, freq)
+        except:
+            return pd.DataFrame().to_records()
         if freq[-1] == "m":
             df["datetime"] = df.apply(
                 lambda row: int(row["date"].split(" ")[0].replace("-", "")) * 1000000 + int(
@@ -140,4 +143,5 @@ class QuantaxisDataBackend(DataBackend):
         :rtype: str
         """
         code = self.convert_code(order_book_id)
-        return "{}[{}]".format(order_book_id, self.code_name_map.get(code))
+        # todo 转化etf index
+        return "{}[{}]".format(order_book_id, self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh"))))
