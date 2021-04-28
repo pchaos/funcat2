@@ -53,12 +53,11 @@ from .context import (
 )
 from .helper import select, select2, selectAsync, backtest, zig_helper
 
-
 # create open high low close volume datetime
 for name in ["open", "high", "low", "close", "volume", "datetime"]:
     # dtype = np.float64 if name != "datetime" else np.uint64
     dtype = float if name != "datetime" else int
-    cls = type("{}Series".format(name.capitalize()), (MarketDataSeries, ), {"name": name, "dtype": dtype})
+    cls = type("{}Series".format(name.capitalize()), (MarketDataSeries,), {"name": name, "dtype": dtype})
     obj = cls(dynamic_update=True)
     for var in [name[0], name[0].upper(), name.upper()]:
         globals()[var] = obj
@@ -86,7 +85,7 @@ LLV = llv
 HHVBARS = hhvbars
 LLVBARS = llvbars
 IF = IIF = iif
-BARSLAST=barslast
+BARSLAST = barslast
 CEILING = ceiling
 CONST = const
 DRAWNULL = drawnull
@@ -95,7 +94,6 @@ TROUGHBARS = troughbars
 
 S = set_current_security
 T = set_current_date
-
 
 __all__ = [
     "OPEN", "O",

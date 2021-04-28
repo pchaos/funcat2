@@ -32,7 +32,7 @@ class QuantaxisDataBackend(DataBackend):
     def convert_code(self, order_book_id):
         return order_book_id.split(".")[0]
 
-    # @lru_cache(maxsize=4096)
+    @lru_cache(maxsize=4096)
     def get_price(self, order_book_id, start, end, freq, is_index=False):
         """
         :param order_book_id: e.g. 000002
@@ -71,7 +71,7 @@ class QuantaxisDataBackend(DataBackend):
             arr = df.to_records()
         return arr
 
-    @lru_cache(maxsize=4096)
+    # @lru_cache(maxsize=4096)
     def get_stock_price(self, order_book_id, start, end, freq):
         """
         :param order_book_id: e.g. 000002
@@ -91,7 +91,7 @@ class QuantaxisDataBackend(DataBackend):
         # else W M
         return self.backend.QA_fetch_stock_day_adv(code, start=start, end=end).data
 
-    @lru_cache(maxsize=4096)
+    # @lru_cache(maxsize=4096)
     def get_index_price(self, order_book_id, start, end, freq):
         """
         :param order_book_id: e.g. 000002

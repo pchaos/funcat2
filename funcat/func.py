@@ -49,7 +49,7 @@ class OneArgumentSeries(ArgumentSeriesBase):
             series = series.series
 
             try:
-                series[series == np.inf] = np.nan
+                series[np.isinf(series)] = np.nan
                 # print(f"series type:{type(series)}; self.func: {help(self.func)}")
                 # func = self.getFunc()
                 # series = func(series, arg)
@@ -65,7 +65,7 @@ class OneArgumentSeries(ArgumentSeriesBase):
     #         series = series.series
     #
     #         try:
-    #             series[series == np.inf] = np.nan
+    #             series[np.isinf(series)] = np.nan
     #             print(f"series type:{type(series)}; self.func: {help(self.func)}")
     #             series = self.func(series, arg)
     #         except Exception as e:
@@ -110,7 +110,7 @@ class TwoArgumentSeries(ArgumentSeriesBase):
         if isinstance(series, NumericSeries):
             series = series.series
             try:
-                series[series == np.inf] = np.nan
+                series[np.isinf(series)] = np.nan
                 series = self.getFunc()(series, arg1, arg2)
                 series = filter_begin_nan(series)
             except Exception as e:
@@ -123,7 +123,10 @@ class TwoArgumentSeries(ArgumentSeriesBase):
 class SMASeries(TwoArgumentSeries):
     """同花顺专用SMA"""
 
-    def func(self, series, n, _):
+    def getFunc(self):
+        return self.func
+
+    def func(self, series, n, _=None):
         results = np.nan_to_num(series).copy()
         # FIXME this is very slow
         for i in range(1, len(series)):

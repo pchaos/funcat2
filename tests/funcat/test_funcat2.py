@@ -70,15 +70,16 @@ class TestFuncat2TestCase(unittest.TestCase):
 
     def test_CLOSE(self):
         data_backend = ExecutionContext.get_data_backend()
-        order_book_id_list = data_backend.get_order_book_id_list()[:150]
+        order_book_id_list = data_backend.get_order_book_id_list()[:300]
         # 选出涨停股
         data = select(
             lambda: C > 50,
-            start_date=20181221,
+            start_date=20181228,
             end_date=20190104,
             order_book_id_list=order_book_id_list
         )
-        self.assertTrue(len(data) > 10, f"交易数据:{data}")
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+        print(data)
 
     def test_CLOSE_asyn(self):
         data_backend = ExecutionContext.get_data_backend()
@@ -90,7 +91,7 @@ class TestFuncat2TestCase(unittest.TestCase):
             end_date=20190104,
             order_book_id_list=order_book_id_list
         )
-        self.assertTrue(len(data) > 10, f"交易数据:{data}")
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
 
     def test_CLOSE_select2(self):
         data_backend = ExecutionContext.get_data_backend()
@@ -158,6 +159,18 @@ class TestFuncat2TestCase(unittest.TestCase):
         plt.legend(loc="best")
         plt.show()
 
+    def test_callback(self):
+        # 选出最近3天每天的成交量小于20日成交量均线，最近3天最低价低于20日均线，最高价高于20日均线
+        # 自定义选股回调函数
+        def callback(date, order_book_id, symbol):
+            print("Cool, 在", date, "选出", order_book_id, symbol)
+
+        select(
+            lambda: (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3)),
+            start_date=20170104,
+            end_date=20170104,
+            callback=callback,
+        )
 
 if __name__ == '__main__':
     unittest.main()

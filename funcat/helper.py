@@ -54,13 +54,14 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
                     pbar.set_description(f"{i}")
 
     print(getsourcelines(func))
+    results = []
     start_date = get_int_date(start_date)
     if end_date is None:
         end_date = datetime.date.today()
     end_date = get_int_date(end_date)
     data_backend = ExecutionContext.get_data_backend()
     if len(order_book_id_list) == 0:
-        order_book_id_list = data_backend.get_order_book_id_list()[:300]
+        order_book_id_list = data_backend.get_order_book_id_list()
     trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
     set_start_date(trading_dates[0] - 10000)  # 提前一年的数据
     loop = asyncio.get_event_loop()
@@ -86,7 +87,7 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
         for i in range(len(order_book_id_list)):
             order_book_id = order_book_id_list[i]
             set_current_security(order_book_id)
-            choose(order_book_id,func, callback)
+            choose(order_book_id, func, callback)
 
             if not (i % 5):
                 # pbar.update(5)
@@ -100,7 +101,7 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
     end_date = get_int_date(end_date)
     data_backend = ExecutionContext.get_data_backend()
     if len(order_book_id_list) == 0:
-        order_book_id_list = data_backend.get_order_book_id_list()[:300]
+        order_book_id_list = data_backend.get_order_book_id_list()
     trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
     set_start_date(trading_dates[0] - 10000)
     for idx, date in enumerate(reversed(trading_dates)):
@@ -117,6 +118,12 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
 
 @suppress_numpy_warn
 def select(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+
+    def decordCallback(date, order_book_id, symbol):
+        result.append([date, order_book_id, symbol])
+        callback(date, order_book_id, symbol)
+
+    result = []
     print(getsourcelines(func))
     start_date = get_int_date(start_date)
     if end_date is None:
@@ -124,7 +131,7 @@ def select(func, start_date="2016-10-01", end_date=None, callback=print, order_b
     end_date = get_int_date(end_date)
     data_backend = ExecutionContext.get_data_backend()
     if len(order_book_id_list) == 0:
-        order_book_id_list = data_backend.get_order_book_id_list()[:300]
+        order_book_id_list = data_backend.get_order_book_id_list()
     trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
     set_start_date(trading_dates[0] - 10000)
     for idx, date in enumerate(reversed(trading_dates)):
@@ -137,9 +144,10 @@ def select(func, start_date="2016-10-01", end_date=None, callback=print, order_b
 
         order_book_id_list = tqdm(order_book_id_list)
         for order_book_id in order_book_id_list:
-            choose(order_book_id, func, callback)
+            choose(order_book_id, func, decordCallback)
             order_book_id_list.set_description("Processing {}".format(order_book_id))
     print("")
+    return result
 
 
 @suppress_numpy_warn
