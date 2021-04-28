@@ -21,7 +21,8 @@ class QuantaxisDataBackend(DataBackend):
 
     @cached_property
     def stock_basics(self):
-        return self.backend.QAFetch.QATdx.QA_fetch_get_stock_list('stock')
+        return self.backend.QA_fetch_stock_list_adv()
+        # return self.backend.QAFetch.QATdx.QA_fetch_get_stock_list('stock')
 
     @cached_property
     def code_name_map(self):
@@ -118,7 +119,7 @@ class QuantaxisDataBackend(DataBackend):
         info = self.stock_basics
         code_list = info.index.sort_values().tolist()
         order_book_id_list = [
-            code for code, _ in code_list
+            code for code in code_list
         ]
         return order_book_id_list
 
@@ -144,4 +145,6 @@ class QuantaxisDataBackend(DataBackend):
         """
         code = self.convert_code(order_book_id)
         # todo 转化etf index
-        return "{}[{}]".format(order_book_id, self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh"))))
+        return f'{self.code_name_map.get(code)}'
+        # return f'{self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh")))}'
+        # return "{}[{}]".format(order_book_id, self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh"))))

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-# from __future__ import print_function
 import datetime
 import numpy as np
 import asyncio
 from tqdm.asyncio import tqdm
+from numba import njit
 
 from .context import ExecutionContext, set_current_security, set_current_date, symbol, set_start_date, \
     get_current_security
 from .utils import getsourcelines, FormulaException, get_int_date
 
 __all__ = ["select",
+           "select2",
            "selectAsync",
            "suppress_numpy_warn",
            "backtest",
@@ -77,17 +78,20 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
 
 
 @suppress_numpy_warn
-def selectAsync2(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
-    """异步select"""
+def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+    """not done"""
+    from numba.typed import List
+    # @njit()
+    def achoose(order_book_id_list, func, callback):
+        for i in range(len(order_book_id_list)):
+            order_book_id = order_book_id_list[i]
+            set_current_security(order_book_id)
+            choose(order_book_id,func, callback)
 
-    async def achoose(order_book_id_list, func, callback):
-        with tqdm(range(len(order_book_id_list))) as pbar:
-            async for i in pbar:
-                order_book_id = order_book_id_list[i]
-                choose(order_book_id, func, callback)
-                if not (i % 5):
-                    # pbar.update(5)
-                    pbar.set_description(f"{i}")
+            if not (i % 5):
+                # pbar.update(5)
+                # print(f"{i}", end=" ")
+                pass
 
     print(getsourcelines(func))
     start_date = get_int_date(start_date)
@@ -98,8 +102,7 @@ def selectAsync2(func, start_date="2016-10-01", end_date=None, callback=print, o
     if len(order_book_id_list) == 0:
         order_book_id_list = data_backend.get_order_book_id_list()[:300]
     trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
-    set_start_date(trading_dates[0])
-    loop = asyncio.get_event_loop()
+    set_start_date(trading_dates[0] - 10000)
     for idx, date in enumerate(reversed(trading_dates)):
         if end_date and date > get_int_date(end_date):
             continue
@@ -107,9 +110,8 @@ def selectAsync2(func, start_date="2016-10-01", end_date=None, callback=print, o
             break
         set_current_date(str(date))
         print(f"Dealing [{date}]")
-
-        loop.run_until_complete(achoose(order_book_id_list, func, callback))
-    loop.close()
+        iddic = {i: order_book_id_list[i] for i in range(0, len(order_book_id_list))}
+        achoose(iddic, func, callback)
     print("")
 
 
@@ -122,9 +124,9 @@ def select(func, start_date="2016-10-01", end_date=None, callback=print, order_b
     end_date = get_int_date(end_date)
     data_backend = ExecutionContext.get_data_backend()
     if len(order_book_id_list) == 0:
-        order_book_id_list = data_backend.get_order_book_id_list()[300]
+        order_book_id_list = data_backend.get_order_book_id_list()[:300]
     trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
-    set_start_date(trading_dates[0])
+    set_start_date(trading_dates[0] - 10000)
     for idx, date in enumerate(reversed(trading_dates)):
         if end_date and date > get_int_date(end_date):
             continue
