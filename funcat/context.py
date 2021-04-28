@@ -117,7 +117,7 @@ def set_start_date(date):
     ExecutionContext.set_start_date(date)
 
 def get_start_date():
-    ExecutionContext.get_start_date()
+    return ExecutionContext.get_start_date()
 
 
 def set_current_date(date):
