@@ -70,7 +70,7 @@ class TestFuncat2TestCase(unittest.TestCase):
 
     def test_CLOSE(self):
         data_backend = ExecutionContext.get_data_backend()
-        order_book_id_list = data_backend.get_order_book_id_list()[:300]
+        order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
         data = select(
             lambda: C > 50,
@@ -83,7 +83,7 @@ class TestFuncat2TestCase(unittest.TestCase):
 
     def test_CLOSE_asyn(self):
         data_backend = ExecutionContext.get_data_backend()
-        order_book_id_list = data_backend.get_order_book_id_list()[:150]
+        order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
         data = selectAsync(
             lambda: C > 50,
@@ -92,18 +92,37 @@ class TestFuncat2TestCase(unittest.TestCase):
             order_book_id_list=order_book_id_list
         )
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
+        print(data)
 
     def test_CLOSE_select2(self):
         data_backend = ExecutionContext.get_data_backend()
-        order_book_id_list = data_backend.get_order_book_id_list()[:150]
+        order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
         data = select2(
-            lambda: C > 50,
+            lambda: C > 40,
             start_date=20181221,
             end_date=20190104,
             order_book_id_list=order_book_id_list
         )
-        self.assertTrue(len(data) > 10, f"交易数据:{data}")
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+        print(data)
+
+    def test_CLOSE_select2_2(self):
+        data_backend = ExecutionContext.get_data_backend()
+        order_book_id_list = data_backend.get_order_book_id_list()[150:300]
+        # 选出涨停股
+        data = select2(
+            lambda: 30 > C > 20,
+            start_date=20181221,
+            end_date=20190104,
+            order_book_id_list=order_book_id_list
+        )
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+        print(data)
+        for item in range(len(data)):
+            for key, value in data[item].items():
+                print(key, value, end=";")
+            print("")
 
     def test_cross(self):
         # 0x02 均线金叉死叉
@@ -171,6 +190,7 @@ class TestFuncat2TestCase(unittest.TestCase):
             end_date=20170104,
             callback=callback,
         )
+
 
 if __name__ == '__main__':
     unittest.main()

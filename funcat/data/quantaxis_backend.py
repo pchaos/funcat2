@@ -32,7 +32,7 @@ class QuantaxisDataBackend(DataBackend):
     def convert_code(self, order_book_id):
         return order_book_id.split(".")[0]
 
-    @lru_cache(maxsize=4096)
+    @lru_cache(maxsize=6000)
     def get_price(self, order_book_id, start, end, freq, is_index=False):
         """
         :param order_book_id: e.g. 000002

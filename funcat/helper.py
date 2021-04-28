@@ -36,8 +36,15 @@ def choose(order_book_id, func, callback):
         if func():
             date = ExecutionContext.get_current_date()
             callback(date, order_book_id, symbol(order_book_id))
+            return {"date": get_int_date(date), "code": order_book_id, "name": symbol(order_book_id)}
     except FormulaException as e:
         pass
+    return {}
+
+
+def _list2Array(alist: list):
+    arr = np.asarray(alist)
+    return arr[arr != {}]
 
 
 @suppress_numpy_warn
@@ -48,7 +55,7 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
         with tqdm(range(len(order_book_id_list))) as pbar:
             async for i in pbar:
                 order_book_id = order_book_id_list[i]
-                choose(order_book_id, func, callback)
+                results.append(choose(order_book_id, func, callback))
                 if not (i % 5):
                     # pbar.update(5)
                     pbar.set_description(f"{i}")
@@ -76,6 +83,7 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
         loop.run_until_complete(achoose(order_book_id_list, func, callback))
     loop.close()
     print("")
+    return _list2Array(results)
 
 
 @suppress_numpy_warn
@@ -87,7 +95,7 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
         for i in range(len(order_book_id_list)):
             order_book_id = order_book_id_list[i]
             set_current_security(order_book_id)
-            choose(order_book_id, func, callback)
+            results.append(choose(order_book_id, func, callback))
 
             if not (i % 5):
                 # pbar.update(5)
@@ -95,6 +103,7 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
                 pass
 
     print(getsourcelines(func))
+    results = []
     start_date = get_int_date(start_date)
     if end_date is None:
         end_date = datetime.date.today()
@@ -114,15 +123,11 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
         iddic = {i: order_book_id_list[i] for i in range(0, len(order_book_id_list))}
         achoose(iddic, func, callback)
     print("")
+    return _list2Array(results)
 
 
 @suppress_numpy_warn
 def select(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
-
-    def decordCallback(date, order_book_id, symbol):
-        result.append([date, order_book_id, symbol])
-        callback(date, order_book_id, symbol)
-
     result = []
     print(getsourcelines(func))
     start_date = get_int_date(start_date)
@@ -144,10 +149,10 @@ def select(func, start_date="2016-10-01", end_date=None, callback=print, order_b
 
         order_book_id_list = tqdm(order_book_id_list)
         for order_book_id in order_book_id_list:
-            choose(order_book_id, func, decordCallback)
+            result.append(choose(order_book_id, func, callback))
             order_book_id_list.set_description("Processing {}".format(order_book_id))
     print("")
-    return result
+    return _list2Array(result)
 
 
 @suppress_numpy_warn
