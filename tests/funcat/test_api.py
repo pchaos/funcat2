@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
-from funcat import *
 import numpy as np
+from funcat import *
+from funcat.api import MarketDataSeries
 
 
 class TestApi(unittest.TestCase):
@@ -88,6 +89,51 @@ class TestApi(unittest.TestCase):
         data = SMA(CLOSE, 5)
         self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
         print(f"SMA5:{data}, SMA 5 长度：{len(data)}")
+
+    def test_llv(self):
+        n = 3
+        data = LLV(CLOSE, n)
+        self.assertTrue(len(data) > 1, "LLV个数不大天1！")
+        print(f"LLV: {data.series}, LLV {n} 长度：{len(data)}, {data}")
+
+    def test_llv_2(self):
+        fakeData = self.fakeMarketData()
+        n = 5
+        data = LLV(fakeData, n)
+        self.assertTrue(len(data) > 1, "LLV个数不大天1！")
+        print(f"LLV:{data.series}, LLV {n} 长度：{len(data)}, {data}")
+        self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+
+    def test_llv_3(self):
+        fakeData = self.fakeMarketData(np.array([i for i in range(100, 0, -1)]))
+        n = 5
+        data = LLV(fakeData, n)
+        print(f"LLV:{data.series}, LLV {n} 长度：{len(data)}, {data}")
+        self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+        self.assertIn(data.series, fakeData.series[(n - 1):], f"{fakeData.series[(n - 1):]}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[(n - 1):]), f"{fakeData.series[(n - 1):]}")
+
+    def test_llv_4(self):
+        fakeData = self.fakeMarketData(np.array([i for i in range(100, 1, -1)]))
+        n = 0
+        data = LLV(fakeData, n)
+        print(f"LLV:{data.series}, LLV {n} 长度：{len(data)}, {data}")
+        self.assertTrue(len(data) == 1, f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[(n - 1):]), f"{fakeData.series[(n - 1):]}")
+
+    def fakeMarketData(self, arr=None):
+        """产生模拟交易数据"""
+        if arr is None:
+            fakeData = np.array(range(100))
+        else:
+            fakeData = arr
+        name = "fake"
+        dtype = float
+        cls = type("{}Series".format(name.capitalize()), (MarketDataSeries,), {"name": name, "dtype": dtype})
+        obj = cls(dynamic_update=False)
+        obj._series = fakeData
+        print(f"{obj}, {obj.series}")
+        return obj
 
     def test_cci(self):
         data = CCI(CLOSE, HIGH, LOW)

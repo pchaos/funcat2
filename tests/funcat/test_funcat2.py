@@ -87,7 +87,7 @@ class TestFuncat2TestCase(unittest.TestCase):
         # 选出涨停股
         data = selectAsync(
             lambda: C > 50,
-            start_date=20181221,
+            start_date=20181228,
             end_date=20190104,
             order_book_id_list=order_book_id_list
         )
@@ -100,7 +100,7 @@ class TestFuncat2TestCase(unittest.TestCase):
         # 选出涨停股
         data = select2(
             lambda: C > 40,
-            start_date=20181221,
+            start_date=20181228,
             end_date=20190104,
             order_book_id_list=order_book_id_list
         )
@@ -113,15 +113,15 @@ class TestFuncat2TestCase(unittest.TestCase):
         # 选出涨停股
         data = select2(
             lambda: 30 > C > 20,
-            start_date=20181221,
+            start_date=20181228,
             end_date=20190104,
             order_book_id_list=order_book_id_list
         )
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
         print(data)
         for item in range(len(data)):
-            for key, value in data[item].items():
-                print(key, value, end=";")
+            for k, v in data[item].items():
+                print(k, v, end=";")
             print("")
 
     def test_cross(self):
@@ -184,12 +184,13 @@ class TestFuncat2TestCase(unittest.TestCase):
         def callback(date, order_book_id, symbol):
             print("Cool, 在", date, "选出", order_book_id, symbol)
 
-        select(
+        data = select(
             lambda: (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3)),
             start_date=20170104,
             end_date=20170104,
             callback=callback,
         )
+        print(data)
 
 
 if __name__ == '__main__':

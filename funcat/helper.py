@@ -36,7 +36,7 @@ def choose(order_book_id, func, callback):
         if func():
             date = ExecutionContext.get_current_date()
             callback(date, order_book_id, symbol(order_book_id))
-            return {"date": get_int_date(date), "code": order_book_id, "name": symbol(order_book_id)}
+            return {"date": get_int_date(date), "code": order_book_id, "cname": symbol(order_book_id)}
     except FormulaException as e:
         pass
     return {}
@@ -44,6 +44,8 @@ def choose(order_book_id, func, callback):
 
 def _list2Array(alist: list):
     arr = np.asarray(alist)
+    # arr = arr[arr != {}]
+    # return np.array([[item[j] for j in ['date', 'code', 'cname']] for item in arr])
     return arr[arr != {}]
 
 

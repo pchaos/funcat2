@@ -40,6 +40,9 @@ def getsourcelines(func):
 
 def get_int_date(date):
     if isinstance(date, int):
+        if date < 15000000:
+            # 日期格式错误
+            raise Exception(f"date format error:{date}")
         return date
 
     try:
@@ -101,10 +104,7 @@ def handle_numpy_warning(func):
     return wrapper
 
 
-
-
 async def get_async_response(func, param):
-
     loop = asyncio.get_running_loop()
 
     # "None" will use all cores
@@ -139,7 +139,3 @@ def check_ping(hostname):
         pingstatus = "Network Error"
 
     return pingstatus
-
-
-
-

@@ -56,6 +56,7 @@ class OneArgumentSeries(ArgumentSeriesBase):
                 series = self.getFunc()(series, arg)
                 series = filter_begin_nan(series)
             except Exception as e:
+                print(f"series error: {series}")
                 raise FormulaException(e)
         super(ArgumentSeriesBase, self).__init__(series)
         self.extra_create_kwargs["arg"] = arg
@@ -176,8 +177,9 @@ class SumSeries(NumericSeries):
         if isinstance(series, NumericSeries):
             series = series.series
             try:
-                series[series == np.inf] = 0
-                series[series == -np.inf] = 0
+                series[np.isinf(series)] = 0
+                # series[series == np.inf] = 0
+                # series[series == -np.inf] = 0
                 series = talib.SUM(series, period)
             except Exception as e:
                 raise FormulaException(e)
@@ -190,8 +192,9 @@ class AbsSeries(NumericSeries):
         if isinstance(series, NumericSeries):
             series = series.series
             try:
-                series[series == np.inf] = 0
-                series[series == -np.inf] = 0
+                series[np.isinf(series)] = 0
+                # series[series == np.inf] = 0
+                # series[series == -np.inf] = 0
                 series = np.abs(series)
             except Exception as e:
                 raise FormulaException(e)
@@ -282,16 +285,23 @@ def hhv(s, n):
 
 @handle_numpy_warning
 def llv(s, n):
+    """LLV(X,N),求N周期内X最低值,N=0则从第一个有效值开始.
+    例如: LLV(LOW,N)表示N个周期内的最低价；
+     LLV(LOW,0)表示求历史最低价;
+    """
     # TODO lazy compute
     series = s.series
-    size = len(s.series) - n
+    # size = len(s.series) - n
     try:
+        pass
         # result = np.full(size, 0, dtype=np.float64)
-        result = np.full(size, 0, dtype=float)
+        # result = np.full(size, 0, dtype=float)
     except ValueError as e:
         raise FormulaException(e)
-
-    result = np.min(rolling_window(series, n), 1)
+    if n:
+        result = np.min(rolling_window(series, n), 1)
+    else:
+        result = np.array([np.min(series)])
 
     return NumericSeries(result)
 
