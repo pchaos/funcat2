@@ -88,7 +88,7 @@ class TestApi(unittest.TestCase):
     def test_sma(self):
         data = SMA(CLOSE, 5)
         self.assertTrue(len(data) > 1, "五日均线个数不大天1！")
-        print(f"SMA5:{data}, SMA 5 长度：{len(data)}")
+        print(f"SMA 5:{data}, SMA 5 长度：{len(data)}")
 
     def test_llv(self):
         n = 3
@@ -119,7 +119,42 @@ class TestApi(unittest.TestCase):
         data = LLV(fakeData, n)
         print(f"LLV:{data.series}, LLV {n} 长度：{len(data)}, {data}")
         self.assertTrue(len(data) == 1, f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[(n - 1):]), f"历史最低价 {fakeData.series[(n - 1):]}")
+
+    def test_hhv(self):
+        n = 3
+        data = HHV(CLOSE, n)
+        self.assertTrue(len(data) > 1, "HHV个数不大天1！")
+        print(f"HHV: {data.series}, HHV {n} 长度：{len(data)}, {data}")
+
+
+    def test_hhv_2(self):
+        fakeData = self.fakeMarketData()
+        n = 5
+        data = HHV(fakeData, n)
+        self.assertTrue(len(data) > 1, "LLV个数不大天1！")
+        print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
+        self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
         self.assertTrue(np.alltrue(data.series == fakeData.series[(n - 1):]), f"{fakeData.series[(n - 1):]}")
+
+    def test_hhv_3(self):
+        fakeData = self.fakeMarketData(np.array([i for i in range(100, 0, -1)]))
+        n = 5
+        data = HHV(fakeData, n)
+        self.assertTrue(len(data) > 1, "LLV个数不大天1！")
+        print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
+        self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n-1)]), f"{fakeData.series[(n - 1):]}")
+
+    def test_hhv_4(self):
+        fakeData = self.fakeMarketData(np.array([i for i in range(100, 0, -1)]))
+        n = 0
+        data = HHV(fakeData, n)
+        self.assertTrue(len(data) == 1, "HHV个数不等于1！")
+        print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
+        self.assertTrue(len(fakeData) >= len(data) , f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n-1)]), f"{fakeData.series[(n - 1):]}")
+
 
     def fakeMarketData(self, arr=None):
         """产生模拟交易数据"""

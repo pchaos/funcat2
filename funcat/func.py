@@ -271,14 +271,17 @@ def every(cond, n):
 def hhv(s, n):
     # TODO lazy compute
     series = s.series
-    size = len(s.series) - n
+    # size = len(s.series) - n
     try:
         # result = np.full(size, 0, dtype=np.float64)
-        result = np.full(size, 0, dtype=float)
+        # result = np.full(size, 0, dtype=float)
+        pass
     except ValueError as e:
         raise FormulaException(e)
-
-    result = np.max(rolling_window(series, n), 1)
+    if n:
+        result = np.max(rolling_window(series, n), 1)
+    else:
+        result = np.array([np.max(series)])
 
     return NumericSeries(result)
 
