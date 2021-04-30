@@ -256,9 +256,9 @@ False
 ```
 
 ## DataBackend
-默认实现了一个从 tushare 上面实时拉数据选股的 Backend。
+* 默认实现了一个从 tushare 上面实时拉数据选股的 Backend。
 
-还有一个 [RQAlpha](https://github.com/ricequant/rqalpha) 的 Backend，使用它可以为我们提供本地的数据源，比从 tushare 拉数据速度更有优势。
+*  [RQAlpha](https://github.com/ricequant/rqalpha) 的 Backend，使用它可以为我们提供本地的数据源，比从 tushare 拉数据速度更有优势。
 
 ``` bash
 pip install rqalpha    # 安装依赖库 RQAlpha
@@ -273,5 +273,20 @@ from funcat import *
 
 set_data_backend(RQAlphaDataBackend("~/.rqalpha/bundle"))
 ```
+* [QUANTAXIS](https://github.com/QUANTAXIS/QUANTAXIS)的 Backend。
+替换 DataBackend 为 QUANTAXIS  的 DataProxy，这样可以从 QUANTAXIS 的 bundle 中获取数据。
 
+``` python
+from funcat.data.quantaxis_backend import BACKEND
+from funcat import *
+
+set_data_backend(BACKEND())
+```
 为了更高的性能，您也可以自定义Backend使用本地数据。这样可以极大地提高运行速度。
+
+## git开发流程：
+```bash
+git checkout master
+git merge dev
+git checkout dev
+```
