@@ -3,6 +3,7 @@ import unittest
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import numpy as np
+from numba import njit
 from funcat import *
 from funcat.api import *
 from funcat.context import ExecutionContext
@@ -191,6 +192,56 @@ class TestFuncat2TestCase(unittest.TestCase):
             callback=callback,
         )
         print(data)
+
+    def test_callback2(self):
+        # 使用函数方式测试select
+        # 自定义选股回调函数
+        def callback(date, order_book_id, symbol):
+            print("Cool, 在", date, "选出", order_book_id, symbol)
+
+        def myfunc():
+            return (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3))
+
+        data = select(
+            myfunc,
+            start_date=20170104,
+            end_date=20170104,
+            callback=callback,
+        )
+        data2 = select(
+            lambda: (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3)),
+            start_date=20170104,
+            end_date=20170104,
+            callback=callback,
+        )
+        self.assertTrue(np.alltrue(data == data2), f"{data}\n{data2}")
+        print(data)
+
+    def test_user_func(self):
+        # 选出豹子价格
+
+        def myfunc():
+            """检测豹子价格;
+            例如：6.66 4.44， 77.77
+            """
+
+            def baozi(price):
+                s = f"{np.round(price.value, 2):.2f}".replace(".", "")
+                arr = np.fromiter(s, dtype=int)
+                for i in range(1, len(arr)):
+                    if arr[0] != arr[i]:
+                        return False
+                return True
+                # return arr[0] == arr[1] and arr[-2] == arr[-1] and arr[0] == arr[-1] and (np.sum(arr) / arr[1]) == len(arr)
+
+            return baozi(CLOSE) or baozi(LOW) or baozi(HIGH)
+
+        data = selectAsync(
+            myfunc,
+            start_date=20210423,
+            end_date=20210427,
+        )
+        print(f"豹子价：{data}")
 
 
 if __name__ == '__main__':
