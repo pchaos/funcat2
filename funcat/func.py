@@ -278,7 +278,7 @@ def hhv(s, n):
         pass
     except ValueError as e:
         raise FormulaException(e)
-    if n:
+    if 0 < n < len(series):
         result = np.max(rolling_window(series, n), 1)
     else:
         result = np.array([np.max(series)])
@@ -301,7 +301,7 @@ def llv(s, n):
         # result = np.full(size, 0, dtype=float)
     except ValueError as e:
         raise FormulaException(e)
-    if n:
+    if 0 < n < len(series):
         result = np.min(rolling_window(series, n), 1)
     else:
         result = np.array([np.min(series)])
