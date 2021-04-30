@@ -290,3 +290,5 @@ git checkout master
 git merge dev
 git checkout dev
 ```
+### 设置ssh登录
+> git remote set-url origin git@github.com:pchaos/funcat2.git
