@@ -15,6 +15,7 @@ from .api import *
 from .indicators import *
 
 from .data.tushare_backend import TushareDataBackend
+from .data.tusharepro_backend import TushareDataBackend as TushareProDataBackend
 from .data.quantaxis_backend import QuantaxisDataBackend
 from .data.mongodb_backend import MongodbBackend
 from .context import ExecutionContext as funcat_execution_context

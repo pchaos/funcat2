@@ -65,7 +65,7 @@ class TushareDataBackend(DataBackend):
                 break
         return self.trading_dates[s:e]
 
-    @lru_cache(maxsize=4096)
+    @lru_cache(maxsize=6000)
     def get_price(self, order_book_id, start, end, freq):
         """
         :param order_book_id: e.g. 000002.SZ

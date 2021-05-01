@@ -136,7 +136,7 @@ class QuantaxisDataBackend(DataBackend):
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 
-    @lru_cache(maxsize=4096)
+    @lru_cache(maxsize=6000)
     def symbol(self, order_book_id):
         """获取order_book_id对应的名字
         :param order_book_id str: 股票代码
