@@ -11,7 +11,7 @@ class TestQuantaxisDataBackend(unittest.TestCase):
 
     def test_stock_basics(self):
         data = self.qdb.stock_basics
-        self.assertTrue(len(data) > 3000, f"股票代码数量：{len(data)},实际数量应该大于3000只。")
+        self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
 
     def test_get_price(self):
         data = self.qdb.get_price("000001", 20210101, 20210201, '1d')
