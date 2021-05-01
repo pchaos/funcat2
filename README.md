@@ -285,10 +285,22 @@ set_data_backend(BACKEND())
 为了更高的性能，您也可以自定义Backend使用本地数据。这样可以极大地提高运行速度。
 
 ## git开发流程：
+### 开发分支
+```bash
+git clone https://github.com/pchaos/funcat2.git
+cd funcat2
+git chechkout dev 
+# ... do your self
+```
+### 提交开发到master分支
 ```bash
 git checkout master
 git merge dev
+git push
 git checkout dev
+
+# 一句话执行
+git checkout master && git merge dev && git push && git checkout dev
 ```
-### 设置ssh登录
+### 不用每次输入密码，设置https为ssh登录
 > git remote set-url origin git@github.com:pchaos/funcat2.git
