@@ -1,3 +1,18 @@
+0.4.1
+==================
+增加tushare pro backend
+
+增加tencent backend
+
+0.4.0
+==================
+增加QUANAXIS backend
+
+增加测试类
+
+取消python 2支持，只支持pythohn 3
+
+
 0.0.23
 ==================
 

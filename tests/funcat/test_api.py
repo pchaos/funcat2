@@ -157,7 +157,7 @@ class TestApi(unittest.TestCase):
 
 
     def fakeMarketData(self, arr=None):
-        """产生模拟交易数据"""
+        """产生模拟交易数据,便于校验数据"""
         if arr is None:
             fakeData = np.array(range(100))
         else:
