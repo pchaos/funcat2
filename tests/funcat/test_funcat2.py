@@ -268,7 +268,8 @@ class TestFuncat2TestCase(unittest.TestCase):
             ma200 = MA(C, 200)
             ml = LLV(LOW, 250)
             mm = HHV(H, 250)
-            return CLOSE > mm * 0.75 and CLOSE > ml * 1.3 and CLOSE >= ma50 and ma50 > ma150 > ma200
+            return CLOSE > mm * 0.75 and CLOSE > ml * 1.3 and CLOSE >= ma150 and ma50 > ma150 > ma200 and \
+                   EVERY(MA(C, 200) > REF(MA(C, 200), 1), 20)
 
         data = selectAsync(
             stage2,

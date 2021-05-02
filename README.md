@@ -273,8 +273,8 @@ from funcat import *
 
 set_data_backend(RQAlphaDataBackend("~/.rqalpha/bundle"))
 ```
-* [QUANTAXIS](https://github.com/QUANTAXIS/QUANTAXIS)的 Backend。
-替换 DataBackend 为 QUANTAXIS  的 DataProxy，这样可以从 QUANTAXIS 的 bundle 中获取数据。
+* [QUANTAXIS](https://github.com/QUANTAXIS/QUANTAXIS) 的Backend。
+替换 DataBackend 为 QUANTAXIS  的 DataProxy，这样可以从 QUANTAXIS 中获取数据。
 
 ``` python
 from funcat.data.quantaxis_backend import BACKEND
@@ -304,3 +304,5 @@ git checkout master && git merge dev && git push && git checkout dev
 ```
 ### 不用每次输入密码，设置https为ssh登录
 > git remote set-url origin git@github.com:pchaos/funcat2.git
+
+× PS：使用你的用户名
