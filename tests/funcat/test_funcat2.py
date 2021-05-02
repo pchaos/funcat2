@@ -242,6 +242,41 @@ class TestFuncat2TestCase(unittest.TestCase):
         )
         print(f"豹子价：{data}")
 
+    def test_2nd_stag(self):
+        """当前股价处在50日、150日和200日线上方；
+        50日线＞150日线＞200日线；
+        200日均线至少上涨了1个月（大多数情况下，上涨4-5个月更好）；
+        股价比最近一年最低价至少高30%，至少处在最近一年最高价的75%，距离最高价越近越好；
+        交易量较大的几周中，上涨的交易周数量高于下跌的；
+        RPS不低于70，最好80、90左右。
+        RPS指标又称为股价相对强度指标，是由美国的欧奈尔提出，并运用于市场的分析的。RPS指标是指在一段时间内，个股涨幅在全部股票涨幅排名中的位次值，可通过官方资料得知。
+        """
+
+        def stage2():
+            """参考：
+            C>0 {收盘价>0}
+            AND C>MA(C,150) {收盘价大于150日均线}
+            AND MA(C,150)>MA(C,200) {150日均线大于200日均线}
+            AND EVERY(MA(C,200)>REF(MA(C,200),1),20) {20日均线向上增长}
+            AND C/LLV(L,250)>1.3 {收盘价距一年内新低的涨幅不低于30%}
+            AND C/HHV(H,250)>0.75 {收盘价距一年内新高的距离低于25%}
+            AND VOL>REF(HHV(V,10),1)*1.5 {成交量>前10日内成交量最高值的1.5倍}
+            AND IF(RPS.RPS250<70,0,1); {股价相对强弱指标不低于70}
+            """
+            ma50 = MA(C, 50)
+            ma150 = MA(C, 150)
+            ma200 = MA(C, 200)
+            ml = LLV(LOW, 250)
+            mm = HHV(H, 250)
+            return CLOSE > mm * 0.75 and CLOSE > ml * 1.3 and CLOSE >= ma50 and ma50 > ma150 > ma200
+
+        data = selectAsync(
+            stage2,
+            start_date=20210423,
+            end_date=20210427,
+        )
+        print(f"2nd stage：\n{data}\n{len(data)}")
+
 
 if __name__ == '__main__':
     unittest.main()

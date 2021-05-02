@@ -69,18 +69,21 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         self.assertTrue(lc1 > lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
 
     def test_freq2(self):
+        """赋值的时候没有获取实际值。"""
+        from copy import deepcopy
         print(f"freq: '{get_current_freq()}' {get_current_date()}, {get_current_security()}")
         set_current_freq("1d")
-        c1 = CLOSE
-        lc1 = len(c1)
+        c1 = deepcopy(CLOSE)
         set_current_freq("W")
         c2 = CLOSE
         lc2 = len(c2)
         print(f"week :{lc2}")
-        self.assertTrue(lc1 > lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
+        lc1 = len(c1)
+        self.assertTrue(lc1 == lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
 
     def test_week_trends(self):
         pass
+
 
 if __name__ == '__main__':
     unittest.main()
