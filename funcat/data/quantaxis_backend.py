@@ -44,12 +44,18 @@ class QuantaxisDataBackend(DataBackend):
         """
         if order_book_id.endswith(".XSHG") or order_book_id.endswith(".XSHE"):
             # 判断指数
-            is_index =True
+            is_index = True
         try:
             if is_index:
-                df = self.get_index_price(order_book_id, start, end, freq)
+                data = self.get_index_price(order_book_id, start, end, freq)
             else:
-                df = self.get_stock_price(order_book_id, start, end, freq)
+                data = self.get_stock_price(order_book_id, start, end, freq)
+            if freq == "W":
+                df = data.week.rename(columns={"vol": "volume"})
+            elif freq == "M":
+                df = data.month.rename(columns={"vol": "volume"})
+            else:
+                df = data.data
         except:
             return pd.DataFrame().to_records()
         if freq[-1] == "m":
@@ -89,7 +95,7 @@ class QuantaxisDataBackend(DataBackend):
         elif freq == "1d":
             ktype = "D"
         # else W M
-        return self.backend.QA_fetch_stock_day_adv(code, start=start, end=end).data
+        return self.backend.QA_fetch_stock_day_adv(code, start=start, end=end)
 
     # @lru_cache(maxsize=4096)
     def get_index_price(self, order_book_id, start, end, freq):
@@ -108,8 +114,7 @@ class QuantaxisDataBackend(DataBackend):
             ktype = freq[:-1]
         elif freq == "1d":
             ktype = "D"
-        # else W M
-        return self.backend.QA_fetch_index_day_adv(code, start=start, end=end).data
+        return self.backend.QA_fetch_index_day_adv(code, start=start, end=end)
 
     @lru_cache()
     def get_order_book_id_list(self):
@@ -123,7 +128,7 @@ class QuantaxisDataBackend(DataBackend):
         ]
         return order_book_id_list
 
-    @lru_cache()
+    @lru_cache(maxsize=256)
     def get_trading_dates(self, start, end):
         """获取所有的交易日
 

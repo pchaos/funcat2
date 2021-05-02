@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#
 
 import datetime
 
@@ -11,7 +10,8 @@ from .utils import get_int_date
 class ExecutionContext(object):
     stack = []
 
-    def __init__(self, date=None, order_book_id=None, data_backend=None, freq="1d", start_date=datetime.date(2018, 4, 1)):
+    def __init__(self, date=None, order_book_id=None, data_backend=None, freq="1d",
+                 start_date=datetime.date(2018, 4, 1)):
         self._current_date = self._convert_date_to_int(date)
         self._start_date = self._convert_date_to_int(start_date)
         self._order_book_id = order_book_id
@@ -116,6 +116,7 @@ def get_current_security():
 def set_start_date(date):
     ExecutionContext.set_start_date(date)
 
+
 def get_start_date():
     return ExecutionContext.get_start_date()
 
@@ -130,6 +131,10 @@ def get_current_date():
 
 def set_current_freq(freq):
     ExecutionContext.set_current_freq(freq)
+
+
+def get_current_freq():
+    return ExecutionContext.get_current_freq()
 
 
 def symbol(order_book_id):

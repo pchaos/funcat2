@@ -50,6 +50,7 @@ from .context import (
     get_start_date,
     set_data_backend,
     set_current_freq,
+    get_current_freq,
 )
 from .helper import select, select2, selectAsync, backtest, zig_helper
 
@@ -148,5 +149,6 @@ __all__ = [
     "get_start_date",
     "set_data_backend",
     "set_current_freq",
+    "get_current_freq",
     "NumericSeries",
 ]

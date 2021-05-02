@@ -46,7 +46,7 @@ class TestQuantaxisDataBackend(unittest.TestCase):
 
     def test_get_order_book_id_list(self):
         data = self.qdb.get_order_book_id_list()
-        self.assertTrue(len(data) > 3000, f"股票代码数量：{len(data)},实际数量应该大于3000只。")
+        self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
 
     def test_get_trading_dates(self):
         data = self.qdb.get_trading_dates(20200101, 20210301)
@@ -56,6 +56,31 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         data2 = self.qdb.get_trading_dates(20200101, 20210401)
         self.assertTrue(len(data2) > len(data), f"交易日期数量：{len(data)}， {len(data2)},实际天数应该大于前一个交易天数")
 
+    def test_freq(self):
+        print(f"freq: '{get_current_freq()}' {get_current_date()}, {get_current_security()}")
+        set_current_freq("1d")
+        c1 = CLOSE
+        lc1 = len(c1.series)
+        print(f"day :{lc1}")
+        set_current_freq("W")
+        c2 = CLOSE
+        lc2 = len(c2)
+        print(f"week :{lc2}")
+        self.assertTrue(lc1 > lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
+
+    def test_freq2(self):
+        print(f"freq: '{get_current_freq()}' {get_current_date()}, {get_current_security()}")
+        set_current_freq("1d")
+        c1 = CLOSE
+        lc1 = len(c1)
+        set_current_freq("W")
+        c2 = CLOSE
+        lc2 = len(c2)
+        print(f"week :{lc2}")
+        self.assertTrue(lc1 > lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
+
+    def test_week_trends(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

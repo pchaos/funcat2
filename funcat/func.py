@@ -19,7 +19,6 @@ from .helper import zig_helper
 
 #  ignore pandas warning
 import warnings
-
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 

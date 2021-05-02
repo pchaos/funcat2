@@ -23,7 +23,9 @@ def get_bars(freq):
         return bars
 
     # if security is suspend, just skip
-    if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != current_date and freq not in ("W", "M"):
+    # if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != current_date and freq not in ("W", "M"):
+    trading_dates = ExecutionContext.get_data_backend().get_trading_dates(start=start_date, end=current_date)
+    if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != trading_dates[-1] and freq not in ("W", "M"):
         return np.array([])
 
     return bars
