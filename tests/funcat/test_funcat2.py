@@ -44,8 +44,7 @@ class TestFuncat2TestCase(unittest.TestCase):
         select(
             lambda: ((HHV(MAX(C, O), 30) / LLV(MIN(C, O), 30) - 1 < 0.07)
                      & (HHV(MAX(C, O), 100) / LLV(MIN(C, O), 100) - 1 > 0.25)
-                     & (COUNT(C > MA(C, 60), 10) > 3)
-                     ),
+                     & (COUNT(C > MA(C, 60), 10) > 3)),
             start_date=(n8),
             end_date=(n9),
         )
@@ -62,7 +61,9 @@ class TestFuncat2TestCase(unittest.TestCase):
             print("Cool, 在", date, "选出", order_book_id, symbol)
 
         select(
-            lambda: (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3)),
+            lambda:
+            (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(
+                H > MA(C, 20), 3)),
             start_date=(n8),
             end_date=(n9),
             callback=callback,
@@ -72,12 +73,10 @@ class TestFuncat2TestCase(unittest.TestCase):
         data_backend = ExecutionContext.get_data_backend()
         order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
-        data = select(
-            lambda: C > 50,
-            start_date=20181228,
-            end_date=20190104,
-            order_book_id_list=order_book_id_list
-        )
+        data = select(lambda: C > 50,
+                      start_date=20181228,
+                      end_date=20190104,
+                      order_book_id_list=order_book_id_list)
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
         print(data)
 
@@ -85,12 +84,10 @@ class TestFuncat2TestCase(unittest.TestCase):
         data_backend = ExecutionContext.get_data_backend()
         order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
-        data = selectAsync(
-            lambda: C > 50,
-            start_date=20181228,
-            end_date=20190104,
-            order_book_id_list=order_book_id_list
-        )
+        data = selectAsync(lambda: C > 50,
+                           start_date=20181228,
+                           end_date=20190104,
+                           order_book_id_list=order_book_id_list)
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
         print(data)
 
@@ -98,12 +95,10 @@ class TestFuncat2TestCase(unittest.TestCase):
         data_backend = ExecutionContext.get_data_backend()
         order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
-        data = select2(
-            lambda: C > 40,
-            start_date=20181228,
-            end_date=20190104,
-            order_book_id_list=order_book_id_list
-        )
+        data = select2(lambda: C > 40,
+                       start_date=20181228,
+                       end_date=20190104,
+                       order_book_id_list=order_book_id_list)
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
         print(data)
 
@@ -111,12 +106,10 @@ class TestFuncat2TestCase(unittest.TestCase):
         data_backend = ExecutionContext.get_data_backend()
         order_book_id_list = data_backend.get_order_book_id_list()[150:300]
         # 选出涨停股
-        data = select2(
-            lambda: 30 > C > 20,
-            start_date=20181228,
-            end_date=20190104,
-            order_book_id_list=order_book_id_list
-        )
+        data = select2(lambda: 30 > C > 20,
+                       start_date=20181228,
+                       end_date=20190104,
+                       order_book_id_list=order_book_id_list)
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
         print(data)
         for item in range(len(data)):
@@ -144,10 +137,18 @@ class TestFuncat2TestCase(unittest.TestCase):
         plt.plot(ma11.series, label="ma11", alpha=0.7)
         plt.plot(ma22.series, label="ma22", alpha=0.7)
         plt.plot(ma66.series, label="ma66", alpha=0.7)
-        plt.plot(np.where(buy_signal.series)[0], C.series[np.where(buy_signal.series)[0]], "^", label="buy",
-                 markersize=12, color="red")
-        plt.plot(np.where(sell_signal.series)[0], C.series[np.where(sell_signal.series)[0]], "v", label="sell",
-                 markersize=12, color="green")
+        plt.plot(np.where(buy_signal.series)[0],
+                 C.series[np.where(buy_signal.series)[0]],
+                 "^",
+                 label="buy",
+                 markersize=12,
+                 color="red")
+        plt.plot(np.where(sell_signal.series)[0],
+                 C.series[np.where(sell_signal.series)[0]],
+                 "v",
+                 label="sell",
+                 markersize=12,
+                 color="green")
         plt.legend(loc="best")
         plt.show()
 
@@ -158,7 +159,10 @@ class TestFuncat2TestCase(unittest.TestCase):
         D = EMA(K, (M2 * 2 - 1))
         J = K * 3 - D * 2
         print(K, D, J)
-        f, (ax1, ax2,) = plt.subplots(2, 1)
+        f, (
+            ax1,
+            ax2,
+        ) = plt.subplots(2, 1)
         ax1.plot(L.series, label="L")
         ax1.plot(MA(L, 7).series, label="ma7")
         ax1.plot(MA(H, 11).series, label="ma11")
@@ -171,10 +175,18 @@ class TestFuncat2TestCase(unittest.TestCase):
         ax2.set_xlim(22)
         buy_signal = CROSS(J, K)
         sell_signal = CROSS(K, J)
-        plt.plot(np.where(buy_signal.series)[0], K.series[np.where(buy_signal.series)[0]], "^", label="buy",
-                 markersize=12, color="red")
-        plt.plot(np.where(sell_signal.series)[0], J.series[np.where(sell_signal.series)[0]], "v", label="sell",
-                 markersize=12, color="green")
+        plt.plot(np.where(buy_signal.series)[0],
+                 K.series[np.where(buy_signal.series)[0]],
+                 "^",
+                 label="buy",
+                 markersize=12,
+                 color="red")
+        plt.plot(np.where(sell_signal.series)[0],
+                 J.series[np.where(sell_signal.series)[0]],
+                 "v",
+                 label="sell",
+                 markersize=12,
+                 color="green")
         plt.legend(loc="best")
         plt.show()
 
@@ -185,7 +197,9 @@ class TestFuncat2TestCase(unittest.TestCase):
             print("Cool, 在", date, "选出", order_book_id, symbol)
 
         data = select(
-            lambda: (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3)),
+            lambda:
+            (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(
+                H > MA(C, 20), 3)),
             start_date=20170104,
             end_date=20170104,
             callback=callback,
@@ -199,7 +213,8 @@ class TestFuncat2TestCase(unittest.TestCase):
             print("Cool, 在", date, "选出", order_book_id, symbol)
 
         def myfunc():
-            return (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3))
+            return (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3)
+                    & EVERY(H > MA(C, 20), 3))
 
         data = select(
             myfunc,
@@ -208,7 +223,9 @@ class TestFuncat2TestCase(unittest.TestCase):
             callback=callback,
         )
         data2 = select(
-            lambda: (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(H > MA(C, 20), 3)),
+            lambda:
+            (EVERY(V < MA(V, 20) / 2, 3) & EVERY(L < MA(C, 20), 3) & EVERY(
+                H > MA(C, 20), 3)),
             start_date=20170104,
             end_date=20170104,
             callback=callback,
@@ -223,7 +240,6 @@ class TestFuncat2TestCase(unittest.TestCase):
             """检测豹子价格;
             例如：6.66 4.44， 77.77
             """
-
             def baozi(price):
                 s = f"{np.round(price.value, 2):.2f}".replace(".", "")
                 arr = np.fromiter(s, dtype=int)
@@ -251,7 +267,6 @@ class TestFuncat2TestCase(unittest.TestCase):
         RPS不低于70，最好80、90左右。
         RPS指标又称为股价相对强度指标，是由美国的欧奈尔提出，并运用于市场的分析的。RPS指标是指在一段时间内，个股涨幅在全部股票涨幅排名中的位次值，可通过官方资料得知。
         """
-
         def stage2():
             """参考：
             C>0 {收盘价>0}
@@ -277,6 +292,14 @@ class TestFuncat2TestCase(unittest.TestCase):
             end_date=20210427,
         )
         print(f"2nd stage：\n{data}\n{len(data)}")
+
+    def test_finacial(self):
+        """总市值<(总资产-负债总额)
+        FINANCE（41）/1000<(FINANCE（10）-FINANCE（15）-FINANCE（16）);
+        通达信软件里没有“负债总额”函数，只有“流动负债”（FINANCE（15））、“长期负债”（FINANCE（16））函数。
+        """
+        # todo
+        self.assertFalse
 
 
 if __name__ == '__main__':

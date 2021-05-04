@@ -60,7 +60,7 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
                 results.append(choose(order_book_id, func, callback))
                 if not (i % 5 == 0):
                     # pbar.update(5)
-                    pbar.set_description(f"{i}")
+                    pbar.set_description(f"{i}, {order_book_id}")
 
     print(getsourcelines(func))
     results = []

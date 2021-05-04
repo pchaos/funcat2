@@ -144,3 +144,12 @@ def TRIX(M1=12, M2=20):
     TRMA = MA(TRIX, M2)
 
     return TRIX, TRMA
+
+# def trendline():
+#     S1 := 25;
+#     S2 := 85;
+#     DSG := EMA(H, S1); # 短上轨
+#     DXG := EMA(L, S1); # 短下轨
+#     CSG := EMA(H, S2); #长上轨
+#     CXG := EMA(L, S2); # 长下轨
+#     return DSG, DXG, CSG, CXG
