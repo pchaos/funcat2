@@ -2,6 +2,7 @@
 import unittest
 from funcat.api import EMA, MA
 from funcat.tools import tdx2python, tdx2func, file2exec_txt
+from funcat.indicators import trendline
 
 
 # from funcat.indicators import trendline
@@ -55,10 +56,15 @@ class Test(unittest.TestCase):
         self.assertTrue(len(testData) == 4, f"徐小明趋势线每日应该返回四条数据；{testData}")
         testData2 = tdx2func("trend.tdx", funcName, "S1=5", "S2=110", S1=23, S2=99)
         self.assertTrue(testData == testData2, f"返回数据应该相同")
-        testData3 = tdx2func("trend.tdx", funcName, "S1=5", "S2=110", S1=23, S2=95)
-        self.assertTrue(testData != testData3, f"参数不同，返回数据应该不相同")
-        print(testData2)
 
+    def test_tdx2func2(self):
+        funcName = "testfunc"
+        data = tdx2func("trend.tdx", funcName, "S1=5", "S2=100", S1=23, S2=99)
+        testData2 = trendline(S1=23, S2=99)
+        self.assertTrue(data == testData2, f"返回数据应该相同:\n{data}\n{testData2}")
+        testData3 = trendline(S1=23, S2=95)
+        self.assertTrue(data != testData3, f"参数不同，返回数据应该不相同")
+        print(testData2)
 
 
 if __name__ == '__main__':
