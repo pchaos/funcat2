@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """小白量化--通达信/大智慧公式转Python代码
-https://blog.csdn.net/hepu8/article/details/104130585
+see: https://blog.csdn.net/hepu8/article/details/104130585
 """
 
 import os
-
-print('小白量化--通达信/大智慧公式转Python代码\n')
+import numpy as np
+from ..utils import lru_cache
+from funcat.api import *
 
 
 def read_tdx(filename):
@@ -21,15 +22,19 @@ def read_tdx(filename):
     currDir = os.path.join(os.path.join(os.path.abspath(os.path.dirname(__file__)), ".."),
                            "usrFunc")
     fullname = os.path.join(f"{currDir}", filename)
-    print(fullname)
+    # print(fullname)
     if os.path.exists(fullname):
-        gs = open(fullname).readlines()
-    return gs
+        with open(fullname) as f:
+            gs = f.readlines()
+        print(f"Reading file: {filename}")
+        return gs
     raise Exception(f"not find file :{fullname}")
 
 
-def tdx2python(filename):
-    """"""
+@lru_cache()
+def tdx2python(filename) -> str:
+    """将文件（filename)转换成python语句
+    """
     gs = read_tdx(filename)
     ovar = ''
     gs3 = []
@@ -37,7 +42,7 @@ def tdx2python(filename):
         s = s.replace(':=', '=')
         if s.find(':') > 0:
             if len(ovar) > 0:
-                ovar = ovar + ',' + s[0:s.find(':')]
+                ovar = ovar + f",{s[0:s.find(':')].strip()}"
             else:
                 ovar = s[0:s.find(':')]
             s = s.replace(':', '=')
@@ -48,5 +53,57 @@ def tdx2python(filename):
         gs3.append(s)
     gs4 = "\n".join(gs3)
     gs4 = gs4 + '\nreturn ' + ovar
-    print('Python代码:\n', gs4)
+    # print('Python代码:\n', gs4)
     return gs4
+
+
+@lru_cache()
+def file2exec_txt(filename, *args):
+    gs = tdx2python(filename)
+    if len(gs) > 0:
+        gs = gs.replace("\n", "\n\t")
+        if len(args) > 0:
+            i = 0
+            funcPara = ""  # 函数参数
+            for arg in args:
+                if i == 0:
+                    funcName = args[0]
+                    i += 1
+                else:
+                    if i == 1:
+                        funcPara += f"{arg.strip()}"
+                    else:
+                        funcPara += f", {arg.strip()}"
+                    i += 1
+        execTxt = f"def {funcName}({funcPara}):\n\t{gs}"
+        # print(execTxt)
+        return funcName, execTxt
+    return "", ""
+
+
+def _func_para(**kwargs):
+    """生成参数"""
+    i = 0
+    funcPara = ""
+    for kw in kwargs:
+        if i == 0:
+            funcPara = f"{kw}={kwargs[kw]}"
+        else:
+            funcPara += f", {kw}={kwargs[kw]}"
+    return funcPara
+
+
+def tdx2func(filename, *args, **kwargs):
+    """从文件filename读取通达信公式，并返回结果
+
+    """
+    funcName, execTxt = file2exec_txt(filename, *args)
+    if len(execTxt) > 0:
+        # 添加globals后，能在exec后执行函数
+        execTxt = f"{execTxt}\nglobals()[f'{funcName}']= {funcName}"
+        exec(execTxt, globals(), locals())
+        return eval(f"{funcName}({_func_para(**kwargs)})", globals(), locals())
+
+    else:
+        print(f"error in {filename}! at least function name is given.")
+        return np.array([])

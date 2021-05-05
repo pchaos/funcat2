@@ -9,10 +9,12 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 
-try:
-    from functools import lru_cache
-except ImportError:
-    from backports.functools_lru_cache import lru_cache
+from functools import lru_cache
+
+# try:
+#     from functools import lru_cache
+# except ImportError:
+#     from backports.functools_lru_cache import lru_cache
 
 
 class FormulaException(Exception):

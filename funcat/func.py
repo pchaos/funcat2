@@ -98,7 +98,6 @@ class ExponentialMovingAverageSeries(OneArgumentSeries):
 
 
 class StdSeries(OneArgumentSeries):
-    # func = talib.STDDEV
     def getFunc(self):
         return talib.STDDEV
 
