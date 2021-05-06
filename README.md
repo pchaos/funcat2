@@ -305,4 +305,4 @@ git checkout master && git merge dev && git push && git checkout dev
 ### 不用每次输入密码，设置https为ssh登录
 > git remote set-url origin git@github.com:pchaos/funcat2.git
 
-× PS：使用你的用户名
+* PS：使用你的用户名
