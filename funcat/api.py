@@ -41,7 +41,8 @@ from .func import (
     barslast,
     mular,
     upnday,
-    downnday
+    downnday,
+    nday
 )
 from .context import (
     symbol,
@@ -83,8 +84,9 @@ REF = Ref
 MIN = minimum
 MAX = maximum
 EVERY = every
-UPNDAY= upnday
-DOWNNDAY=downnday
+UPNDAY = upnday
+DOWNNDAY = downnday
+NDAY = nday
 COUNT = count
 HHV = hhv
 LLV = llv
@@ -140,6 +142,7 @@ __all__ = [
     "MULAR",
     "UPNDAY",
     "DOWNNDAY",
+    "NDAY",
 
     "S",
     "T",
