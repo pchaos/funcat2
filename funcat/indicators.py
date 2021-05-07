@@ -6,7 +6,8 @@ from .api import (
     REF, IF, SUM, STD,
     MA, EMA, SMA,
 )
-from .tools import tdx2func
+from .utils import tdx2func
+
 
 def KDJ(N=9, M1=3, M2=3):
     """
@@ -145,7 +146,22 @@ def TRIX(M1=12, M2=20):
 
     return TRIX, TRMA
 
+
 def trendline(**kwargs):
+    """短期趋势、长期趋势
+    默认参数：S1=25, S2=85
+    返回：短上轨、短下跪，长上轨，长下轨
+    """
+    S1 = kwargs.get("S1", 25)
+    S2 = kwargs.get("S2", 85)
+    DSG = EMA(HIGH, S1)  # 短上轨
+    DXG = EMA(LOW, S1)  # 短下轨
+    CSG = EMA(HIGH, S2)  # 长上轨
+    CXG = EMA(LOW, S2)  # 长下轨
+    return DSG, DXG, CSG, CXG
+
+
+def trendline_E(**kwargs):
     """短期趋势、长期趋势
     默认参数：S1=25, S2=85
     """

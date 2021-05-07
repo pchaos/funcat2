@@ -16,6 +16,11 @@ class TestFuncat2TestCase(unittest.TestCase):
         T("20201216")
         S("000001.XSHG")
 
+    @classmethod
+    def setUp(self) -> None:
+        T("20201216")
+        S("000001.XSHG")
+
     def test_select(self):
         # 选出涨停股
         data = select(
@@ -240,6 +245,7 @@ class TestFuncat2TestCase(unittest.TestCase):
             """检测豹子价格;
             例如：6.66 4.44， 77.77
             """
+
             def baozi(price):
                 s = f"{np.round(price.value, 2):.2f}".replace(".", "")
                 arr = np.fromiter(s, dtype=int)
@@ -267,6 +273,7 @@ class TestFuncat2TestCase(unittest.TestCase):
         RPS不低于70，最好80、90左右。
         RPS指标又称为股价相对强度指标，是由美国的欧奈尔提出，并运用于市场的分析的。RPS指标是指在一段时间内，个股涨幅在全部股票涨幅排名中的位次值，可通过官方资料得知。
         """
+
         def stage2():
             """参考：
             C>0 {收盘价>0}
@@ -299,7 +306,7 @@ class TestFuncat2TestCase(unittest.TestCase):
         通达信软件里没有“负债总额”函数，只有“流动负债”（FINANCE（15））、“长期负债”（FINANCE（16））函数。
         """
         # todo
-        self.assertFalse
+        self.assertTrue(True == False)
 
 
 if __name__ == '__main__':

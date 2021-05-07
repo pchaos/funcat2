@@ -47,6 +47,9 @@ class TestQuantaxisDataBackend(unittest.TestCase):
     def test_get_order_book_id_list(self):
         data = self.qdb.get_order_book_id_list()
         self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
+    def test_get_order_book_id_list2(self):
+        data = self.qdb.get_order_book_id_list()
+        self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
 
     def test_get_trading_dates(self):
         data = self.qdb.get_trading_dates(20200101, 20210301)

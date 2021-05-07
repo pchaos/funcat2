@@ -1,3 +1,4 @@
+import unittest
 from unittest import TestCase
 from funcat import *
 
@@ -23,3 +24,6 @@ class TestTushareDataBackend(TestCase):
         data = self.be.get_price("000001.SH", 20210101, 20210201, '1d')
         self.assertTrue(len(data) > 10, f"交易日期数量：{len(data)},实际应该大于10天。")
         print(data)
+
+if __name__ == '__main__':
+    unittest.main()

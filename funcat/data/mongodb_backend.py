@@ -2,9 +2,10 @@
 #
 
 from cached_property import cached_property
+from functools import lru_cache
 
 from .backend import DataBackend
-from ..utils import lru_cache, get_str_date_from_int, get_int_date
+from ..utils import get_str_date_from_int, get_int_date
 
 import pymongo
 import QUANTAXIS as qa

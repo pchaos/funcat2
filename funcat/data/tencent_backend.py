@@ -9,10 +9,11 @@ import datetime
 import requests
 import json
 import os
+from functools import lru_cache
 
 # from .rt_data import get_runtime_data
 from .backend import DataBackend
-from ..utils import lru_cache, get_str_date_from_int, get_int_date
+from ..utils import get_str_date_from_int, get_int_date
 
 
 class TencentDataBackend(DataBackend):

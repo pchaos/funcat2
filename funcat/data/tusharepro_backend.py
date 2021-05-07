@@ -7,10 +7,11 @@ import pandas as pd
 import numpy as np
 import datetime
 import os
+from functools import lru_cache
 
 from .rt_data_from_tencent import get_runtime_data
 from .backend import DataBackend
-from ..utils import lru_cache, get_str_date_from_int, get_int_date
+from ..utils import get_str_date_from_int, get_int_date
 
 
 class TushareDataBackend(DataBackend):

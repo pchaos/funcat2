@@ -44,13 +44,11 @@ def choose(order_book_id, func, callback):
 
 def _list2Array(alist: list):
     arr = np.asarray(alist)
-    # arr = arr[arr != {}]
-    # return np.array([[item[j] for j in ['date', 'code', 'cname']] for item in arr])
     return arr[arr != {}]
 
 
 @suppress_numpy_warn
-def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]) -> np.array:
     """异步select"""
 
     async def achoose(order_book_id_list, func, callback):
@@ -58,7 +56,7 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
             async for i in pbar:
                 order_book_id = order_book_id_list[i]
                 results.append(choose(order_book_id, func, callback))
-                if not (i % 5 == 0):
+                if not (i % 10 == 0):
                     # pbar.update(5)
                     pbar.set_description(f"{i}, {order_book_id}")
 
@@ -89,7 +87,7 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
 
 
 @suppress_numpy_warn
-def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]) -> np.array:
     """not done"""
     from numba.typed import List
     # @njit()
@@ -129,7 +127,7 @@ def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_
 
 
 @suppress_numpy_warn
-def select(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]):
+def select(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]) -> np.array:
     result = []
     print(getsourcelines(func))
     start_date = get_int_date(start_date)
@@ -145,6 +143,7 @@ def select(func, start_date="2016-10-01", end_date=None, callback=print, order_b
         if end_date and date > get_int_date(end_date):
             continue
         if date < get_int_date(start_date):
+            # 日期小于开始日期则计算完成
             break
         set_current_date(str(date))
         print(f"[{date}]")
