@@ -40,7 +40,8 @@ from .func import (
     troughbars,
     barslast,
     mular,
-    upnday
+    upnday,
+    downnday
 )
 from .context import (
     symbol,
@@ -83,6 +84,7 @@ MIN = minimum
 MAX = maximum
 EVERY = every
 UPNDAY= upnday
+DOWNNDAY=downnday
 COUNT = count
 HHV = hhv
 LLV = llv
@@ -137,6 +139,7 @@ __all__ = [
     "TROUGHBARS",
     "MULAR",
     "UPNDAY",
+    "DOWNNDAY",
 
     "S",
     "T",

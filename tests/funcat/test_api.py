@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from funcat import *
-from funcat.api import MarketDataSeries, UPNDAY
+from funcat.api import MarketDataSeries, UPNDAY, DOWNNDAY
 
 
 class TestApi(unittest.TestCase):
@@ -303,6 +303,20 @@ class TestApiQuantaxis(TestApi):
     #                     print(CLOSE[j - 1], CLOSE[j + 3])
     #                 except Exception as e:
     #                     pass
+
+    def test_downnday(self):
+        n = 5
+        und = DOWNNDAY(CLOSE, n)
+        print(f"CLOSE length :{len(CLOSE)}; DOWNNDAY length:{len(und)}")
+        self.assertTrue(len(CLOSE) == len(und) + n + 1, "返回的结果会变短{n+1}")
+
+    def test_downnday2(self):
+        n = 5
+        fakeData = self.fakeMarketData(np.array([i for i in range(100, 0, -1)]))
+        und = DOWNNDAY(fakeData, n)
+        for i in range(1, len(fakeData) - n - 1):
+            # 返回结果每个都为False
+            self.assertTrue(und.series[i], f"第{i}个数据返回不正确")
 
 
 if __name__ == '__main__':

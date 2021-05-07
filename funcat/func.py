@@ -469,11 +469,20 @@ def mular(series, n):
     raise Exception("not implement!!!")
 
 # @handle_numpy_warning
-def upnday(s, n: int):
+def upnday(s, m: int):
     """返回是否连涨周期数.
     用法:
      UPNDAY(CLOSE,M)
      表示连涨M个周期,M为常量
      """
     # s = get_series(s)
-    return every(s > Ref(s, 1), n)
+    return every(s > Ref(s, 1), m)
+
+@handle_numpy_warning
+def downnday(s, m: int):
+    """返回是否连跌周期.
+    用法:
+     DOWNNDAY(CLOSE,M)
+     表示连跌M个周期,M为常量
+     """
+    return every(s < Ref(s, 1), m)
