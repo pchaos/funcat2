@@ -2,10 +2,10 @@
 import unittest
 import numpy as np
 from funcat import *
-from funcat.api import MarketDataSeries, UPNDAY, DOWNNDAY, NDAY
+from funcat.api import UPNDAY, DOWNNDAY, NDAY
+from funcat.utils import MyTestCase
 
-
-class TestApi(unittest.TestCase):
+class TestApi(MyTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.setBackend()
@@ -153,20 +153,6 @@ class TestApi(unittest.TestCase):
         print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
         self.assertTrue(len(fakeData) >= len(data), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
         self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n - 1)]), f"{fakeData.series[(n - 1):]}")
-
-    def fakeMarketData(self, arr=None):
-        """产生模拟交易数据,便于校验数据"""
-        if arr is None:
-            fakeData = np.array(range(100))
-        else:
-            fakeData = arr
-        name = "fake"
-        dtype = float
-        cls = type("{}Series".format(name.capitalize()), (MarketDataSeries,), {"name": name, "dtype": dtype})
-        obj = cls(dynamic_update=False)
-        obj._series = fakeData
-        print(f"{obj}, {obj.series}")
-        return obj
 
     def test_cci(self):
         data = CCI(CLOSE, HIGH, LOW)

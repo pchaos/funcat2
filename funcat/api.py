@@ -57,6 +57,7 @@ from .context import (
     get_current_freq,
 )
 from .helper import select, select2, selectAsync, backtest, zig_helper
+from .conditional_selection import hong_san_bing
 
 # create open high low close volume datetime
 for name in ["open", "high", "low", "close", "volume", "datetime"]:
@@ -103,6 +104,8 @@ TROUGHBARS = troughbars
 
 S = set_current_security
 T = set_current_date
+
+HSB = hong_san_bing
 
 __all__ = [
     "OPEN", "O",
@@ -163,4 +166,6 @@ __all__ = [
     "set_current_freq",
     "get_current_freq",
     "NumericSeries",
+
+    "HSB",
 ]
