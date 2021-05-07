@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from funcat import *
-from funcat.api import MarketDataSeries
+from funcat.api import MarketDataSeries, UPNDAY
 
 
 class TestApi(unittest.TestCase):
@@ -127,7 +127,6 @@ class TestApi(unittest.TestCase):
         self.assertTrue(len(data) > 1, "HHV个数不大天1！")
         print(f"HHV: {data.series}, HHV {n} 长度：{len(data)}, {data}")
 
-
     def test_hhv_2(self):
         fakeData = self.fakeMarketData()
         n = 5
@@ -144,7 +143,7 @@ class TestApi(unittest.TestCase):
         self.assertTrue(len(data) > 1, "LLV个数不大天1！")
         print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
         self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
-        self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n-1)]), f"{fakeData.series[(n - 1):]}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n - 1)]), f"{fakeData.series[(n - 1):]}")
 
     def test_hhv_4(self):
         fakeData = self.fakeMarketData(np.array([i for i in range(100, 0, -1)]))
@@ -152,9 +151,8 @@ class TestApi(unittest.TestCase):
         data = HHV(fakeData, n)
         self.assertTrue(len(data) == 1, "HHV个数不等于1！")
         print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
-        self.assertTrue(len(fakeData) >= len(data) , f"返回数量不匹配！{len(fakeData)}， {len(data)}")
-        self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n-1)]), f"{fakeData.series[(n - 1):]}")
-
+        self.assertTrue(len(fakeData) >= len(data), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
+        self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n - 1)]), f"{fakeData.series[(n - 1):]}")
 
     def fakeMarketData(self, arr=None):
         """产生模拟交易数据,便于校验数据"""
@@ -208,6 +206,103 @@ class TestApiQuantaxis(TestApi):
         # stock
         S("000001")
         assert np.equal(round(CLOSE.value, 2), 9.25), f"收盘价：{CLOSE.value}, {type(CLOSE)}"
+
+    def test_ref(self):
+        n = 10
+        c1 = REF(C, n)  # n天前的收盘价
+        self.assertTrue(CLOSE.series[-(n + 1)] == c1.value, f"数据不匹配：{CLOSE.series[-(n + 1)]}, {c1}")
+
+    def test_ref3(self):
+        n = 10
+        c1 = REF(C, n)  # n天前的收盘价
+        print(f"CLOSE length :{len(CLOSE)};  REF(C, {n}) length:{len(c1)}")
+        self.assertTrue(len(CLOSE) == len(c1) + n, "Ref的数据会缩短{n}")
+
+    def test_ref2(self):
+        m = 10
+        for n in range(1, m):
+            c1 = REF(C, n)  # n天前的收盘价
+            self.assertTrue(CLOSE.series[-(n + 1)] == c1.value, f"数据不匹配：{CLOSE.series[-(n + 1)]}, {c1}")
+            print(n, c1)
+        print(np.flipud(CLOSE.series[-m:]))
+
+    def test_upnday(self):
+        n = 5
+        und = UPNDAY(CLOSE, n)
+        print(f"CLOSE length :{len(CLOSE)}; UPNDAY length:{len(und)}")
+        self.assertTrue(len(CLOSE) == len(und) + n + 1, "返回的结果会变短{n+1}")
+
+    def test_upnday2(self):
+        n = 5
+        fakeData = self.fakeMarketData()
+        und = UPNDAY(fakeData, n)
+        for i in range(1, len(fakeData) - n - 1):
+            # 返回结果每个都为True
+            self.assertTrue(und.series[i], f"第{i}个数据返回不正确")
+
+    def test_upnday3(self):
+        n = 5
+        fakeData = self.fakeMarketData(np.array([i for i in range(100, 0, -1)]))
+        und = UPNDAY(fakeData, n)
+        for i in range(1, len(fakeData) - n - 1):
+            # 返回结果每个都为False
+            self.assertTrue(und.series[i] == False, f"第{i}个数据返回不正确")
+
+    def test_upnday4(self):
+        n = 5
+        m = 100
+        data = np.array(range(int(m / 2), 0, -1))
+        data2 = np.array(range(int(m / 2)))
+        fakeData = self.fakeMarketData(np.append(data, data2))
+        result = {"0": 0, "1": 0}
+        und = UPNDAY(fakeData, n)
+        for i in range(1, len(und)):
+            if und.series[i]:
+                result["1"] += 1
+            else:
+                result["0"] += 1
+        print(f"原始数据长度：{len(fakeData)}, 返回数据长度：{len(und)}\n", result)
+        self.assertTrue(result["1"] < result["0"], f"连续上涨的个数应该小于非连续上涨的个数")
+        self.assertTrue(result["1"] + result["0"] + n + 2 == int(m / 2) * 2, f"连续上涨的个数应该小于非连续上涨的个数")
+
+    def test_upnday5(self):
+        n = 5
+        data = np.array(range(10, 0, -1))
+        data2 = np.array(range(10))
+        fd = np.append(data, data2)
+        for i in range(3):
+            fd = np.append(fd, fd)
+        fakeData = self.fakeMarketData(fd)
+        result = {"0": 0, "1": 0}
+        und = UPNDAY(fakeData, n)
+        for i in range(1, len(und)):
+            if und.series[i]:
+                result["1"] += 1
+            else:
+                result["0"] += 1
+        print(f"原始数据长度：{len(fakeData)}, 返回数据长度：{len(und)}\n", result)
+        print(und.series)
+
+    # def test_upnday6(self):
+    #     # todo
+    #     n = 5
+    #     und = UPNDAY(CLOSE, n)
+    #     print(f"CLOSE length :{len(CLOSE)}; UPNDAY length:{len(und)}")
+    #     # print(und.series)
+    #     for i in range(n + 1, len(und)):
+    #         if und[i]:
+    #             j = len(und) - (i + n + 1)
+    #             # j = len(und) - (i + n )
+    #             a, b, c = CLOSE[j], CLOSE[j + 1], CLOSE[j + 2]
+    #             print(i, a, b, c, end=";")
+    #             if a > b > c:
+    #                 print(True)
+    #             else:
+    #                 print(False)
+    #                 try:
+    #                     print(CLOSE[j - 1], CLOSE[j + 3])
+    #                 except Exception as e:
+    #                     pass
 
 
 if __name__ == '__main__':

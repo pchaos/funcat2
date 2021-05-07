@@ -19,6 +19,7 @@ from .helper import zig_helper
 
 #  ignore pandas warning
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
@@ -218,6 +219,13 @@ def CrossOver(s1, s2):
 
 
 def Ref(s1, n):
+    """引用若干周期前的数据(平滑处理).
+    用法:
+     REF(X,A),引用A周期前的X值.A可以是变量.
+    平滑处理:当引用不到数据时进行的操作.此函数中,平滑时使用上一个周期的引用值.
+    例如:
+     REF(CLOSE,BARSCOUNT(C)-1)表示第二根K线的收盘价.
+     """
     if isinstance(n, NumericSeries):
         return s1[int(n.value)]
     return s1[n]
@@ -388,9 +396,9 @@ def const(s):
 @handle_numpy_warning
 def drawnull(s):
     """DRAWNULL 无效数 返回无效数。
-用法： DRAWNULL
-例如： IF(CLOSE>REF(CLOSE，1)，CLOSE，DRAWNULL) 表示下跌时分析图上不画线。 BACKSET 向前赋值
-"""
+    用法： DRAWNULL
+    例如： IF(CLOSE>REF(CLOSE，1)，CLOSE，DRAWNULL) 表示下跌时分析图上不画线。 BACKSET 向前赋值
+    """
     pass
 
 
@@ -448,3 +456,24 @@ def barslast(statement):
         begin -= 1
 
     return NumericSeries(result)
+
+
+@handle_numpy_warning
+def mular(series, n):
+    """求累乘.
+    用法:
+     MULAR(X,N),统计N周期中X的乘积.N=0则从第一个有效值开始.
+    例如:
+     MULAR(C/REF(C,1),0)表示统计从上市第一天以来的复利
+    """
+    raise Exception("not implement!!!")
+
+# @handle_numpy_warning
+def upnday(s, n: int):
+    """返回是否连涨周期数.
+    用法:
+     UPNDAY(CLOSE,M)
+     表示连涨M个周期,M为常量
+     """
+    # s = get_series(s)
+    return every(s > Ref(s, 1), n)

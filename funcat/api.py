@@ -38,7 +38,9 @@ from .func import (
     drawnull,
     zig,
     troughbars,
-    barslast
+    barslast,
+    mular,
+    upnday
 )
 from .context import (
     symbol,
@@ -80,6 +82,7 @@ REF = Ref
 MIN = minimum
 MAX = maximum
 EVERY = every
+UPNDAY= upnday
 COUNT = count
 HHV = hhv
 LLV = llv
@@ -87,6 +90,7 @@ HHVBARS = hhvbars
 LLVBARS = llvbars
 IF = IIF = iif
 BARSLAST = barslast
+MULAR = mular
 CEILING = ceiling
 CONST = const
 DRAWNULL = drawnull
@@ -131,6 +135,8 @@ __all__ = [
     "DRAWNULL",
     "ZIG",
     "TROUGHBARS",
+    "MULAR",
+    "UPNDAY",
 
     "S",
     "T",
