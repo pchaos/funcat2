@@ -34,8 +34,8 @@ def getsourcelines(func):
 
 def get_int_date(date):
     if isinstance(date, int):
-        if date < 15000000:
-            # 日期格式错误
+        if date < 15000000 or date > 99990000:
+            # 日期格式错误 公园1500～9999年
             raise Exception(f"date format error:{date}")
         return date
 

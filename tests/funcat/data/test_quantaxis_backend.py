@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 from funcat import *
+from funcat.utils import getsourcelines, FormulaException, get_int_date
 
 
 class TestQuantaxisDataBackend(unittest.TestCase):
@@ -83,6 +84,17 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         print(f"week :{lc2}")
         lc1 = len(c1)
         self.assertTrue(lc1 == lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
+
+    def test_get_trading_dates(self):
+        """当下载本地数据后，本测试应该成功"""
+        start_date = 20210426
+        end_date = 20210506
+        start_date = get_int_date(start_date)
+        end_date = get_int_date(end_date)
+        trading_dates = self.qdb.get_trading_dates(start=start_date, end=end_date)
+        print("请检查本地数据是否完整，再运行本测试。", trading_dates)
+        self.assertTrue(start_date == trading_dates[0], f"开始日期应该相同：{start_date},{trading_dates[0]}")
+        self.assertTrue(end_date == trading_dates[-1], f"结束日期应该相同：{end_date},{trading_dates[-1]}")
 
     def test_week_trends(self):
         pass
