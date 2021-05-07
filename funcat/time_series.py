@@ -185,6 +185,10 @@ class TimeSeries(object):
 
     def __and__(self, other):
         s1, s2 = fit_series(self.series, get_series(other))
+        if s1.dtype != bool:
+            s1 = s1 > 0
+        if s2.dtype != bool:
+            s2 = s2 > 0
         return BoolSeries(s1 & s2)
 
     def __or__(self, other):
