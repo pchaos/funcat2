@@ -277,7 +277,7 @@ set_data_backend(RQAlphaDataBackend("~/.rqalpha/bundle"))
 替换 DataBackend 为 QUANTAXIS  的 DataProxy，这样可以从 QUANTAXIS 中获取数据。
 
 ``` python
-from funcat.data.quantaxis_backend import BACKEND
+from funcat.data.quantaxis_backend import QuantaxisDataBackend as BACKEND
 from funcat import *
 
 set_data_backend(BACKEND())

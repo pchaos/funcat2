@@ -61,6 +61,11 @@ class TestSelection(MyTestCase):
         print(data.series)
 
     def test_hong_san_bing_select(self):
+        """搜索出来 旗滨集团 三星医疗 睿能科技
+        [{'date': 20210506, 'code': '601567', 'cname': '三星医疗'}
+         {'date': 20210506, 'code': '601636', 'cname': '旗滨集团'}
+         {'date': 20210430, 'code': '603933', 'cname': '睿能科技'}]
+        """
         order_book_id_list = self.BE.get_order_book_id_list()[3000:4000]
         # 选出红三兵
         data = select(HSB,
@@ -68,11 +73,7 @@ class TestSelection(MyTestCase):
                       end_date=20210506,
                       order_book_id_list=order_book_id_list)
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
-        # 搜索出来 旗滨集团 三星医疗 睿能科技
-        """[{'date': 20210506, 'code': '601567', 'cname': '三星医疗'}
-         {'date': 20210506, 'code': '601636', 'cname': '旗滨集团'}
-         {'date': 20210430, 'code': '603933', 'cname': '睿能科技'}]
-        """
+
         print(data)
 
     def test_hong_san_bing_select2(self):
