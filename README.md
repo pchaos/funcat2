@@ -109,7 +109,7 @@ IF(OPEN > CLOSE, OPEN, CLOSE)
 MA(C, 60)  # 60日均线
 ```
 
-其他更多请见：[指标库](https://github.com/pchaos/funcat2/blob/master/funcat2/indicators.py)
+其他更多请见：[指标库](https://github.com/pchaos/funcat2/blob/master/funcat/indicators.py)
 
 
 还有更多的技术指标还在实现中，欢迎提交pr一起实现。
