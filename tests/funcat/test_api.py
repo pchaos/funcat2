@@ -5,6 +5,7 @@ from funcat import *
 from funcat.api import UPNDAY, DOWNNDAY, NDAY
 from funcat.utils import MyTestCase
 
+
 class TestApi(MyTestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -198,12 +199,6 @@ class TestApiQuantaxis(TestApi):
         c1 = REF(C, n)  # n天前的收盘价
         self.assertTrue(CLOSE.series[-(n + 1)] == c1.value, f"数据不匹配：{CLOSE.series[-(n + 1)]}, {c1}")
 
-    def test_ref3(self):
-        n = 10
-        c1 = REF(C, n)  # n天前的收盘价
-        print(f"CLOSE length :{len(CLOSE)};  REF(C, {n}) length:{len(c1)}")
-        self.assertTrue(len(CLOSE) == len(c1) + n, "Ref的数据会缩短{n}")
-
     def test_ref2(self):
         m = 10
         for n in range(1, m):
@@ -211,6 +206,31 @@ class TestApiQuantaxis(TestApi):
             self.assertTrue(CLOSE.series[-(n + 1)] == c1.value, f"数据不匹配：{CLOSE.series[-(n + 1)]}, {c1}")
             print(n, c1)
         print(np.flipud(CLOSE.series[-m:]))
+
+    def test_ref3(self):
+        n = 10
+        c1 = REF(C, n)  # n天前的收盘价
+        print(f"CLOSE length :{len(CLOSE)};  REF(C, {n}) length:{len(c1)}")
+        self.assertTrue(len(CLOSE) == len(c1) + n, "Ref的数据会缩短{n}")
+
+    def test_ref4(self):
+        n = 10
+        c1 = REF(C, n)  # n天前的收盘价
+        print(f"CLOSE length :{len(CLOSE)};  REF(C, {n}) length:{len(c1)}")
+        j = n + 1
+        c2 = REF(C, j - 1)  # j-1天前的收盘价
+        self.assertTrue(len(c1) == len(c2))
+        self.assertTrue(np.alltrue(c1.series == c2.series), f"c1.series == c2.series\n{c1.series == c2.series}")
+
+    def test_ref5(self):
+        n = 0
+        c1 = REF(C, n)  # n天前的收盘价
+        j = 1
+        c2 = REF(C, j)  # j天前的收盘价
+        self.assertTrue(len(c1) >= len(c2))
+        self.assertTrue(len(c1) == len(CLOSE))
+        self.assertTrue(np.alltrue(REF(c1, 1).series == c2.series), f"c1.series == c2.series\n{c1.series == c2.series}")
+        self.assertTrue(np.alltrue(c1.series == CLOSE.series), f"c1.series == c2.series\n{c1.series == CLOSE.series}")
 
     def test_upnday(self):
         n = 5
