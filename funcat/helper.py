@@ -4,7 +4,7 @@ import datetime
 import numpy as np
 import asyncio
 from tqdm.asyncio import tqdm
-from numba import njit
+# from numba import njit
 
 from .context import ExecutionContext, set_current_security, set_current_date, symbol, set_start_date, \
     get_current_security
@@ -246,7 +246,6 @@ def zig_helper(series, n):
                 curr_state = rise
                 candidate_i = i
     for i in range(len(peers) - 1):
-
         peer_start_i = peers[i]
         peer_end_i = peers[i + 1]
         start_value = series[peer_start_i]

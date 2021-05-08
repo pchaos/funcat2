@@ -129,7 +129,7 @@ class QuantaxisDataBackend(DataBackend):
         ]
         return order_book_id_list
 
-    @lru_cache(maxsize=256)
+    @lru_cache(maxsize=512)
     def get_trading_dates(self, start, end):
         """获取所有的交易日
 
