@@ -3,10 +3,10 @@
 import six
 import numpy as np
 
-from .utils import wrap_formula_exc, FormulaException
+from .utils import wrap_formula_exc, FormulaException, func_counter
 from .context import ExecutionContext
 
-
+@func_counter
 def get_bars(freq):
     data_backend = ExecutionContext.get_data_backend()
     current_date = ExecutionContext.get_current_date()

@@ -5,7 +5,7 @@ import datetime
 import functools
 
 import numpy as np
-
+from .singletion import FuncCounter
 
 # from functools import lru_cache
 
@@ -97,3 +97,15 @@ def handle_numpy_warning(func):
 
     return wrapper
 
+
+from functools import wraps
+
+
+def func_counter(func):
+    """function执行次数记数
+    """
+    @wraps(func)
+    def wrapped_f(*args, **kwargs):
+        FuncCounter.instance().update(func.__name__)
+        return func(*args, **kwargs)
+    return wrapped_f
