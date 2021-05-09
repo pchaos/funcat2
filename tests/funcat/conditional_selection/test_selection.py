@@ -13,7 +13,7 @@ from funcat.utils import MyTestCase
 class TestSelection(MyTestCase):
     @classmethod
     def setUp(cls) -> None:
-        T("20201216")
+        T("20210506")
         S("000001.XSHG")
 
     def test_bit_and(self):
@@ -41,7 +41,8 @@ class TestSelection(MyTestCase):
                 print(f"数据不同步:-{i}, {b[i]} != {c[i]}")
 
     def test_hong_san_bing(self):
-        # fakeData = self.fakeMarketData()
+        S("601636")
+        T("20210506")
         data = HSB()
         # print(hsb.series)
         self.assertTrue(len(data) > 0)
@@ -93,6 +94,12 @@ class TestSelection(MyTestCase):
 
         print(data)
 
+    def test_hong_san_bing_counter(self):
+        from funcat.utils import FuncCounter
+        data = HSB()
+        # print(hsb.series)
+        self.assertTrue(len(data) > 0)
+        print(f'计算一次红三兵需要调用get_bars({ FuncCounter.instance().get("get_bars")})次')
 
 if __name__ == '__main__':
     unittest.main()
