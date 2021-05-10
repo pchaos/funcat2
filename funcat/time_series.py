@@ -298,6 +298,7 @@ class MarketDataSeries(NumericSeries):
         return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
 
     @property
+    @func_counter
     def series(self):
         self._ensure_series_update()
         return super(MarketDataSeries, self).series
