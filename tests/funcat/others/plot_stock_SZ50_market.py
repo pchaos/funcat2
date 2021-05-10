@@ -31,6 +31,30 @@ class TestPlotStockSZ50(MyTestCase):
         symbols = self.BE.backend.QA_fetch_stock_block_adv(blockname=blockname).data.index.levels[1].to_list()
         return symbols
 
+    def get_open_close(self, symbols, start_date=20200101, end_date=20201231):
+        """获取开盘价，收盘价
+        调整连续交易日时间序列
+        """
+        quotes = []
+        # date_range = pd.date_range(start=str(start_date), end=str(end_date), freq='B')
+        trading_dates = self.BE.get_trading_dates(start=start_date, end=end_date)
+        dr = pd.DataFrame(trading_dates, columns=["date"])
+        # dr = pd.DataFrame(data=date_range, columns=['date'])
+        dr.date = dr.date.map(lambda x: datetime.datetime.strptime(str(x), '%Y%m%d'))
+        for symbol in symbols:
+            # 前复权
+            df = pd.DataFrame(self.BE.get_price(symbol, start_date, end_date, "1d"))
+            # 字符串转日期
+            df.date = df.date.map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
+            # 与日期序列合并，使数据日期连续
+            df = pd.merge(dr, df, how='left', on='date')
+            quotes.append(df)
+            print(symbol, end=",")
+
+        close_prices = np.vstack([q['close'] for q in quotes])
+        open_prices = np.vstack([q['open'] for q in quotes])
+        return close_prices, open_prices, symbols
+
     def get_open_close2(self, symbols, start_date=20200101, end_date=20201231):
         """非正常交易日期截断"""
         quotes = []
@@ -57,30 +81,6 @@ class TestPlotStockSZ50(MyTestCase):
                     quotes.pop(i)
                     symbols.pop(i)
                     print(i, normal_count, counts[i])
-        close_prices = np.vstack([q['close'] for q in quotes])
-        open_prices = np.vstack([q['open'] for q in quotes])
-        return close_prices, open_prices, symbols
-
-    def get_open_close(self, symbols, start_date=20200101, end_date=20201231):
-        """获取开盘价，收盘价
-        调整连续交易日时间序列
-        """
-        quotes = []
-        # date_range = pd.date_range(start=str(start_date), end=str(end_date), freq='B')
-        trading_dates = self.BE.get_trading_dates(start=start_date, end=end_date)
-        dr = pd.DataFrame(trading_dates, columns=["date"])
-        # dr = pd.DataFrame(data=date_range, columns=['date'])
-        dr.date = dr.date.map(lambda x: datetime.datetime.strptime(str(x), '%Y%m%d'))
-        for symbol in symbols:
-            # 前复权
-            df = pd.DataFrame(self.BE.get_price(symbol, start_date, end_date, "1d"))
-            # 字符串转日期
-            df.date = df.date.map(lambda x: datetime.datetime.strptime(x, '%Y-%m-%d'))
-            # 与日期序列合并，使数据日期连续
-            df = pd.merge(dr, df, how='left', on='date')
-            quotes.append(df)
-            print(symbol, end=",")
-
         close_prices = np.vstack([q['close'] for q in quotes])
         open_prices = np.vstack([q['open'] for q in quotes])
         return close_prices, open_prices, symbols
@@ -119,7 +119,7 @@ class TestPlotStockSZ50(MyTestCase):
         # 支持中文
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
         plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
-        plt.figure(1, facecolor='w', figsize=(10, 8))
+        plt.figure(1, facecolor='w', figsize=(15, 12))
         plt.clf()
         ax = plt.axes([0., 0., 1., 1.])
         plt.axis('off')
@@ -183,7 +183,7 @@ class TestPlotStockSZ50(MyTestCase):
     def test_plot_stock(self):
         start_date = 20190101
         end_date = 20201231
-        symbols = self.get_symbola__from_block()
+        symbols = self.get_symbola__from_block("上证50")
         close_prices, open_prices, symbols = self.get_open_close(symbols, start_date, end_date)
         names = np.array([self.BE.symbol(item) for item in symbols])
         self._visualize(names, close_prices, open_prices)
