@@ -28,6 +28,8 @@ class TestUtils(unittest.TestCase):
                     print("!", end="")
         print("")
         print(FuncCounter.instance().get("get_bars"))
+        print(FuncCounter.instance().counter)
+
 
 
 if __name__ == '__main__':
