@@ -2,12 +2,25 @@
 
 import six
 import numpy as np
+from functools import lru_cache
 
 from .utils import wrap_formula_exc, FormulaException, func_counter
 from .context import ExecutionContext
 
+
 @func_counter
 def get_bars(freq):
+    @lru_cache(maxsize=256)
+    def _check_return_none(order_book_id, data_backend, current_date, start_date, freq):
+        # if security is suspend, just skip
+        # if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != current_date and freq not in ("W", "M"):
+        trading_dates = ExecutionContext.get_data_backend().get_trading_dates(start=start_date, end=current_date)
+        if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != trading_dates[-1] and freq not in (
+                "W", "M"):
+            return order_book_id
+        else:
+            return ""
+
     data_backend = ExecutionContext.get_data_backend()
     current_date = ExecutionContext.get_current_date()
     order_book_id = ExecutionContext.get_current_security()
@@ -19,13 +32,10 @@ def get_bars(freq):
         return np.array([])
 
     # return empty array direct
-    if len(bars) == 0:
-        return bars
+    # if len(bars) == 0:
+    #     return bars
 
-    # if security is suspend, just skip
-    # if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != current_date and freq not in ("W", "M"):
-    trading_dates = ExecutionContext.get_data_backend().get_trading_dates(start=start_date, end=current_date)
-    if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != trading_dates[-1] and freq not in ("W", "M"):
+    if len(bars) > 0 and _check_return_none(order_book_id, data_backend, current_date, start_date, freq):
         return np.array([])
 
     return bars
