@@ -230,6 +230,7 @@ class NumericSeries(TimeSeries):
         self.extra_create_kwargs = {}
 
     @property
+    @func_counter
     def series(self):
         return self._series
 
@@ -240,8 +241,11 @@ class NumericSeries(TimeSeries):
         if isinstance(index, NumericSeries):
             index = int(index.value)
             assert index >= 0
-
         return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
+        # if index == 1:
+        #     return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
+        # else:
+        #     return self.__class__(series=self._series[:len(self.series) - index], **self.extra_create_kwargs)
 
 
 class DuplicateNumericSeries(NumericSeries):
@@ -267,6 +271,7 @@ class MarketDataSeries(NumericSeries):
         self._dynamic_update = dynamic_update
         self._freq = freq
 
+    @func_counter
     def _ensure_series_update(self):
         if self._dynamic_update:
             # TODO: cache
@@ -298,7 +303,6 @@ class MarketDataSeries(NumericSeries):
         return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
 
     @property
-    @func_counter
     def series(self):
         self._ensure_series_update()
         return super(MarketDataSeries, self).series

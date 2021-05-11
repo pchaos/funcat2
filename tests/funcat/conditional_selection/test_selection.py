@@ -99,7 +99,17 @@ class TestSelection(MyTestCase):
         data = HSB()
         # print(hsb.series)
         self.assertTrue(len(data) > 0)
-        print(f'计算一次红三兵需要调用get_bars({ FuncCounter.instance().get("get_bars")})次')
+        print(f'计算一次红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次')
+
+    def test_chcount(self):
+        from funcat.conditional_selection import CHCOUNT
+        from funcat.utils import FuncCounter
+        data = CHCOUNT()
+        self.assertTrue(0 < data < 10, "指标空范围在1～9之间。计算值：{data}")
+        print(f'计算一次红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次; {FuncCounter.counter}')
+        print(data.series)
+        print(MA(data, 5).series)
+
 
 if __name__ == '__main__':
     unittest.main()
