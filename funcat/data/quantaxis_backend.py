@@ -22,7 +22,10 @@ class QuantaxisDataBackend(DataBackend):
 
     @cached_property
     def stock_basics(self):
-        return self.backend.QA_fetch_stock_list_adv()
+        df_index = self.backend.QA_fetch_index_list_adv()
+        df_index["code"]=df_index["code"] + df_index["sse"].apply(lambda x: ".XSHG" if x == "sh" else ".XSHE")
+
+        return pd.concat([self.backend.QA_fetch_stock_list_adv(), df_index, self.backend.QA_fetch_etf_list()])
         # return self.backend.QAFetch.QATdx.QA_fetch_get_stock_list('stock')
 
     @cached_property
@@ -149,8 +152,8 @@ class QuantaxisDataBackend(DataBackend):
         :returns: 名字
         :rtype: str
         """
-        code = self.convert_code(order_book_id)
+        # code = self.convert_code(order_book_id)
         # todo 转化etf index
-        return f'{self.code_name_map.get(code)}'
+        return f'{self.code_name_map.get(order_book_id)}'
         # return f'{self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh")))}'
         # return "{}[{}]".format(order_book_id, self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh"))))
