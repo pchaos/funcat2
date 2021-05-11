@@ -49,15 +49,21 @@ class OneArgumentSeries(ArgumentSeriesBase):
             series = series.series
 
             try:
-                series[np.isinf(series)] = np.nan
+                if series.dtype != int:
+                    series[np.isinf(series)] = np.nan
+
                 # print(f"series type:{type(series)}; self.func: {help(self.func)}")
                 # func = self.getFunc()
                 # series = func(series, arg)
                 series = self.getFunc()(series, arg)
-                series = filter_begin_nan(series)
+                # series = filter_begin_nan(series)
             except Exception as e:
-                print(f"series error: {series}")
-                raise FormulaException(e)
+                if series.dtype == int:
+                    series = series.astype(float)
+                    series = self.getFunc()(series, arg)
+                else:
+                    print(f"series error: {series}")
+                    raise FormulaException(e)
         super(ArgumentSeriesBase, self).__init__(series)
         self.extra_create_kwargs["arg"] = arg
 
