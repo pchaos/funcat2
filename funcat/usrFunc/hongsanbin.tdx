@@ -1,6 +1,8 @@
 {红三兵
 连续上涨三天，涨幅要一天比一天大，其中第一天的上涨幅度不小于三个点。
-成交量也要一天比一天大}
+成交量也要一天比一天大
+DAYS=3
+}
 COND1:=(REF(C,DAYS-1)/REF(C, DAYS)-1);
 COND2:=(REF(C,DAYS-2)/REF(C, DAYS-1)-1);
 COND3:=(REF(C,DAYS-3)/REF(C, DAYS-2)-1);

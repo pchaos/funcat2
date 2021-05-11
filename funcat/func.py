@@ -59,8 +59,7 @@ class OneArgumentSeries(ArgumentSeriesBase):
                 # series = filter_begin_nan(series)
             except Exception as e:
                 if series.dtype == int:
-                    series = series.astype(float)
-                    series = self.getFunc()(series, arg)
+                    series = self.getFunc()(series.astype(float), arg)
                 else:
                     print(f"series error: {series}")
                     raise FormulaException(e)

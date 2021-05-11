@@ -109,6 +109,7 @@ class TestSelection(MyTestCase):
         print(f'计算一次红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次; {FuncCounter.counter}')
         print(data.series)
         print(MA(data, 5).series)
+        print(data.series[-10:])
 
 
 if __name__ == '__main__':

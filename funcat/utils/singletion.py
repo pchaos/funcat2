@@ -4,7 +4,8 @@ from py_singleton import singleton
 
 @singleton
 class FuncCounter(object):
-    """Limitation For best performance, the code to create instance is not thread-safe, however, after the instance is created it should be safe for multi-threading.
+    """单例模式计数器
+    Limitation For best performance, the code to create instance is not thread-safe, however, after the instance is created it should be safe for multi-threading.
     It is recommended to call instance() once during the initial phrase of your app in a single thread.
     FuncCounter.counter记录记数情况
     """
