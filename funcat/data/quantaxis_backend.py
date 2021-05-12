@@ -23,9 +23,11 @@ class QuantaxisDataBackend(DataBackend):
     @cached_property
     def stock_basics(self):
         df_index = self.backend.QA_fetch_index_list_adv()
-        df_index["code"]=df_index["code"] + df_index["sse"].apply(lambda x: ".XSHG" if x == "sh" else ".XSHE")
+        df_index["code"] = df_index["code"] + df_index["sse"].apply(lambda x: ".XSHG" if x == "sh" else ".XSHE")
+        df_etf = self.backend.QA_fetch_etf_list()
+        df_etf["code"] = df_etf["code"].apply(lambda x: f"{x}.etf")
 
-        return pd.concat([self.backend.QA_fetch_stock_list_adv(), df_index, self.backend.QA_fetch_etf_list()])
+        return pd.concat([self.backend.QA_fetch_stock_list_adv(), df_index, df_etf])
         # return self.backend.QAFetch.QATdx.QA_fetch_get_stock_list('stock')
 
     @cached_property
@@ -121,16 +123,31 @@ class QuantaxisDataBackend(DataBackend):
         return self.backend.QA_fetch_index_day_adv(code, start=start, end=end)
 
     @lru_cache()
-    def get_order_book_id_list(self):
-        """获取所有的股票代码列表
+    def get_order_book_id_list(self, code_type="stock") -> list:
+
+        """获取股票代码列表
+        Args:
+            code_type (str): 代码类型;取值范围： "stock, "etf", "index", "all";
+                                    分别对应： 股票， etf， 指数， 全部
+        Returns:
+            类型code_type对应的代码列表
         """
-        # info = self.backend.get_stock_basics()
+
+        code_types = {"stock": lambda x: len(x) == 6,
+                      "etf": lambda x: x.endswith(".etf"),
+                      "index": lambda x: x.endswith(".XSH", 5, -1),
+                      "all": lambda x: True,
+                      "none": lambda x: False}
         info = self.stock_basics
+        if code_type:
+            info = info[info["code"].apply(code_types.get(code_type.lower(),
+                                                          code_types.get("none")))]
         code_list = info.index.sort_values().tolist()
         order_book_id_list = [
             code for code in code_list
         ]
         return order_book_id_list
+
 
     @lru_cache(maxsize=512)
     def get_trading_dates(self, start, end) -> list:
@@ -144,6 +161,7 @@ class QuantaxisDataBackend(DataBackend):
         df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day('000001', start, end)
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
+
 
     @lru_cache(maxsize=6000)
     def symbol(self, order_book_id):

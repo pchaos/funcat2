@@ -28,8 +28,8 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         codes = ["600000", "000001", "000001.XSHG"]
         for code in codes:
             self.assertTrue(len(symbol(code)) > 3, "股票名称长度大于3！")
-        for i in range(1,len(codes)):
-            self.assertTrue(symbol(codes[i-1]) != symbol(codes[i]), "不同代码的名称应该不同")
+        for i in range(1, len(codes)):
+            self.assertTrue(symbol(codes[i - 1]) != symbol(codes[i]), "不同代码的名称应该不同")
 
     def test_get_price(self):
         data = self.qdb.get_price("000001", 20210101, 20210201, '1d')
@@ -67,8 +67,23 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
 
     def test_get_order_book_id_list2(self):
+        # stock
         data = self.qdb.get_order_book_id_list()
         self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
+        data = self.qdb.get_order_book_id_list("stock")
+        self.assertTrue(len(data) > 3500, f"股票代码数量：{len(data)},实际数量应该大于3500只。")
+        # etf
+        data = self.qdb.get_order_book_id_list("etf")
+        self.assertTrue(2000 > len(data) > 1000, f"股票代码数量：{len(data)},实际数量应该大于1000只。")
+        # index
+        data = self.qdb.get_order_book_id_list("index")
+        self.assertTrue(4000 > len(data) > 1000, f"股票代码数量：{len(data)},实际数量({len(data)})应该大于1000只。")
+        # all code lise
+        data = self.qdb.get_order_book_id_list("all")
+        self.assertTrue(len(data) > 7000, f"股票代码数量：{len(data)},实际数量应该大于7000只。")
+        # 其他类型返回空列表
+        data = self.qdb.get_order_book_id_list("others")
+        self.assertTrue(len(data) < 1, f"股票代码数量：{len(data)},实际数量应该大于7000只。")
 
     def test_get_trading_dates(self):
         data = self.qdb.get_trading_dates(20200101, 20210301)
