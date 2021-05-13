@@ -56,6 +56,7 @@ class QuantaxisDataBackend(DataBackend):
                 data = self.get_index_price(order_book_id, start, end, freq)
             else:
                 data = self.get_stock_price(order_book_id, start, end, freq)
+                
             if freq == "W":
                 df = data.week.rename(columns={"vol": "volume"})
             elif freq == "M":
@@ -149,16 +150,20 @@ class QuantaxisDataBackend(DataBackend):
         return order_book_id_list
 
 
-    @lru_cache(maxsize=512)
-    def get_trading_dates(self, start, end) -> list:
+    @lru_cache(maxsize=100)
+    def get_trading_dates(self, start, end, order_book_id="000001.XSHG") -> list:
         """获取所有的交易日
-
-        :param start: 20160101
-        :param end: 20160201
+        Args:
+            start: 20160101
+            end: 20160201
+            order_book_id: stock code; 
+        Returns:
+            股票（order_book_id）start~end时间段内交易日期列表
         """
         start = get_str_date_from_int(start)
         end = get_str_date_from_int(end)
-        df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day('000001', start, end)
+        df = self.get_price(order_book_id, start, end, "1d")
+        # df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day(order_book_id, start, end)
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 

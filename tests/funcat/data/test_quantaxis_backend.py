@@ -93,6 +93,15 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         data2 = self.qdb.get_trading_dates(20200101, 20210401)
         self.assertTrue(len(data2) > len(data), f"交易日期数量：{len(data)}， {len(data2)},实际天数应该大于前一个交易天数")
 
+    def test_get_trading_dates2(self):
+        start, end = 20150101, 20210301
+        data = self.qdb.get_trading_dates(start, end)
+        code ="000002"
+        data2 = self.qdb.get_trading_dates(start, end, code)
+        self.assertTrue(len(data) > 250, f"交易日期数量：{len(data)},实际应该大于250天。")
+        print(f"交易日期：{len(data)} - {len(data2)} = {len(data)-len(data2)}")
+
+
     def test_freq(self):
         print(f"freq: '{get_current_freq()}' {get_current_date()}, {get_current_security()}")
         set_current_freq("1d")
@@ -118,7 +127,7 @@ class TestQuantaxisDataBackend(unittest.TestCase):
         lc1 = len(c1)
         self.assertTrue(lc1 == lc2, f"日线数据比周线数据多：{lc1}, {lc2};{get_start_date()} - {get_current_date()}")
 
-    def test_get_trading_dates(self):
+    def test_get_trading_dates3(self):
         """当下载本地数据后，本测试应该成功"""
         start_date = 20210426
         end_date = 20210506
