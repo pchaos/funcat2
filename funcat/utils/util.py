@@ -7,13 +7,13 @@ import functools
 import numpy as np
 from .singletion import FuncCounter
 
-# from functools import lru_cache
 
 class FormulaException(Exception):
     pass
 
 
 def wrap_formula_exc(func):
+
     def wrapper(*args, **kwargs):
         try:
             # print(func, args, kwargs)
@@ -90,6 +90,7 @@ def rolling_window(a, window):
 
 
 def handle_numpy_warning(func):
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         with np.errstate(invalid='ignore'):
@@ -104,8 +105,10 @@ from functools import wraps
 def func_counter(func):
     """function执行次数记数
     """
+
     @wraps(func)
     def wrapped_f(*args, **kwargs):
         FuncCounter.instance().update(func.__name__)
         return func(*args, **kwargs)
+
     return wrapped_f

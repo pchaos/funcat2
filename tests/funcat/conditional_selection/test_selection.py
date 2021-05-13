@@ -5,8 +5,6 @@ import numpy as np
 
 from funcat.api import *
 from funcat.utils import MyTestCase
-
-
 # from funcat.context import ExecutionContext
 
 
@@ -89,6 +87,24 @@ class TestSelection(MyTestCase):
         data = select(HSB,
                       start_date=20210426,
                       end_date=20210506,
+                      order_book_id_list=order_book_id_list)
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+
+        print(data)
+
+    def test_hong_san_bing_select3(self):
+        """ 搜索出来
+        [{'date': 20210506, 'code': '601567', 'cname': '三星医疗'}
+         {'date': 20210506, 'code': '601636', 'cname': '旗滨集团'}
+         {'date': 20210430, 'code': '603933', 'cname': '睿能科技'}
+         {'date': 20210429, 'code': '000718', 'cname': '苏宁环球'}]
+        """
+        order_book_id_list = self.BE.get_order_book_id_list()
+        start, end = 20210413, 20210416
+        # 选出红三兵
+        data = select(HSB,
+                      start_date=start,
+                      end_date=end,
                       order_book_id_list=order_book_id_list)
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
 
