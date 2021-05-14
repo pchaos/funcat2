@@ -21,4 +21,8 @@ from .context import ExecutionContext as funcat_execution_context
 
 funcat_execution_context(date=20200104,
                          order_book_id="000001.XSHG",
-                         data_backend=TushareDataBackend())._push()
+                         data_backend=QuantaxisDataBackend())._push()
+#
+# funcat_execution_context(date=20200104,
+#                          order_book_id="000001.XSHG",
+#                          data_backend=TushareDataBackend())._push()

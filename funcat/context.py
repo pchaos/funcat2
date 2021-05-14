@@ -5,6 +5,7 @@ import datetime
 import six
 
 from .utils import get_int_date
+from . import strategy
 
 
 class ExecutionContext(object):
@@ -137,11 +138,12 @@ def get_current_freq():
     return ExecutionContext.get_current_freq()
 
 
-def symbol(order_book_id):
+def symbol(order_book_id:str) -> str:
     """获取股票代码对应的名字
-    :param order_book_id:
-    :returns:
-    :rtype:
+    Args:
+        order_book_id: 代码
+    Returns:
+        代码对应的中文名称
     """
     data_backend = ExecutionContext.get_data_backend()
     return data_backend.symbol(order_book_id)
