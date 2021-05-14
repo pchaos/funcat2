@@ -23,7 +23,7 @@ def hong_san_bing2(DAYS=3, PERCENT=3):
 
 def hong_san_bing(DAYS=3, PERCENT=3):
     """红三兵
-    连续上涨三天，涨幅要一天比一天大，其中第一天的上涨幅度不小于三个点。
+    连续上涨三天，涨幅要一天比一天大，其中第一天的上涨幅度不小于三个点(或者涨停)。
     成交量也要一天比一天大
     """
     from funcat.api import REF, C, CLOSE, UPNDAY, NDAY, O, OPEN, V, VOL, VOLUME
