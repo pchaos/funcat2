@@ -168,7 +168,7 @@ def selectV(func, start_date="2016-10-01", end_date=None, callback=print, order_
         callback：回调函数（默认为print）
         order_book_id_list: 选股范围（默认为所有股票，不包含指数、基金）
     Returns:
-        返回符合条件的数组（np.array[date, code, symbol]）
+        返回符合条件的数组（时间，代码，中文名 --- np.array[date, code, symbol]）
         """
 
     def choose(order_book_id, func, callback):
@@ -180,7 +180,8 @@ def selectV(func, start_date="2016-10-01", end_date=None, callback=print, order_
             dates = data_backend.get_trading_dates(start_date, end_date, order_book_id)
             minLen = min(len(flag), len(dates))
             flag_true = flag.series[-minLen:][flag.series[-minLen:]]
-            if minLen > 0 and len(flag_true) > 0:
+            # if minLen > 0 and len(flag_true) > 0:
+            if len(flag_true) > 0:
                 return zip(flag_true, np.array(dates, dtype=int)[-minLen:][flag.series[-minLen:]])
             else:
                 return zip()
