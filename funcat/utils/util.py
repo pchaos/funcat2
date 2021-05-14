@@ -33,7 +33,7 @@ def getsourcelines(func):
 
 
 def get_int_date(date):
-    if isinstance(date, int):
+    if isinstance(date, int) or isinstance(date, np.int64):
         if date < 15000000 or date > 99990000:
             # 日期格式错误 公园1500～9999年
             raise Exception(f"date format error:{date}")
@@ -60,7 +60,7 @@ def get_int_date(date):
     if isinstance(date, (datetime.date)):
         return int(date.strftime("%Y%m%d"))
 
-    raise ValueError("unknown date {}".format(date))
+    raise ValueError(f"unknown date {date}, type {type(date)}")
 
 
 def get_str_date_from_int(date_int):

@@ -94,11 +94,14 @@ class TestSelection(MyTestCase):
 
     def test_hong_san_bing_select3(self):
         """ 搜索出来
-        [{'date': 20210506, 'code': '601567', 'cname': '三星医疗'}
-         {'date': 20210506, 'code': '601636', 'cname': '旗滨集团'}
-         {'date': 20210430, 'code': '603933', 'cname': '睿能科技'}
-         {'date': 20210429, 'code': '000718', 'cname': '苏宁环球'}]
+    [{'date': 20210416, 'code': '002738', 'cname': '中矿资源'}
+     {'date': 20210416, 'code': '603721', 'cname': '中广天择'}
+     {'date': 20210415, 'code': '000978', 'cname': '桂林旅游'}
+     {'date': 20210415, 'code': '603721', 'cname': '中广天择'}
+     {'date': 20210414, 'code': '600200', 'cname': '江苏吴中'}
+     {'date': 20210413, 'code': '300268', 'cname': '佳沃股份'}]
         """
+        from funcat.utils import FuncCounter
         order_book_id_list = self.BE.get_order_book_id_list()
         start, end = 20210413, 20210416
         # 选出红三兵
@@ -109,6 +112,85 @@ class TestSelection(MyTestCase):
         self.assertTrue(len(data) > 0, f"交易数据:{data}")
 
         print(data)
+        print(f'计算红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次')
+
+    def test_hong_san_bing_select_index(self):
+        """ 搜索出来
+        [{'date': 20210222, 'code': '880036.XSHG', 'cname': '创业停板'}
+         {'date': 20210218, 'code': '880325.XSHG', 'cname': '铜'}
+         {'date': 20210210, 'code': '880325.XSHG', 'cname': '铜'}]
+        """
+        from funcat.utils import FuncCounter
+        order_book_id_list = self.BE.get_order_book_id_list("index")
+        start, end = 20210413, 20210516
+        # 选出红三兵
+        data = select(HSB,
+                      start_date=start,
+                      end_date=end,
+                      order_book_id_list=order_book_id_list)
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+
+        print(data)
+        print(f'计算红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次')
+
+    def test_hong_san_bing_selectV(self):
+        """ 搜索出来
+        [{'date': 20210415, 'code': '000978', 'cname': '桂林旅游'}
+         {'date': 20210416, 'code': '002738', 'cname': '中矿资源'}
+         {'date': 20210413, 'code': '300268', 'cname': '佳沃股份'}
+         {'date': 20210414, 'code': '600200', 'cname': '江苏吴中'}
+         {'date': 20210415, 'code': '603721', 'cname': '中广天择'}
+         {'date': 20210416, 'code': '603721', 'cname': '中广天择'}]
+          216.536s
+        """
+        from funcat.utils import FuncCounter
+        from funcat.helper import selectV
+        order_book_id_list = self.BE.get_order_book_id_list("stock")
+        start, end = 20210413, 20210416
+        # 选出红三兵
+        data = selectV(HSB,
+                      start_date=start,
+                      end_date=end,
+                      order_book_id_list=order_book_id_list)
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+
+        print(data)
+        print(f'计算红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次')
+        
+    def test_hong_san_bing_selectV_index(self):
+        """ 搜索出来
+
+        """
+        from funcat.utils import FuncCounter
+        from funcat.helper import selectV
+        order_book_id_list = self.BE.get_order_book_id_list("index")
+        start, end = 20210413, 20210516
+        # 选出红三兵
+        data = selectV(HSB,
+                      start_date=start,
+                      end_date=end,
+                      order_book_id_list=order_book_id_list)
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+
+        print(data)
+        print(f'计算红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次')
+        
+    def test_hong_san_bing_selectV_etf(self):
+        """ 搜索出来
+        """
+        from funcat.utils import FuncCounter
+        from funcat.helper import selectV
+        order_book_id_list = self.BE.get_order_book_id_list("etf")
+        start, end = 20210413, 20210516
+        # 选出红三兵
+        data = selectV(HSB,
+                      start_date=start,
+                      end_date=end,
+                      order_book_id_list=order_book_id_list)
+        self.assertTrue(len(data) > 0, f"交易数据:{data}")
+
+        print(data)
+        print(f'计算红三兵需要调用get_bars({FuncCounter.instance().get("get_bars")})次')
 
     def test_hong_san_bing_counter(self):
         from funcat.utils import FuncCounter

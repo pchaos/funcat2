@@ -4,11 +4,11 @@ import datetime
 import numpy as np
 import asyncio
 from tqdm.asyncio import tqdm
-# from numba import njit
 
 from .context import ExecutionContext, set_current_security, set_current_date, symbol, set_start_date, \
     get_current_security
 from .utils import getsourcelines, FormulaException, get_int_date
+from pandas.core.sorting import _reorder_by_uniques
 
 __all__ = ["select",
            "select2",
@@ -20,6 +20,7 @@ __all__ = ["select",
 
 
 def suppress_numpy_warn(func):
+
     def wrapper(*args, **kwargs):
         try:
             old_settings = np.seterr(all='ignore')
@@ -90,6 +91,7 @@ def selectAsync(func, start_date="2016-10-01", end_date=None, callback=print, or
 def select2(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]) -> np.array:
     """not done"""
     from numba.typed import List
+
     # @njit()
     def achoose(order_book_id_list, func, callback):
         for i in range(len(order_book_id_list)):
@@ -152,6 +154,59 @@ def select(func, start_date="2016-10-01", end_date=None, callback=print, order_b
         for order_book_id in order_book_id_list:
             result.append(choose(order_book_id, func, callback))
             order_book_id_list.set_description("Processing {}".format(order_book_id))
+    print("")
+    return _list2Array(result)
+
+
+@suppress_numpy_warn
+def selectV(func, start_date="2016-10-01", end_date=None, callback=print, order_book_id_list=[]) -> np.array:
+    """条件选股
+    Args:
+        func (function): 选股条件
+        start_date: 选股开始时间
+        end_date: 选股截止时间（默认为当天）
+        callback：回调函数（默认为print）
+        order_book_id_list: 选股范围（默认为所有股票，不包含指数、基金）
+    Returns:
+        返回符合条件的数组（np.array[date, code, symbol]）
+        """
+
+    def choose(order_book_id, func, callback):
+        """返回func返回True的数据"""
+        set_current_security(order_book_id)
+        try:
+            flag = func()
+            data_backend = ExecutionContext.get_data_backend()
+            dates = data_backend.get_trading_dates(start_date, end_date, order_book_id)
+            minLen = min(len(flag), len(dates))
+            flag_true = flag.series[-minLen:][flag.series[-minLen:]]
+            if minLen > 0 and len(flag_true) > 0:
+                return zip(flag_true, np.array(dates, dtype=int)[-minLen:][flag.series[-minLen:]])
+            else:
+                return zip()
+            # callback(date, order_book_id, symbol(order_book_id))
+            # return {"date": get_int_date(date), "code": order_book_id, "cname": symbol(order_book_id)}
+        except FormulaException as e:
+            pass
+        return zip()
+
+    result = []
+    print(getsourcelines(func))
+    start_date = get_int_date(start_date)
+    if end_date is None:
+        end_date = datetime.date.today()
+    end_date = get_int_date(end_date)
+    data_backend = ExecutionContext.get_data_backend()
+    if len(order_book_id_list) == 0:
+        order_book_id_list = data_backend.get_order_book_id_list()
+    trading_dates = data_backend.get_trading_dates(start=start_date, end=end_date)
+    set_start_date(trading_dates[0] - 10000)
+    set_current_date(str(trading_dates[-1]))
+    for code in tqdm(order_book_id_list):
+        # print(f"[{code}];", end="")
+        for flag, date in tuple(choose(code, func, callback)):
+            callback(code, flag, date)
+            result.append({"date": get_int_date(date), "code": code, "cname": symbol(code)})
     print("")
     return _list2Array(result)
 

@@ -48,7 +48,8 @@ class QuantaxisDataBackend(DataBackend):
         :returns:
         :rtype: numpy.rec.array
         """
-        if order_book_id.endswith(".XSHG") or order_book_id.endswith(".XSHE"):
+        # if order_book_id.endswith(".XSHG") or order_book_id.endswith(".XSHE"):
+        if len(order_book_id) > 6:
             # 判断指数
             is_index = True
         try:
