@@ -258,6 +258,7 @@ class TestSelection(MyTestCase):
         
     def test_hong_san_bing_selectV_etf(self):
         """ 搜索出来
+        [{'date': 20210430, 'code': '167302.etf', 'cname': '湾区LOF'}]
         """
         from funcat.utils import FuncCounter
         from funcat.helper import selectV

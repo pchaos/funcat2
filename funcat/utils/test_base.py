@@ -16,7 +16,9 @@ class MyTestCase(unittest.TestCase):
 
     def fakeMarketData(self, arr=None):
         from funcat.time_series import MarketDataSeries
-        """产生模拟交易数据,便于校验数据"""
+        """产生模拟交易数据,便于校验数据
+        默认返回MarketDataSeries子类，子类series为np.array(range(100))
+        """
         if arr is None:
             fakeData = np.array(range(100))
         else:

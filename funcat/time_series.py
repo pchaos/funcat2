@@ -6,10 +6,12 @@ from functools import lru_cache
 
 from .utils import wrap_formula_exc, FormulaException, func_counter
 from .context import ExecutionContext
+# from pandas.tests.arithmetic.test_numeric import ser_or_index
 
 
 @func_counter
 def get_bars(freq):
+
     @lru_cache(maxsize=256)
     def _check_return_none(order_book_id, data_backend, current_date, start_date, freq):
         # if security is suspend, just skip
@@ -56,11 +58,11 @@ def get_value(val):
         return val
 
 
-def get_series(val):
+def get_series(val, size=640000):
     if isinstance(val, TimeSeries):
         return val.series
     else:
-        return DuplicateNumericSeries(val).series
+        return DuplicateNumericSeries(val, size).series
 
 
 def ensure_timeseries(series):
@@ -221,9 +223,16 @@ class TimeSeries(object):
 
     def __int__(self):
         return int(self.value)
+    
+    def tolist(self):
+        if self.series is not None:
+            return self.series.tolist()
+        else: 
+            return []
 
 
 class NumericSeries(TimeSeries):
+
     def __init__(self, series=[]):
         super(NumericSeries, self).__init__()
         self._series = series
@@ -249,6 +258,7 @@ class NumericSeries(TimeSeries):
 
 
 class DuplicateNumericSeries(NumericSeries):
+
     # FIXME size should come from other series
     def __init__(self, series, size=640000):
         try:
@@ -256,7 +266,7 @@ class DuplicateNumericSeries(NumericSeries):
         except:
             val = series
         # super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
-        super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=float))
+        super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=type(val)))
 
 
 class MarketDataSeries(NumericSeries):

@@ -35,6 +35,7 @@ def filter_begin_nan(series):
 
 
 class ArgumentSeriesBase(NumericSeries):
+
     def getFunc(self):
         """EXAMPLE:
         def getFunc(self):
@@ -44,6 +45,7 @@ class ArgumentSeriesBase(NumericSeries):
 
 
 class OneArgumentSeries(ArgumentSeriesBase):
+
     def __init__(self, series, arg):
         if isinstance(series, NumericSeries):
             series = series.series
@@ -104,6 +106,7 @@ class ExponentialMovingAverageSeries(OneArgumentSeries):
 
 
 class StdSeries(OneArgumentSeries):
+
     def getFunc(self):
         return talib.STDDEV
 
@@ -140,6 +143,7 @@ class SMASeries(TwoArgumentSeries):
 
 
 class CCISeries(TwoArgumentSeries):
+
     def getFunc(self):
         return talib.CCI
 
@@ -192,6 +196,7 @@ class SumSeries(NumericSeries):
 
 
 class AbsSeries(NumericSeries):
+
     def __init__(self, series):
         if isinstance(series, NumericSeries):
             series = series.series
@@ -291,8 +296,11 @@ def hhv(s, n):
         raise FormulaException(e)
     if 0 < n < len(series):
         result = np.max(rolling_window(series, n), 1)
+        result = np.append(np.array([np.nan] * (n - 1)), result)
     else:
         result = np.array([np.max(series)])
+        if n > 0:
+             result = np.append(np.array([np.nan] * (len(series) - 1)), result)
 
     return NumericSeries(result)
 
@@ -314,8 +322,11 @@ def llv(s, n):
         raise FormulaException(e)
     if 0 < n < len(series):
         result = np.min(rolling_window(series, n), 1)
+        result = np.append(np.array([np.nan] * (n - 1)), result)
     else:
         result = np.array([np.min(series)])
+        if n > 0:
+             result = np.append(np.array([np.nan] * (len(series) - 1)), result)
 
     return NumericSeries(result)
 
@@ -369,8 +380,9 @@ IFF 逻辑判断 根据条件求不同的值。
 用法： IFF(X，A，B) 若X不为0则返回A，否则返回B。
 例如： IFF(CLOSE>OPEN，HIGH，LOW) 表示该周期收阳则返回最高值，否则返回最低值。
 """
-    series1 = get_series(true_statement)
-    series2 = get_series(false_statement)
+    n = len(condition)
+    series1 = get_series(true_statement, n)
+    series2 = get_series(false_statement, n)
     cond_series, series1, series2 = fit_series(condition.series, series1, series2)
 
     series = series2.copy()

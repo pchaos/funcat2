@@ -13,6 +13,7 @@
 import numpy as np
 
 from .time_series import MarketDataSeries, NumericSeries
+
 from .func import (
     SumSeries,
     AbsSeries,
@@ -57,7 +58,7 @@ from .context import (
     get_current_freq,
 )
 from .helper import select, select2, selectAsync, backtest, zig_helper
-from .conditional_selection import hong_san_bing
+from .conditional_selection import hong_san_bing, FOURWEEK, FOURWEEKQTY
 
 # create open high low close volume datetime
 for name in ["open", "high", "low", "close", "volume", "datetime"]:
@@ -168,4 +169,6 @@ __all__ = [
     "NumericSeries",
 
     "HSB",
+    "FOURWEEK",
+    "FOURWEEKQTY",
 ]

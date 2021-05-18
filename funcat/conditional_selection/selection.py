@@ -2,7 +2,6 @@
 import numpy as np
 from ..time_series import NumericSeries
 
-
 def hong_san_bing2(DAYS=3, PERCENT=3):
     """红三兵
     连续上涨三天，涨幅要一天比一天大，其中第一天的上涨幅度不小于三个点。
