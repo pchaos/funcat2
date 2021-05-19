@@ -11,6 +11,7 @@ class TestTurtle(MyTestCase):
     def setUp(cls) -> None:
         T("20210506")
         S("000001.XSHG")
+        set_current_freq("1d")
         
     def test_four_week_qty(self):
         n = 20
