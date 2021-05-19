@@ -41,7 +41,7 @@ class TestTurtle(MyTestCase):
 
     def test_four_week2(self):
         n = 20
-        hh, ll  = FOURWEEK()
+        hh, ll = FOURWEEK()
         data = hh or ll
         print(data.series[n - 1:n + 20])
         last_high, last_low = FOURWEEKQTY()

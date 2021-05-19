@@ -5,6 +5,7 @@ Created on 2021-05-17
 @author: p19992003 
 '''
 import numpy as np
+from turtle import Turtle
 
 
 class Tutle(object):
@@ -26,12 +27,32 @@ class Tutle(object):
     1. 上升的EMA下方不开新的空单掉头；
     2. 下降的EMA上方不开新的多单掉头；
     3. 典型双顶模式下不做相反的单子掉头。
+    
+    周规则广泛应用于任何的投资市场中，在期货市场中应用较多，同样也适合于股票市场，夏蕊看股经过研究，总结出了在股票市场中的周规则。
+
+股票投资的周规则：
+
+周规则一：
+只要本周的收盘价超出前四周内的最高价，就可买进股票做多。
+只要本周的收盘价低于前两周内的最低价，就要卖出股票做空。
+
+周规则二：
+只要本周的收盘价超出前三周内的最高的收盘价或开盘价，就可买进股票做多。
+只要本周的收盘价低于前三周内的最低的收盘价或开盘价，就可卖出股票做空。
     '''
 
     def __init__(self, params):
         '''
         '''
         pass
+
+    @classmethod
+    def _default_quantity(cls):
+        """返回四周规则最高价、最低价基准；
+        e.g. return CLOSE, CLOSE 表示最高收盘价 最低收盘价作为最高价，最低价的比较基准
+        """
+        from funcat.api import CLOSE, HIGH, LOW
+        return CLOSE, CLOSE
     
     @classmethod
     def four_week_qty(cls, high_series=None, low_series=None, high_n=20, low_n=20):
@@ -48,8 +69,7 @@ class Tutle(object):
             LLV, HHV
         if not high_series:
             # 没有参数时，序列默认为CLOSE
-            high_series = CLOSE
-            low_series = CLOSE
+            high_series, low_series = cls._default_quantity()
         last_high = HHV(high_series, high_n)
         last_low = LLV(low_series, low_n)
         return last_high, last_low
@@ -60,13 +80,21 @@ class Tutle(object):
         1、只要价格超出前四周内的最高价，就平掉空头仓位并做多；
         2、只要价格跌破前四周内的最低价，就平掉多头仓位并做空。
         """
-        from funcat.api import CLOSE, HIGH, LOW, \
-            LLV, HHV, REF, IF, \
+        from funcat.api import LLV, HHV, REF, IF, \
             NumericSeries
         last_high, last_low = cls.four_week_qty(high_series, low_series, high_n, low_n)
-        hh = IF(CLOSE > REF(last_high, 1), 1, 0)
-        ll = IF(CLOSE < REF(last_low, 1), -1, 0)
+        high_qty, low_qty = cls._default_quantity()
+        hh = IF(high_qty > REF(last_high, 1), 1, 0)
+        ll = IF(low_qty < REF(last_low, 1), -1, 0)
         return  NumericSeries(np.append(np.array([np.nan]), hh.series)), NumericSeries(np.append(np.array([np.nan]), ll.series))
+
+
+class TurtleUsingHighLow(Turtle):
+
+    @classmethod
+    def _default_quantity(cls):
+        from funcat.api import HIGH, LOW
+        return HIGH, LOW
 
         
 FOURWEEKQTY = Tutle.four_week_qty
