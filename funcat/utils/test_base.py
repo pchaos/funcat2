@@ -2,8 +2,7 @@
 import unittest
 
 import numpy as np
-
-
+from funcat.utils import FuncCounter
 
 class MyTestCase(unittest.TestCase):
     """测试单元基类
@@ -14,6 +13,11 @@ class MyTestCase(unittest.TestCase):
         set_data_backend(BACKEND())
         cls.BE = BACKEND()
 
+    @classmethod
+    def tearDownClass(cls):
+        super(MyTestCase, cls).tearDownClass()
+        print(f"调用记录：{FuncCounter()}")
+        
     def fakeMarketData(self, arr=None):
         from funcat.time_series import MarketDataSeries
         """产生模拟交易数据,便于校验数据

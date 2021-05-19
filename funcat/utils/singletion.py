@@ -19,6 +19,12 @@ class FuncCounter(object):
     def get(self, value):
         return self.counter[value]
 
+    def __str__(self):
+        # return object.__str__(self, *args, **kwargs)
+        return f"Counter:{self.counter}"
+    
+    def __repr__(self):
+        return f"Counter:{self.counter}; length:{len(self.counter)}"
 
 if __name__ == '__main__':
     a0 = FuncCounter.instance()
@@ -33,3 +39,4 @@ if __name__ == '__main__':
     print(FuncCounter.instance().get("a"))
     assert a1 is a2
     assert a1 is a3
+    print(FuncCounter)
