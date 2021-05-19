@@ -8,7 +8,7 @@ import numpy as np
 from turtle import Turtle
 
 
-class Tutle(object):
+class Turtle(object):
     '''
     海龟法则
     《金融评论》曾发表过一篇论文，里面刊载了十年间对二十多种技术型交易系统的测试和研究，最终得出了结论，周规则名列榜首，仅随其后的是移动平均线。同时期，理查德·丹尼斯（Richard Dennis）创办了举世轰动的“海龟交易班”，“龟儿”们创造了四年年均复利八十的收益，而《海龟交易法则》中的具体操作信号正是周规则。对于移动平均线，大家早已熟，那么周规则是什么呢？为什么它如此优秀，就连世界上最顶级的交易员都在使用它？
@@ -68,7 +68,7 @@ class Tutle(object):
         """
         from funcat.api import CLOSE, HIGH, LOW, \
             LLV, HHV
-        if not high_series:
+        if high_series is None:
             # 没有参数时，序列默认为从_default_quantity()获取（此处为CLOSE， CLOSE）
             high_series, low_series = cls.default_quantity()
         last_high = HHV(high_series, high_n)
@@ -102,5 +102,5 @@ class TurtleUsingHighLow(Turtle):
         return HIGH, LOW
 
 
-FOURWEEKQTY = Tutle.four_week_qty
-FOURWEEK = Tutle.four_week
+FOURWEEKQTY = Turtle.four_week_qty
+FOURWEEK = Turtle.four_week

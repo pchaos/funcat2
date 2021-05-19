@@ -24,6 +24,19 @@ class TestTurtle(MyTestCase):
             self.assertTrue((h > l) or not(h > 0), f"四周规则上轨应该比下轨大：{h},{l} ; {type(h)}")
         self.assertTrue(len(CLOSE) == len(last_high), f"{len(CLOSE)} == {len(last_high)}")
 
+    def test_four_week_qty_weeks(self):
+        """周为单位计算四周规则"""
+        set_current_freq("W")
+        n = 4
+        last_high, last_low = FOURWEEKQTY(CLOSE, CLOSE, n, n)
+        print(last_high, last_low.series[-10:])
+        print(last_high.series[n - 1:n + 20], last_low.series[:10])
+        print(last_high, last_low.series[-10:])
+        print(tuple(zip(last_high.series, last_low.series)))
+        for h, l in tuple(zip(last_high.series, last_low.series)):
+            self.assertTrue((h > l) or not(h > 0), f"四周规则上轨应该比下轨大：{h},{l} ; {type(h)}")
+        self.assertTrue(len(CLOSE) == len(last_high), f"{len(CLOSE)} == {len(last_high)}")
+        
     def test_four_week(self):
         n = 20
         fakedata = self.fakeMarketData()
