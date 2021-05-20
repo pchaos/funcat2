@@ -8,7 +8,9 @@ from .selection import hong_san_bing, chcount as CHCOUNT
 
 from .turtle import FOURWEEK, FOURWEEKQTY
 
-__all__ = ["hong_san_bing",
+HSB = hong_san_bing
+
+__all__ = ["hong_san_bing", "HSB",
            "CHCOUNT",
            "FOURWEEK",
            "FOURWEEKQTY",

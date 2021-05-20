@@ -66,8 +66,7 @@ class Turtle(object):
         Returns：
             截取最高价、最低价
         """
-        from funcat.api import CLOSE, HIGH, LOW, \
-            LLV, HHV
+        from funcat.api import LLV, HHV
         if high_series is None:
             # 没有参数时，序列默认为从_default_quantity()获取（此处为CLOSE， CLOSE）
             high_series, low_series = cls.default_quantity()

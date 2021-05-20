@@ -5,7 +5,7 @@ import datetime
 import six
 
 from .utils import get_int_date
-from . import strategy
+# from . import strategy
 
 
 class ExecutionContext(object):

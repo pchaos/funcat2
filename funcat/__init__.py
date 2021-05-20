@@ -12,11 +12,13 @@ del pkgutil
 
 from .api import *
 from .indicators import *
+from .conditional_selection import *
+from .utils import *
 
-from .data.tushare_backend import TushareDataBackend
-from .data.tusharepro_backend import TushareDataBackend as TushareProDataBackend
-from .data.quantaxis_backend import QuantaxisDataBackend
-from .data.mongodb_backend import MongodbBackend
+from .data import TushareDataBackend
+from .data import TushareProDataBackend
+from .data import QuantaxisDataBackend
+from .data import MongodbBackend
 from .context import ExecutionContext as funcat_execution_context
 
 funcat_execution_context(date=20200104,

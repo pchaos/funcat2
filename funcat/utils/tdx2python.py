@@ -6,7 +6,7 @@ see: https://blog.csdn.net/hepu8/article/details/104130585
 import os
 import numpy as np
 from functools import lru_cache
-from funcat.api import *
+from ..api import *
 
 
 def read_tdx(filename):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from functools import wraps
 from py_singleton import singleton
 
 
@@ -20,11 +21,23 @@ class FuncCounter(object):
         return self.counter[value]
 
     def __str__(self):
-        # return object.__str__(self, *args, **kwargs)
         return f"Counter:{self.counter}"
     
     def __repr__(self):
         return f"Counter:{self.counter}; length:{len(self.counter)}"
+
+
+def func_counter(func):
+    """记录function执行次数记数
+    """
+
+    @wraps(func)
+    def wrapped_f(*args, **kwargs):
+        FuncCounter.instance().update(func.__name__)
+        return func(*args, **kwargs)
+
+    return wrapped_f
+
 
 if __name__ == '__main__':
     a0 = FuncCounter.instance()
@@ -40,3 +53,4 @@ if __name__ == '__main__':
     assert a1 is a2
     assert a1 is a3
     print(FuncCounter)
+    print(FuncCounter())

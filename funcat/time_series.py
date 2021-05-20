@@ -43,6 +43,7 @@ def get_bars(freq):
     return bars
 
 
+@func_counter
 def fit_series(*series_list):
     size = min(len(series) for series in series_list)
     if size == 0:
@@ -58,6 +59,7 @@ def get_value(val):
         return val
 
 
+@func_counter
 def get_series(val, size=640000):
     if isinstance(val, TimeSeries):
         return val.series
@@ -65,6 +67,7 @@ def get_series(val, size=640000):
         return DuplicateNumericSeries(val, size).series
 
 
+@func_counter
 def ensure_timeseries(series):
     if isinstance(series, TimeSeries):
         return series
@@ -267,7 +270,6 @@ class DuplicateNumericSeries(NumericSeries):
             val = series
         # super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
         super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=type(val)))
-
 
 class MarketDataSeries(NumericSeries):
     """MarketDataSeries

@@ -12,7 +12,7 @@
 """
 import numpy as np
 
-from .time_series import MarketDataSeries, NumericSeries
+from .time_series import MarketDataSeries, NumericSeries   
 
 from .func import (
     SumSeries,
@@ -58,7 +58,7 @@ from .context import (
     get_current_freq,
 )
 from .helper import select, select2, selectAsync, backtest, zig_helper
-from .conditional_selection import hong_san_bing, FOURWEEK, FOURWEEKQTY
+# from .conditional_selection import hong_san_bing, FOURWEEK, FOURWEEKQTY
 
 # create open high low close volume datetime
 for name in ["open", "high", "low", "close", "volume", "datetime"]:
@@ -106,7 +106,7 @@ TROUGHBARS = troughbars
 S = set_current_security
 T = set_current_date
 
-HSB = hong_san_bing
+
 
 __all__ = [
     "OPEN", "O",
@@ -168,7 +168,7 @@ __all__ = [
     "get_current_freq",
     "NumericSeries",
 
-    "HSB",
-    "FOURWEEK",
-    "FOURWEEKQTY",
+    # "HSB",
+    # "FOURWEEK",
+    # "FOURWEEKQTY",
 ]

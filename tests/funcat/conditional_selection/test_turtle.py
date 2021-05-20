@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 import numpy as np
-from funcat.api import *
+from funcat import FOURWEEK, FOURWEEKQTY
+from funcat.api import T, S, set_current_freq, \
+  CLOSE
 from funcat.utils import MyTestCase
 
 
@@ -68,3 +70,24 @@ class TestTurtle(MyTestCase):
                     self.assertTrue(CLOSE.series[count] > last_high.series[count - 1] 
                         or CLOSE.series[count] < last_low.series[count - 1] ,
                         f"{count}: { data.series[count]} --> {CLOSE.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}") 
+
+    def test_four_week_002124(self):
+        n = 20
+        S("002124")
+        hh, ll = FOURWEEK(high_n=n, low_n=n)
+        data = hh or ll
+        print(data.series[n - 1:])
+        print(data.series[data.series ==1])
+        last_high, last_low = FOURWEEKQTY(high_n=n, low_n=n)
+        fakedata, _= FOURWEEKQTY.__self__.default_quantity()
+        for count, item in enumerate(data.tolist()):
+            if count >= n - 1:
+                if data.series[count] > 0:
+                    self.assertTrue(fakedata.series[count] > last_high.series[count - 1],
+                        f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
+                    print() 
+                elif data.series[count] < 0:
+                    self.assertTrue(fakedata.series[count] < last_low.series[count - 1],
+                        f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
+                 
+        print(fakedata.__class__)

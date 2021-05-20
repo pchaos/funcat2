@@ -2,7 +2,7 @@
 import unittest
 
 import numpy as np
-from funcat.utils import FuncCounter
+
 
 class MyTestCase(unittest.TestCase):
     """测试单元基类
@@ -15,6 +15,7 @@ class MyTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        from funcat.utils import FuncCounter
         super(MyTestCase, cls).tearDownClass()
         print(f"调用记录：{FuncCounter()}")
         
