@@ -288,12 +288,12 @@ def hhv(s, n):
     # TODO lazy compute
     series = s.series
     # size = len(s.series) - n
-    try:
-        # result = np.full(size, 0, dtype=np.float64)
-        # result = np.full(size, 0, dtype=float)
-        pass
-    except ValueError as e:
-        raise FormulaException(e)
+    # try:
+    #     # result = np.full(size, 0, dtype=np.float64)
+    #     # result = np.full(size, 0, dtype=float)
+    #     pass
+    # except ValueError as e:
+    #     raise FormulaException(e)
     if 0 < n < len(series):
         result = np.max(rolling_window(series, n), 1)
         result = np.append(np.array([np.nan] * (n - 1)), result)
@@ -314,12 +314,12 @@ def llv(s, n):
     # TODO lazy compute
     series = s.series
     # size = len(s.series) - n
-    try:
-        pass
-        # result = np.full(size, 0, dtype=np.float64)
-        # result = np.full(size, 0, dtype=float)
-    except ValueError as e:
-        raise FormulaException(e)
+    # try:
+    #     pass
+    #     # result = np.full(size, 0, dtype=np.float64)
+    #     # result = np.full(size, 0, dtype=float)
+    # except ValueError as e:
+    #     raise FormulaException(e)
     if 0 < n < len(series):
         result = np.min(rolling_window(series, n), 1)
         result = np.append(np.array([np.nan] * (n - 1)), result)
