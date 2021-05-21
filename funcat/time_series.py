@@ -227,12 +227,6 @@ class TimeSeries(object):
     def __int__(self):
         return int(self.value)
 
-    def tolist(self):
-        if self.series is not None:
-            return self.series.tolist()
-        else:
-            return []
-
 
 class NumericSeries(TimeSeries):
 
@@ -246,6 +240,17 @@ class NumericSeries(TimeSeries):
     def series(self):
         return self._series
 
+    def tolist(self):
+        if self.series is not None:
+            return self.series.tolist()
+        else:
+            return []
+    
+    def trim(self):
+        """删除nan"""
+        self._series = self._series[~np.isnan(self._series)]
+        return self
+        
     def __getitem__(self, index):
         assert (isinstance(index, int) and index >= 0) \
                or (isinstance(index, NumericSeries))
@@ -270,6 +275,7 @@ class DuplicateNumericSeries(NumericSeries):
             val = series
         # super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
         super().__init__(np.full(size, val, dtype=type(val)))
+
 
 class MarketDataSeries(NumericSeries):
     """MarketDataSeries

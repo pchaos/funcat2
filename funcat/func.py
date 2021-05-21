@@ -137,6 +137,7 @@ class SMASeries(TwoArgumentSeries):
     def func(self, series, n, _):
         results = np.nan_to_num(series).copy()
         # FIXME this is very slow
+        # https://stackoverflow.com/questions/42869495/numpy-version-of-exponential-weighted-moving-average-equivalent-to-pandas-ewm
         for i in range(1, len(series)):
             results[i] = ((n - 1) * results[i - 1] + results[i]) / n
         return results

@@ -35,10 +35,10 @@ class MyTestCase(unittest.TestCase):
         print(f"调用记录：{FuncCounter()}")
         
     def fakeMarketData(self, arr=None):
-        from funcat.time_series import MarketDataSeries
         """产生模拟交易数据,便于校验数据
         默认返回MarketDataSeries子类，子类series为np.array(range(100))
         """
+        from funcat.time_series import MarketDataSeries
         if arr is None:
             fakeData = np.array(range(100))
         else:

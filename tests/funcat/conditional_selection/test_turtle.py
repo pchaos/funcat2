@@ -91,9 +91,9 @@ class TestTurtle(MyTestCase):
                 elif data.series[count] < 0:
                     self.assertTrue(fakedata.series[count] < last_low.series[count - 1],
                         f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
-                 
-        print(fakedata.__class__)
-        
+        # print(fakedata.__class__)
+        self.assertTrue(type(fakedata) == type(CLOSE), f"类型不匹配：{type(fakedata)}")
+
     def test_four_week_399673(self):
         n = 20
         T("20210520")
@@ -117,4 +117,5 @@ class TestTurtle(MyTestCase):
                     self.assertTrue(fakedata.series[count] < last_low.series[count - 1],
                         f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
                  
-        print(fakedata.__class__)
+        expect_result = [ 0, 0, 0, 0, 0, 0, 1, 0, 1, 1]
+        self.assertListEqual(data.tolist()[-10:], expect_result, f"和预期不同：{data.tolist()[-10:]}\n{expect_result}")

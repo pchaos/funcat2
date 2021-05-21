@@ -103,6 +103,7 @@ class TestApi(MyTestCase):
         data = LLV(fakeData, n)
         self.assertTrue(len(data) > 1, "LLV个数不大天1！")
         print(f"LLV:{data.series}, LLV {n} 长度：{len(data)}, {data}")
+        data.trim()
         self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
 
     def test_llv_3(self):
@@ -110,6 +111,7 @@ class TestApi(MyTestCase):
         n = 5
         data = LLV(fakeData, n)
         print(f"LLV:{data.series}, LLV {n} 长度：{len(data)}, {data}")
+        data.trim()
         self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
         self.assertIn(data.series, fakeData.series[(n - 1):], f"{fakeData.series[(n - 1):]}")
         self.assertTrue(np.alltrue(data.series == fakeData.series[(n - 1):]), f"{fakeData.series[(n - 1):]}")
@@ -134,6 +136,7 @@ class TestApi(MyTestCase):
         data = HHV(fakeData, n)
         self.assertTrue(len(data) > 1, "LLV个数不大天1！")
         print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
+        data.trim()
         self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
         self.assertTrue(np.alltrue(data.series == fakeData.series[(n - 1):]), f"{fakeData.series[(n - 1):]}")
 
@@ -143,6 +146,7 @@ class TestApi(MyTestCase):
         data = HHV(fakeData, n)
         self.assertTrue(len(data) > 1, "LLV个数不大天1！")
         print(f"HHV:{data.series}, HHV {n} 长度：{len(data)}, {data}")
+        data.trim()
         self.assertTrue(len(fakeData) == (len(data) + n - 1), f"返回数量不匹配！{len(fakeData)}， {len(data)}")
         self.assertTrue(np.alltrue(data.series == fakeData.series[:-(n - 1)]), f"{fakeData.series[(n - 1):]}")
 
