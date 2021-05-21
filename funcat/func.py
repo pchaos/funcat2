@@ -114,7 +114,7 @@ class StdSeries(OneArgumentSeries):
 class TwoArgumentSeries(ArgumentSeriesBase):
     # class TwoArgumentSeries(NumericSeries):
 
-    def __init__(self, series, arg1, arg2):
+    def __init__(self, series, arg1, arg2=None):
         if isinstance(series, NumericSeries):
             series = series.series
             try:
@@ -134,7 +134,7 @@ class SMASeries(TwoArgumentSeries):
     def getFunc(self):
         return self.func
 
-    def func(self, series, n, _=None):
+    def func(self, series, n, _):
         results = np.nan_to_num(series).copy()
         # FIXME this is very slow
         for i in range(1, len(series)):
