@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 import numpy as np
+from datetime import date
 from funcat import FOURWEEK, FOURWEEKQTY
-from funcat.api import T, S, set_current_freq, \
+from funcat.api import T, S, set_current_freq, symbol, \
   CLOSE
 from funcat.utils import MyTestCase
 
@@ -43,7 +44,7 @@ class TestTurtle(MyTestCase):
         n = 20
         fakedata = self.fakeMarketData()
         hh, ll = FOURWEEK(fakedata, fakedata, n, n)
-        data = hh or ll
+        data = hh + ll
         print(data.series[n - 1:n + 20])
         last_high, last_low = FOURWEEKQTY(fakedata, fakedata, n, n)
         for count, item in enumerate(data.tolist()):
@@ -58,7 +59,7 @@ class TestTurtle(MyTestCase):
     def test_four_week2(self):
         n = 20
         hh, ll = FOURWEEK()
-        data = hh or ll
+        data = hh + ll
         print(data.series[n - 1:n + 20])
         last_high, last_low = FOURWEEKQTY()
         print(f"CLose: {len(CLOSE)}\n", CLOSE.series[n - 1:20])
@@ -73,19 +74,45 @@ class TestTurtle(MyTestCase):
 
     def test_four_week_002124(self):
         n = 20
-        S("002124")
+        code = "002124"
+        S(code)
         hh, ll = FOURWEEK(high_n=n, low_n=n)
-        data = hh or ll
+        data = hh + ll
         print(data.series[n - 1:])
-        print(data.series[data.series ==1])
+        print(f"{symbol(code)}:", data.series[data.series == 1])
         last_high, last_low = FOURWEEKQTY(high_n=n, low_n=n)
-        fakedata, _= FOURWEEKQTY.__self__.default_quantity()
+        fakedata, _ = FOURWEEKQTY.__self__.default_quantity()
         for count, item in enumerate(data.tolist()):
             if count >= n - 1:
                 if data.series[count] > 0:
                     self.assertTrue(fakedata.series[count] > last_high.series[count - 1],
                         f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
-                    print() 
+                    # print() 
+                elif data.series[count] < 0:
+                    self.assertTrue(fakedata.series[count] < last_low.series[count - 1],
+                        f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
+                 
+        print(fakedata.__class__)
+        
+    def test_four_week_399673(self):
+        n = 20
+        T("20210520")
+        code = "399673.XSHE"
+        S(code)
+        hh, ll = FOURWEEK(high_n=n, low_n=n)
+        data = hh + ll
+        print(data.series[n - 1:])
+        print(f"{symbol(code)}:", data.series[data.series == 1])
+        # print(data.series[hh.series == 1])
+        print(data.series[data.series == -1])
+        last_high, last_low = FOURWEEKQTY(high_n=n, low_n=n)
+        fakedata, _ = FOURWEEKQTY.__self__.default_quantity()
+        for count, item in enumerate(data.tolist()):
+            if count >= n - 1:
+                if data.series[count] > 0:
+                    self.assertTrue(fakedata.series[count] > last_high.series[count - 1],
+                        f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")
+                    # print() 
                 elif data.series[count] < 0:
                     self.assertTrue(fakedata.series[count] < last_low.series[count - 1],
                         f"{count}: { data.series[count]} --> {fakedata.series[count]}, {last_high.series[count-1]} --> {last_low.series[count-1]}")

@@ -7,12 +7,27 @@ import numpy as np
 class MyTestCase(unittest.TestCase):
     """测试单元基类
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         from funcat import QuantaxisDataBackend as BACKEND, set_data_backend
         set_data_backend(BACKEND())
         cls.BE = BACKEND()
 
+    @classmethod
+    def tearDown(self):
+        super().tearDown(self)
+        try:
+            # 打印当前交易信息
+            from funcat import get_start_date, get_current_date, get_current_security
+            from funcat.context import ExecutionContext
+            start_date = get_start_date()
+            current_date = get_current_date()
+            trading_dates = ExecutionContext.get_data_backend().get_trading_dates(start=start_date, end=current_date)
+            print(f"|| --> {get_current_security()},trading dates:{trading_dates[0]}~{trading_dates[-1]}")
+        except Exception:
+            pass
+        
     @classmethod
     def tearDownClass(cls):
         from funcat.utils import FuncCounter

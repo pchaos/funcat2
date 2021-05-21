@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 
 from funcat.api import *
+from funcat.conditional_selection import *
 from funcat.utils import MyTestCase
 # from funcat.context import ExecutionContext
 

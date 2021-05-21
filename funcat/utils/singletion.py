@@ -33,7 +33,8 @@ def func_counter(func):
 
     @wraps(func)
     def wrapped_f(*args, **kwargs):
-        FuncCounter.instance().update(func.__name__)
+        # FuncCounter.instance().update(func.__name__)
+        FuncCounter.instance().update(func.__qualname__)
         return func(*args, **kwargs)
 
     return wrapped_f
