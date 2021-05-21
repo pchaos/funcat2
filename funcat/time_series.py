@@ -217,7 +217,7 @@ class TimeSeries(object):
         return BoolSeries(series)
 
     # fix bug in python 2
-    __nonzero__ = __bool__
+#     __nonzero__ = __bool__
 
     def __repr__(self):
         if len(self.series) == 0:
@@ -226,11 +226,11 @@ class TimeSeries(object):
 
     def __int__(self):
         return int(self.value)
-    
+
     def tolist(self):
         if self.series is not None:
             return self.series.tolist()
-        else: 
+        else:
             return []
 
 
@@ -269,7 +269,7 @@ class DuplicateNumericSeries(NumericSeries):
         except:
             val = series
         # super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
-        super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=type(val)))
+        super().__init__(np.full(size, val, dtype=type(val)))
 
 class MarketDataSeries(NumericSeries):
     """MarketDataSeries
