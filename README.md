@@ -33,7 +33,7 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -U funcat2
 - 最低价：`LOW` `L`
 - 成交量：`VOLUME` `V` `VOL`
 
-### 工具函数
+### 工具函
 
 - n天前的数据：`REF`
 ``` python
@@ -300,9 +300,9 @@ git push
 git checkout dev
 
 # 一句话执行
-git checkout master && git merge dev && git push && git checkout dev
+git push && git checkout master && git merge dev && git push && git checkout dev
 ```
 ### 不用每次输入密码，设置https为ssh登录
 > git remote set-url origin git@github.com:pchaos/funcat2.git
 
-* PS：使用你的用户名
+* PS：上面的“pchaos”使用你的用户名
