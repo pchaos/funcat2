@@ -5,22 +5,32 @@ import talib
 import matplotlib.pyplot as plt
 from funcat.utils import handle_numpy_warning
 
+
 @handle_numpy_warning
 def f(x):
     return np.int(x)
 
 
 class MyTestCase(unittest.TestCase):
+
     @classmethod
-    def setUp(self) -> None:
-        self.close = np.random.random(100)
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.close = np.random.random(100)
 
     def test_ma(self):
         close = self.close
         print(f"数据类型：{type(close)}")
-        output = talib.SMA(close)
+        output = talib.MA(close)
         print(f"输出数据类型：{type(output)}")
-        print(output-close)
+        print(output - close)
+
+    def test_sma(self):
+        close = self.close
+        print(f"数据类型：{type(close)}")
+        output = talib.SMA(close, 10)
+        print(f"输出数据类型：{type(output)}")
+        print(output - close)
 
     def test_raiseexception(self):
         x = np.arange(1, 15.1, 0.1)
@@ -34,6 +44,7 @@ class MyTestCase(unittest.TestCase):
 
         plt.plot(x, f2(x))
         plt.show()
+
 
 if __name__ == '__main__':
     unittest.main()
