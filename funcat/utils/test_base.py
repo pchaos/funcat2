@@ -27,13 +27,13 @@ class MyTestCase(unittest.TestCase):
             print(f"|| --> {get_current_security()},trading dates:{trading_dates[0]}~{trading_dates[-1]}")
         except Exception:
             pass
-        
+
     @classmethod
     def tearDownClass(cls):
         from funcat.utils import FuncCounter
         super(MyTestCase, cls).tearDownClass()
         print(f"调用记录：{FuncCounter()}")
-        
+
     def fakeMarketData(self, arr=None):
         """产生模拟交易数据,便于校验数据
         默认返回MarketDataSeries子类，子类series为np.array(range(100))

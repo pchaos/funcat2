@@ -23,6 +23,7 @@ from .func import (
     MovingAverageSeries,
     WeightedMovingAverageSeries,
     ExponentialMovingAverageSeries,
+    KAMASeries,
     CrossOver,
     minimum,
     maximum,
@@ -75,6 +76,7 @@ MA = MovingAverageSeries
 WMA = WeightedMovingAverageSeries
 EMA = ExponentialMovingAverageSeries
 SMA = SMASeries
+KAMA = KAMASeries
 CCI = CCISeries
 
 SUM = SumSeries
@@ -105,8 +107,6 @@ TROUGHBARS = troughbars
 
 S = set_current_security
 T = set_current_date
-
-
 
 __all__ = [
     "OPEN", "O",

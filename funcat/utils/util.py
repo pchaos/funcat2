@@ -99,3 +99,35 @@ def handle_numpy_warning(func):
     return wrapper
 
 
+import numba
+
+
+@numba.njit
+def shift(arr:np.array, num:int, fill_value=np.nan):
+    """Shift elements in a numpy array
+    https://stackoverflow.com/questions/30399534/shift-elements-in-a-numpy-array
+    """
+    result = np.empty_like(arr)
+    if num > 0:
+        result[:num] = fill_value
+        result[num:] = arr[:-num]
+    elif num < 0:
+        result[num:] = fill_value
+        result[:num] = arr[-num:]
+    else:
+        result[:] = arr
+    return result
+
+
+def rolling_apply(fun, a, w):
+    r = np.empty(a.shape)
+    r.fill(np.nan)
+    for i in range(w - 1, a.shape[0]):
+        r[i] = fun(a[(i - w + 1):i + 1])
+    return r
+
+
+# @numba.njit
+def rolling_sum(arr:np.array, n=4) -> np.array:
+    pre_sum = np.convolve(arr, np.ones(n, dtype=int), 'valid')
+    return np.append(np.array([np.nan] * (n - 1)), pre_sum)

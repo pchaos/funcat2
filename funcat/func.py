@@ -92,7 +92,6 @@ class MovingAverageSeries(OneArgumentSeries):
 class WeightedMovingAverageSeries(OneArgumentSeries):
     """http://www.tadoc.org/indicator/WMA.htm"""
 
-    # func = talib.WMA
     def getFunc(self):
         return talib.WMA
 
@@ -105,10 +104,19 @@ class ExponentialMovingAverageSeries(OneArgumentSeries):
         return talib.EMA
 
 
+class KAMASeries(OneArgumentSeries):
+    """Kaufman's Adaptative Moving Average"""
+
+    def getFunc(self):
+        return talib.KAMA
+
+
 class StdSeries(OneArgumentSeries):
 
     def getFunc(self):
         return talib.STDDEV
+
+
 
 
 class TwoArgumentSeries(ArgumentSeriesBase):
@@ -187,8 +195,6 @@ class SumSeries(NumericSeries):
             series = series.series
             try:
                 series[np.isinf(series)] = 0
-                # series[series == np.inf] = 0
-                # series[series == -np.inf] = 0
                 series = talib.SUM(series, period)
             except Exception as e:
                 raise FormulaException(e)
