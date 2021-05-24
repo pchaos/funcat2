@@ -289,6 +289,7 @@ set_data_backend(BACKEND())
 ```bash
 git clone https://github.com/pchaos/funcat2.git
 cd funcat2
+pip install QUANTAXIS
 git chechkout dev 
 # ... do your self
 ```

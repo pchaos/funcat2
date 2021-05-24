@@ -105,7 +105,41 @@ class ExponentialMovingAverageSeries(OneArgumentSeries):
 
 
 class KAMASeries(OneArgumentSeries):
-    """Kaufman's Adaptative Moving Average"""
+    """Kaufman's Adaptative Moving Average
+    传统的移动均线包括简单移动均线，加权移动均线以及指数式移动均线，它们有着固有的弱点——慢趋势和滞后。
+短周期的均线系统虽然能快速反映期货价格的走势，但是又难以抵抗价格“噪音”的干扰，多数情况下短周期所给出的趋势信号并不准确。
+为了避免短期噪音产生的虚假信号与长期趋势中的滞后，考夫曼提出来“自适应的”均线系统，AMA。AMA可以在市场沿一个方向快速移动的时候，使用快的移动平均值，而在价格在横盘的市场中拉锯时，使用慢速的移动平均值。
+AMA的计算公式为：
+AMA=AMA[1]+C*(PRICE-AMA[1])
+这个公式很像指数移动平均线的公式：
+EMA=EMA[1]+C*(PRICE-EMA[1])，C=2/(N+1)
+AMA的关键在于系数C，要完成抗干扰和滞后性的效果，只需当价格快速单向移动时，将C的值赋值为短周期的指数移动均线的系数，当期货价格成横盘状态时，将C赋值为长周期的指数移动均线的系数即可。
+如何知道价格变动时区间震荡还是单向突破呢？引出三个概念，价格方向、波动性和效率系数。
+价格方向：len个时间周期中价格的净变化。
+direction = price –price[len];
+波动性，市场噪音的数量，计算时使用len个时间周期中所有单周期价格变化的总和。
+volatility = @sum(@abs(price –price[1]), n);
+效率系数：价格方向除以波动性，表示方向移动与噪音移动的比。
+Efficiency_Ratio =direction/volativity;
+
+接下来建立效率系数与C的联系
+整体思路是，趋势明显（ER=1)的时候，系数接近短周期均线系数fastest，波段明显的时候（ER=0)，系数接近长周期系数slowest
+取系数的平方是让平均线更趋近于保守，出现波段的时候应该更加谨慎。
+fastest = 2/(N+1) = 2/(2+1) =0.6667;
+slowest = 2/(N+1) = 2/(30+1) =0.0645;
+smooth = ER*(fastest - slowest)+ slowest;
+c = smooth*smooth;
+
+为了与系统自适应特性保持一致，不能简单的用上穿下穿均线来决定买入卖出。因此要设置一个过滤器。
+过滤器=percentage*@std（AMA-AMA[1],n）
+    @std（series，n）是n个周期标准差
+小的过滤器百分数可以用于较快的交易，比如外汇与期货市场。
+大的过滤器百分数可以用于较慢的交易，比如股票和利率市场。
+通常，n=20
+具体交易规则：
+AMA-@lowest(AMA,n)>过滤器，买入
+@highest（AMA，n）-AMA<过滤器，卖出
+"""
 
     def getFunc(self):
         return talib.KAMA
@@ -115,8 +149,6 @@ class StdSeries(OneArgumentSeries):
 
     def getFunc(self):
         return talib.STDDEV
-
-
 
 
 class TwoArgumentSeries(ArgumentSeriesBase):

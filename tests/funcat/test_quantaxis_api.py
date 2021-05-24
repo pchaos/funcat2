@@ -88,6 +88,16 @@ class TestApiQuantaxis(TestApi):
         # for i in range(n, len(data)):
             # self.assertTrue(np.alltrue(np.round(data.series[i], 2) == np.round(data2[i], 2)), f"{i}, {data.series[i]} {data2[i]}")
 
+    def test_kama_close_high(self):
+        n = 20
+        data = KAMA(CLOSE, n)
+        data2 = KAMA(HIGH, n)
+        m = 1
+        print(f"kama high-kama close:", np.round(data2.series[-n * m:], 2) - np.round(data.series[-n * m:], 2))
+        per =np.round((data2.series[-n * m:] -data.series[-n * m:])/CLOSE.series[-n*m:]*100, 3)
+        print(f"kama high-kama close percent%:", per)
+        print(f"kama参数：{n};前置nan数量：{len(CLOSE)-len(data.trim())}")
+        
     def test_ref(self):
         n = 10
         c1 = REF(C, n)  # n天前的收盘价
