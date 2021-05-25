@@ -264,9 +264,9 @@ class NumericSeries(TimeSeries):
         # else:
         #     return self.__class__(series=self._series[:len(self.series) - index], **self.extra_create_kwargs)
 
-
 class DuplicateNumericSeries(NumericSeries):
 
+    @func_counter
     # FIXME size should come from other series
     def __init__(self, series, size=640000):
         try:
