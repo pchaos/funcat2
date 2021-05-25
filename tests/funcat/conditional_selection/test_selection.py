@@ -5,11 +5,11 @@ import numpy as np
 
 from funcat.api import *
 from funcat.conditional_selection import *
-from funcat.utils import MyTestCase
+from funcat.utils import FuncatTestCase
 # from funcat.context import ExecutionContext
 
 
-class TestSelection(MyTestCase):
+class TestSelection(FuncatTestCase):
     @classmethod
     def setUp(cls) -> None:
         T("20210506")

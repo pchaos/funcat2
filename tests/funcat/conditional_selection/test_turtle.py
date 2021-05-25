@@ -5,10 +5,10 @@ from datetime import date
 from funcat import FOURWEEK, FOURWEEKQTY
 from funcat.api import T, S, set_current_freq, symbol, \
   CLOSE
-from funcat.utils import MyTestCase
+from funcat.utils import FuncatTestCase
 
 
-class TestTurtle(MyTestCase):
+class TestTurtle(FuncatTestCase):
 
     @classmethod
     def setUp(cls) -> None:

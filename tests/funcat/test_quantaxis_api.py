@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from funcat import *
 from funcat.api import UPNDAY, DOWNNDAY, NDAY, KAMA
-from funcat.utils import MyTestCase, shift, rolling_sum
+from funcat.utils import shift, rolling_sum
 from .test_api import TestApi
 
 
@@ -48,7 +48,8 @@ class TestApiQuantaxis(TestApi):
         print(f"kama参数：{n};前置nan数量：{len(CLOSE)-len(data.trim())}")
         
     def test_kama3(self):
-
+        """测试KAMA参数"""
+        
         def kama(price, n=10, pow1=2, pow2=30):
             '''kama indicator 
             accepts pandas dataframe of prices
@@ -56,10 +57,10 @@ class TestApiQuantaxis(TestApi):
 
             absDiffx = np.abs(price - shift(price, 1))  
 
-            ER_num = np.abs(price - shift(price, n))
+            ER_change = np.abs(price - shift(price, n))
             
-            ER_den = rolling_sum(absDiffx, n)
-            ER = ER_num / ER_den
+            ER_sum = rolling_sum(absDiffx, n)
+            ER = ER_change / ER_sum
 
             sc = (ER * (2.0 / (pow1 + 1) - 2.0 / (pow2 + 1.0)) + 2 / (pow2 + 1.0)) ** 2.0
 
@@ -78,15 +79,16 @@ class TestApiQuantaxis(TestApi):
                         answer[i] = answer[i - 1] + sc[i] * (price[i] - answer[i - 1])
             return answer
 
-        n = 20
+        n = 10
         data = KAMA(CLOSE, n)
-        data2 = kama(CLOSE.series, n)
+        pow1, pow2=2, 30
+        data2 = kama(CLOSE.series, n, pow1=pow1, pow2=pow2)
         print(f"\nkama:", np.round(data.series[-20:], 2))
         print(f"kama2:", np.round(data2[-20:], 2))
-        m = 10
-        print(f"kama-kama2:", np.round(data.series[-n * m:], 2) - np.round(data2[-n * m:], 2))
-        # for i in range(n, len(data)):
-            # self.assertTrue(np.alltrue(np.round(data.series[i], 2) == np.round(data2[i], 2)), f"{i}, {data.series[i]} {data2[i]}")
+        m = 15
+        print(f"KAMA-kama:", np.round(data.series[-n * m:], 2) - np.round(data2[-n * m:], 2))
+        print(f"KAMA-kama full data:\n", np.round(data.series - data2, 4))
+        print(f"KAMA paras: {n}, {pow1}, {pow2}")
 
     def test_kama_close_high(self):
         n = 20
@@ -94,10 +96,25 @@ class TestApiQuantaxis(TestApi):
         data2 = KAMA(HIGH, n)
         m = 1
         print(f"kama high-kama close:", np.round(data2.series[-n * m:], 2) - np.round(data.series[-n * m:], 2))
-        per =np.round((data2.series[-n * m:] -data.series[-n * m:])/CLOSE.series[-n*m:]*100, 3)
-        print(f"kama high-kama close percent%:", per)
+        per = np.round((data2.series[-n * m:] - data.series[-n * m:]) / CLOSE.series[-n * m:] * 100, 3)
+        print(f"kama high-kama close percent %:", per)
+        per = np.round((CLOSE.series[-n * m:] - data.series[-n * m:]) / CLOSE.series[-n * m:] * 100, 3)
+        print(f"Close-kama close percent %:", per)
         print(f"kama参数：{n};前置nan数量：{len(CLOSE)-len(data.trim())}")
-        
+
+    def test_kama_close_high2(self):
+        T("20210531")
+        n = 20
+        data = KAMA(LOW, n)
+        data2 = KAMA(HIGH, n)
+        m = 1
+        print(f"kama high-kama close:", np.round(data2.series[-n * m:], 2) - np.round(data.series[-n * m:], 2))
+        per = np.round((data2.series[-n * m:] - data.series[-n * m:]) / CLOSE.series[-n * m:] * 100, 3)
+        print(f"kama high-kama low percent %:", per)
+        per = np.round((CLOSE.series[-n * m:] - data.series[-n * m:]) / CLOSE.series[-n * m:] * 100, 3)
+        print(f"Close-kama low percent %:", per)
+        print(f"kama参数：{n};前置nan数量：{len(CLOSE)-len(data.trim())}")
+                
     def test_ref(self):
         n = 10
         c1 = REF(C, n)  # n天前的收盘价

@@ -3,10 +3,10 @@ import unittest
 import numpy as np
 from funcat import *
 from funcat.api import UPNDAY, DOWNNDAY, NDAY, KAMA
-from funcat.utils import MyTestCase
+from funcat.utils import FuncatTestCase
 
 
-class TestApi(MyTestCase):
+class TestApi(FuncatTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.setBackend()

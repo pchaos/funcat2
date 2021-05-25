@@ -19,12 +19,12 @@ from sklearn import cluster, covariance, manifold
 
 from funcat import *
 from funcat.api import UPNDAY, DOWNNDAY, NDAY
-from funcat.utils import MyTestCase
+from funcat.utils import FuncatTestCase
 
 print(__doc__)
 
 
-class TestPlotStockSZ50(MyTestCase):
+class TestPlotStockSZ50(FuncatTestCase):
     def get_symbola__from_block(self, blockname="上证50"):
         """默认返回上证50板块哦列表、
         """
