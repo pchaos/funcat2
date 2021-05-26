@@ -3,6 +3,7 @@ import unittest
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import numpy as np
+from pprint import pprint as print
 from funcat import *
 from funcat.api import *
 from funcat.context import ExecutionContext
@@ -787,9 +788,92 @@ class TestFuncat2TestCase(FuncatTestCase):
         data = selectV(
             stage2,
             start_date=20210423,
+            end_date=20210428,
+        )
+        print(f"2nd stage：\n{data}\n查询到数量：{len(data)}")
+
+    def _getmas(self, a_time_serie):
+      ma50 = MA(a_time_serie, 50)
+      ma150 = MA(a_time_serie, 150)
+      ma200 = MA(a_time_serie, 200)
+      return ma50, ma150, ma200
+
+    def test_3_compare(self):
+        """测试stage1, stage2两种写法。
+        最后stage1的结果是正确的，stage2的结果错误。
+        stage2:当前一个判断ma50>ma150,并且ma200>0,和预期的判断不一样;见stage3
+        """
+
+        def stage1(a_time_serie):
+          ma50, ma150, ma200 = self._getmas(a_time_serie)
+          return (ma50 > ma150) & (ma150 > ma200)
+
+        def stage2(a_time_serie):
+          ma50, ma150, ma200 = self._getmas(a_time_serie)
+          return ma50 > ma150 > ma200
+
+        def stage3(a_time_serie):
+          ma50, ma150, ma200 = self._getmas(a_time_serie)
+          return (ma50 > ma150) & (ma200 > 0)
+         
+        def compare_3_var(arr):
+          fakedata = self.fakeMarketData(arr)
+          # fakedata = self.fakeMarketData(arr)*1000
+          # fakedata._series = np.round(fakedata.series*1000, 3)
+          s1 = stage1(fakedata)
+          s2 = stage2(fakedata)
+          if not np.alltrue(s1.series == s2.series):
+            s = s1 == s2
+            print(s2.series[-20:])
+            print(f"stage1 vs stage2 not all true\n{len(s)}\n:{s.series}")
+            for i in range(len(s1)):
+              ma50, ma150, ma200 = self._getmas(fakedata)
+              if s1 is not None and s1.series[i] != s2.series[i]:
+                print(f"{i}, {s1.series[i]}, {s2.series[i]}, {ma50.series[i]}, {ma150.series[i]}, {ma200.series[i]}")
+              s3 = stage3(fakedata)
+              self.assertTrue(np.alltrue(s3.series == s3.series), f"input:{arr}")
+            return s
+          self.assertTrue(np.alltrue(s1.series == s2.series), f"input:{arr}")
+          print(s1.series[-20:])
+          return None
+
+        arr = np.array(range(300))
+        compare_3_var(arr)
+        arr = np.array(np.random.random(300))
+        arr = np.round(arr * 1000, 3)
+        compare_3_var(arr)
+
+    def test_3_compare2(self):
+
+        def stage1():
+            ma50 = MA(C, 50)
+            ma150 = MA(C, 150)
+            ma200 = MA(C, 200)
+            ml = LLV(LOW, 250)
+            mm = HHV(H, 250)
+            return (ma50 > ma150) & (ma150 > ma200)
+          
+        def stage2():
+            ma50 = MA(C, 50)
+            ma150 = MA(C, 150)
+            ma200 = MA(C, 200)
+            ml = LLV(LOW, 250)
+            mm = HHV(H, 250)
+            return ma50 > ma150 > ma200
+
+        data = selectV(
+            stage2,
+            start_date=20210423,
             end_date=20210427,
         )
-        print(f"2nd stage：\n{data}\n{len(data)}")
+
+        data2 = selectV(
+            stage2,
+            start_date=20210423,
+            end_date=20210427,
+        )
+        print(f"2nd stage1：\n{data}\n查询到数量：{len(data)}")
+        print(f"2nd stage2：\n{data2}\n查询到数量：{len(data2)}")
 
     def test_finacial(self):
         """总市值<(总资产-负债总额)

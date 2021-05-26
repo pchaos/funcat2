@@ -178,11 +178,11 @@ def selectV(func, start_date="2016-10-01", end_date=None, callback=print, order_
             flag = func()
             data_backend = ExecutionContext.get_data_backend()
             dates = data_backend.get_trading_dates(start_date, end_date, order_book_id)
-            minLen = min(len(flag), len(dates))
-            flag_true = flag.series[-minLen:][flag.series[-minLen:]]
-            # if minLen > 0 and len(flag_true) > 0:
+            real_length = min(len(flag), len(dates))
+            flag_true = flag.series[-real_length:][flag.series[-real_length:]]
+            # if real_length > 0 and len(flag_true) > 0:
             if len(flag_true) > 0:
-                return zip(flag_true, np.array(dates, dtype=int)[-minLen:][flag.series[-minLen:]])
+                return zip(flag_true, np.array(dates, dtype=int)[-real_length:][flag.series[-real_length:]])
             else:
                 return zip()
             # callback(date, order_book_id, symbol(order_book_id))
