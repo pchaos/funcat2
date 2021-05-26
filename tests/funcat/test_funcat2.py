@@ -3,7 +3,7 @@ import unittest
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import numpy as np
-from pprint import pprint as print
+# from pprint import pprint as print
 from funcat import *
 from funcat.api import *
 from funcat.context import ExecutionContext

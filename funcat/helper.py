@@ -8,7 +8,6 @@ from tqdm.asyncio import tqdm
 from .context import ExecutionContext, set_current_security, set_current_date, symbol, set_start_date, \
     get_current_security
 from .utils import getsourcelines, FormulaException, get_int_date
-from pandas.core.sorting import _reorder_by_uniques
 
 __all__ = ["select",
            "select2",
