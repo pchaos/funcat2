@@ -2,6 +2,7 @@
 
 import six
 import numpy as np
+import pandas as pd
 from functools import lru_cache
 
 from .utils import wrap_formula_exc, FormulaException, func_counter
@@ -241,13 +242,21 @@ class NumericSeries(TimeSeries):
         return self._series
 
     def tolist(self):
-        if self.series is not None:
-            return self.series.tolist()
-        else:
-            return []
+      """返回list"""
+      if self.series is not None:
+          return self.series.tolist()
+      else:
+          return []
+    
+    def todf(self):
+      """返回pd.Dataframe"""
+      if self.series is not None:
+        return pd.DataFrame(self.series)
+      else:
+        return pd.DataFrame([])
     
     def trim(self):
-        """删除nan"""
+        """删除series np.nan"""
         self._series = self._series[~np.isnan(self._series)]
         return self
         
@@ -263,6 +272,7 @@ class NumericSeries(TimeSeries):
         #     return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
         # else:
         #     return self.__class__(series=self._series[:len(self.series) - index], **self.extra_create_kwargs)
+
 
 class DuplicateNumericSeries(NumericSeries):
 
@@ -333,6 +343,12 @@ class MarketDataSeries(NumericSeries):
     def name(self):
         raise NotImplementedError
 
+    def todf(self):
+      """返回pd.Dataframe"""
+      df = super().todf()
+      df.columns = [self.name]
+      return df
 
+      
 class BoolSeries(NumericSeries):
     pass

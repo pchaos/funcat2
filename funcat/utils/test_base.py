@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
-
 import numpy as np
+__updated__ = "2021-05-27"
 
 
 class FuncatTestCase(unittest.TestCase):
@@ -10,6 +10,7 @@ class FuncatTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        """默认使用QuantaxisDataBackend"""
         from funcat import QuantaxisDataBackend as BACKEND, set_data_backend
         set_data_backend(BACKEND())
         cls.BE = BACKEND()
@@ -18,13 +19,15 @@ class FuncatTestCase(unittest.TestCase):
     def tearDown(self):
         super().tearDown(self)
         try:
-            # 打印当前交易信息
+            # 打印当前统计信息
             from funcat import get_start_date, get_current_date, get_current_security
             from funcat.context import ExecutionContext
             start_date = get_start_date()
             current_date = get_current_date()
-            trading_dates = ExecutionContext.get_data_backend().get_trading_dates(start=start_date, end=current_date)
-            print(f"|| --> {get_current_security()},trading dates:{trading_dates[0]}~{trading_dates[-1]}")
+            trading_dates = ExecutionContext.get_data_backend(
+            ).get_trading_dates(start=start_date, end=current_date)
+            print(
+                f"|| --> {get_current_security()},trading dates:{trading_dates[0]}~{trading_dates[-1]}")
         except Exception:
             pass
 
@@ -40,12 +43,14 @@ class FuncatTestCase(unittest.TestCase):
         """
         from funcat.time_series import MarketDataSeries
         if arr is None:
-            fakeData = np.array(range(100))
+            # fakeData = np.array(range(100))
+            fakeData = np.arange(100)
         else:
             fakeData = arr
         name = "fake"
         dtype = float
-        cls = type("{}Series".format(name.capitalize()), (MarketDataSeries,), {"name": name, "dtype": dtype})
+        cls = type("{}Series".format(name.capitalize()),
+                   (MarketDataSeries,), {"name": name, "dtype": dtype})
         obj = cls(dynamic_update=False)
         obj._series = fakeData
         print(f"{obj}, {obj.series}")

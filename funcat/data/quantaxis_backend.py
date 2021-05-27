@@ -82,8 +82,8 @@ class QuantaxisDataBackend(DataBackend):
             df.reset_index(drop=True, inplace=True)
             # getprice字段：Index(['date', 'open', 'close', 'high', 'low', 'volume', 'datetime'], dtype='object')
             # print(f"quantaxis getprice字段：{df.columns}")
-            arr = df.to_records()
-        return arr
+            result_records = df.to_records()
+        return result_records
 
     # @lru_cache(maxsize=4096)
     def get_stock_price(self, order_book_id, start, end, freq):
