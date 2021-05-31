@@ -8,6 +8,7 @@ from .util import FormulaException, wrap_formula_exc, getsourcelines, get_int_da
 from .singletion import FuncCounter, func_counter
 from .async_utils import get_async_response, check_ping
 from .test_base import FuncatTestCase
+from .delist import DeList
 
 __all__ = ["tdx2func",
            "tdx2python",
@@ -31,5 +32,6 @@ __all__ = ["tdx2func",
            "get_async_response",
            "check_ping",
            "FuncatTestCase",
-           ]
 
+           "DeList",
+           ]
