@@ -7,7 +7,8 @@ from functools import lru_cache
 
 from .utils import wrap_formula_exc, FormulaException, func_counter
 from .context import ExecutionContext
-# from pandas.tests.arithmetic.test_numeric import ser_or_index
+
+__updated__ = "2021-06-01"
 
 
 @func_counter
@@ -16,8 +17,8 @@ def get_bars(freq):
     @lru_cache(maxsize=256)
     def _check_return_none(order_book_id, data_backend, current_date, start_date, freq):
         # if security is suspend, just skip
-        # if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != current_date and freq not in ("W", "M"):
-        trading_dates = ExecutionContext.get_data_backend().get_trading_dates(start=start_date, end=current_date)
+        trading_dates = ExecutionContext.get_data_backend(
+        ).get_trading_dates(start=start_date, end=current_date)
         if data_backend.skip_suspended and bars["datetime"][-1] // 1000000 != trading_dates[-1] and freq not in (
                 "W", "M"):
             return order_book_id
@@ -30,13 +31,10 @@ def get_bars(freq):
     start_date = ExecutionContext.get_start_date()
 
     try:
-        bars = data_backend.get_price(order_book_id, start=start_date, end=current_date, freq=freq)
+        bars = data_backend.get_price(
+            order_book_id, start=start_date, end=current_date, freq=freq)
     except KeyError:
         return np.array([])
-
-    # return empty array direct
-    # if len(bars) == 0:
-    #     return bars
 
     if len(bars) > 0 and _check_return_none(order_book_id, data_backend, current_date, start_date, freq):
         return np.array([])
@@ -62,6 +60,7 @@ def get_value(val):
 
 @func_counter
 def get_series(val, size=640000):
+    """todo 如果不再需要原始数组，则应在切片后调用 copy"""
     if isinstance(val, TimeSeries):
         return val.series
     else:
@@ -242,27 +241,27 @@ class NumericSeries(TimeSeries):
         return self._series
 
     def tolist(self):
-      """返回list"""
-      if self.series is not None:
-          return self.series.tolist()
-      else:
-          return []
-    
+        """返回list"""
+        if self.series is not None:
+            return self.series.tolist()
+        else:
+            return []
+
     def todf(self):
-      """返回pd.Dataframe"""
-      if self.series is not None:
-        return pd.DataFrame(self.series)
-      else:
-        return pd.DataFrame([])
-    
+        """返回pd.Dataframe"""
+        if self.series is not None:
+            return pd.DataFrame(self.series)
+        else:
+            return pd.DataFrame([])
+
     def trim(self):
         """删除series np.nan"""
         self._series = self._series[~np.isnan(self._series)]
         return self
-        
+
     def __getitem__(self, index):
         assert (isinstance(index, int) and index >= 0) \
-               or (isinstance(index, NumericSeries))
+            or (isinstance(index, NumericSeries))
 
         if isinstance(index, NumericSeries):
             index = int(index.value)
@@ -271,7 +270,8 @@ class NumericSeries(TimeSeries):
         # if index == 1:
         #     return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
         # else:
-        #     return self.__class__(series=self._series[:len(self.series) - index], **self.extra_create_kwargs)
+        # return self.__class__(series=self._series[:len(self.series) - index],
+        # **self.extra_create_kwargs)
 
 
 class DuplicateNumericSeries(NumericSeries):
@@ -283,7 +283,6 @@ class DuplicateNumericSeries(NumericSeries):
             val = series[-1]
         except:
             val = series
-        # super(DuplicateNumericSeries, self).__init__(np.full(size, val, dtype=np.float64))
         super().__init__(np.full(size, val, dtype=type(val)))
 
 
@@ -325,7 +324,8 @@ class MarketDataSeries(NumericSeries):
             assert period > 0
             freq = index
             # 因为是行情数据，所以需要动态更新
-            time_series = self.__class__(dynamic_update=True, freq=freq, **self.extra_create_kwargs)
+            time_series = self.__class__(
+                dynamic_update=True, freq=freq, **self.extra_create_kwargs)
             return time_series
 
         return self.__class__(series=self.series[:len(self.series) - index], **self.extra_create_kwargs)
@@ -344,11 +344,11 @@ class MarketDataSeries(NumericSeries):
         raise NotImplementedError
 
     def todf(self):
-      """返回pd.Dataframe"""
-      df = super().todf()
-      df.columns = [self.name]
-      return df
+        """返回pd.Dataframe"""
+        df = super().todf()
+        df.columns = [self.name]
+        return df
 
-      
+
 class BoolSeries(NumericSeries):
     pass
