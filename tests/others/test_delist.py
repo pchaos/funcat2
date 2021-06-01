@@ -5,7 +5,7 @@ import akshare as ak
 from funcat.utils import FuncatTestCase
 from funcat.utils import DeList
 
-__updated__ = "2021-05-31"
+__updated__ = "2021-06-01"
 
 
 class TestDeList(FuncatTestCase):
@@ -13,12 +13,12 @@ class TestDeList(FuncatTestCase):
 
     def test_stock_info_sh_delist(self):
         df = DeList.stock_info_sh_delist()
-        print(df[["COMPANY_CODE", "LISTING_DATE", "CHANGE_DATE"]])
+        print(df[["code", "LISTING_DATE", "CHANGE_DATE"]])
 
     def test_stock_info_sz_delist(self):
-        df = ak.stock_info_sz_delist(indicator="终止上市公司")
+        df = DeList.stock_info_sz_delist(indicator="终止上市公司")
         print(df)
-        print(df[["证券代码", "上市日期", "终止上市日期"]])
+        print(df[["code", "LISTING_DATE", "CHANGE_DATE"]])
 
 
 if __name__ == '__main__':
