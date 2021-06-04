@@ -193,6 +193,67 @@ class TestFuncat2TestCase(unittest.TestCase):
         print(
             f"对于三维数组,数组两个轴axis为（x，y），对应的下标为（0,1），np.transpose()传入的参数为（1,0），即将原数组的0,1轴互换。综上，对二维数组的transpose操作就是对原数组的转置操作。：{ t.transpose()}")
 
+    def test_concatenate(self):
+        # Program to concatenate two 2D arrays column-wise
+        # Creating two 2D arrays
+        arr1 = np.arange(1, 10).reshape(3, 3)
+        arr2 = np.arange(10, 19).reshape(3, 3)
+        print(f"arr1: {arr1}")
+        print(f"arr2: {arr2}")
+
+        # Concatenating operation
+        # axis = 1 implies that it is being done column-wise
+        arr = np.concatenate((arr1, arr2), axis=1)
+        print(f"np.concatenate((arr1, arr2), axis=1): {arr}")
+
+        # axis = 0 implies that it is being done row-wise
+        arr = np.concatenate((arr1, arr2), axis=0)
+        print(f"np.concatenate((arr1, arr2), axis=0): {arr}")
+
+    def test_stack(self):
+        arr1 = np.arange(1, 10).reshape(3, 3)
+        arr2 = np.arange(10, 19).reshape(3, 3)
+        print(f"arr1: {arr1}")
+        print(f"arr2: {arr2}")
+        # Concatenating operation
+        # axis = 1 implies that it is being
+        # done row-wise
+        arr = np.stack((arr1, arr2), axis=1)
+        print(f"np.stack((arr1, arr2), axis=1): {arr}")
+
+        # Concatenating operation
+        # axis = 2 implies that it is being done
+        # along the height
+        arr = np.stack((arr1, arr2), axis=2)
+        print(f"np.stack((arr1, arr2), axis=2): {arr}")
+
+    def test_hstack(self):
+        arr1 = np.arange(1, 10).reshape(3, 3)
+        arr2 = np.arange(10, 19).reshape(3, 3)
+        print(f"arr1: {arr1}")
+        print(f"arr2: {arr2}")
+        # Concatenating operation
+        arr = np.hstack((arr1, arr2))
+        print(f"np.hstack((arr1, arr2)): {arr}")
+
+    def test_vstack(self):
+        arr1 = np.arange(1, 10).reshape(3, 3)
+        arr2 = np.arange(10, 19).reshape(3, 3)
+        print(f"arr1: {arr1}")
+        print(f"arr2: {arr2}")
+        # Concatenating operation
+        arr = np.vstack((arr1, arr2))
+        print(f"np.vstack(arr1, arr2): {arr}")
+
+    def test_dstack(self):
+        arr1 = np.arange(1, 10).reshape(3, 3)
+        arr2 = np.arange(10, 19).reshape(3, 3)
+        print(f"arr1: {arr1}")
+        print(f"arr2: {arr2}")
+        # Concatenating operation
+        arr = np.dstack((arr1, arr2))
+        print(f"np.dstack(arr1, arr2): {arr}")
+
 
 if __name__ == '__main__':
     unittest.main()
