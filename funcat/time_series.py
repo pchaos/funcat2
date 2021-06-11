@@ -8,7 +8,7 @@ from functools import lru_cache
 from .utils import wrap_formula_exc, FormulaException, func_counter
 from .context import ExecutionContext
 
-__updated__ = "2021-06-01"
+__updated__ = "2021-06-11"
 
 
 @func_counter
@@ -226,6 +226,10 @@ class TimeSeries(object):
 
     def __int__(self):
         return int(self.value)
+
+    def shift(self, n: int=1, fill_value=np.nan):
+        from .utils import shift
+        return self.__class__(shift(self.series, n, fill_value))
 
 
 class NumericSeries(TimeSeries):
