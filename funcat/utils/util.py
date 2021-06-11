@@ -7,6 +7,8 @@ import functools
 import numpy as np
 from .singletion import FuncCounter
 
+__updated__ = "2021-06-11"
+
 
 class FormulaException(Exception):
     pass
@@ -103,7 +105,7 @@ import numba
 
 
 @numba.njit
-def shift(arr: np.array, num: int, fill_value=np.nan):
+def shift(arr: np.array, num: int=1, fill_value=np.nan):
     """Shift elements in a numpy array
     https://stackoverflow.com/questions/30399534/shift-elements-in-a-numpy-array
     """

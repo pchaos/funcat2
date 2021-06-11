@@ -1,10 +1,11 @@
-
 # -*- coding: utf-8 -*-
 import unittest
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import numpy as np
 from pprint import pprint as print
+
+__updated__ = "2021-06-11"
 
 
 class TestFuncat2TestCase(unittest.TestCase):
