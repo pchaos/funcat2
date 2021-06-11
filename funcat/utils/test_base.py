@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 import numpy as np
-__updated__ = "2021-05-27"
+import pandas as pd
+from matplotlib import pyplot as plt
+
+__updated__ = "2021-06-11"
 
 
 class FuncatTestCase(unittest.TestCase):
@@ -55,3 +58,20 @@ class FuncatTestCase(unittest.TestCase):
         obj._series = fakeData
         print(f"{obj}, {obj.series}")
         return obj
+
+    def show(self, x, y):
+        from ..api import DATETIME
+
+        def prepare_plt(var):
+            if var is DATETIME:
+                var = var.series // 1000000
+                var = pd.to_datetime(var.astype(str)).values
+            elif hasattr(var, "series"):
+                var = var.series
+            return var
+        x = prepare_plt(x)
+        y = prepare_plt(y)
+
+        # plt.figure(figsize=(15, 9))
+        plt.plot(x, y)
+        plt.show()
