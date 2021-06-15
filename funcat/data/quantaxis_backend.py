@@ -186,6 +186,8 @@ class QuantaxisDataBackend(DataBackend):
         # "sz"), self.code_name_map.get((code, "sh"))))
 
     def finacial(self, n: int):
-        res = QA.QA_fetch_financial_report(['000001', '600100'], [
-                                           '2017-03-31', '2017-06-30', '2017-09-31', '2017-12-31', '2018-03-31'])
+        """todo 获取专业金融数据
+        """
+        res = self.backend().QA_fetch_financial_report(['000001', '600100'], [
+            '2017-03-31', '2017-06-30', '2017-09-31', '2017-12-31', '2018-03-31'])
         return res
