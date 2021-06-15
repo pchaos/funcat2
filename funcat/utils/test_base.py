@@ -72,6 +72,6 @@ class FuncatTestCase(unittest.TestCase):
         x = prepare_plt(x)
         y = prepare_plt(y)
 
-        # plt.figure(figsize=(15, 9))
+        plt.figure(figsize=(15, 9))
         plt.plot(x, y)
         plt.show()
