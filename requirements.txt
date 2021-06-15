@@ -7,3 +7,4 @@ TA-Lib
 cached-property
 tqdm
 py-singleton
+backtrader
