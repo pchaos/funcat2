@@ -6,6 +6,8 @@ from functools import lru_cache
 from .backend import DataBackend
 from ..utils import get_str_date_from_int, get_int_date
 
+__updated__ = "2021-06-15"
+
 
 class QuantaxisDataBackend(DataBackend):
 
@@ -23,7 +25,8 @@ class QuantaxisDataBackend(DataBackend):
     @cached_property
     def stock_basics(self):
         df_index = self.backend.QA_fetch_index_list_adv()
-        df_index["code"] = df_index["code"] + df_index["sse"].apply(lambda x: ".XSHG" if x == "sh" else ".XSHE")
+        df_index["code"] = df_index["code"] + \
+            df_index["sse"].apply(lambda x: ".XSHG" if x == "sh" else ".XSHE")
         df_etf = self.backend.QA_fetch_etf_list()
         df_etf["code"] = df_etf["code"].apply(lambda x: f"{x}.etf")
 
@@ -48,7 +51,8 @@ class QuantaxisDataBackend(DataBackend):
         :returns:
         :rtype: numpy.rec.array
         """
-        # if order_book_id.endswith(".XSHG") or order_book_id.endswith(".XSHE"):
+        # if order_book_id.endswith(".XSHG") or
+        # order_book_id.endswith(".XSHE"):
         if len(order_book_id) > 6:
             # 判断指数
             is_index = True
@@ -57,7 +61,7 @@ class QuantaxisDataBackend(DataBackend):
                 data = self.get_index_price(order_book_id, start, end, freq)
             else:
                 data = self.get_stock_price(order_book_id, start, end, freq)
-                
+
             if freq == "W":
                 df = data.week.rename(columns={"vol": "volume"})
             elif freq == "M":
@@ -72,7 +76,8 @@ class QuantaxisDataBackend(DataBackend):
                     row["date"].split(" ")[1].replace(":", "")) * 100, axis=1)
         elif freq in ("1d", "W", "M"):
             dt = df.index.levels[0].tolist()
-            df["date"] = pd.DataFrame({"datetime": [f"{dt[i]:%Y-%m-%d}" for i in range(len(dt))]}, index=df.index)
+            df["date"] = pd.DataFrame(
+                {"datetime": [f"{dt[i]:%Y-%m-%d}" for i in range(len(dt))]}, index=df.index)
             df["datetime"] = pd.DataFrame({"datetime": [1000000 * (10000 * dt[i].year + 100 * dt[i].month + dt[i].day)
                                                         for i in range(len(dt))]}, index=df.index)
             # df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
@@ -126,7 +131,6 @@ class QuantaxisDataBackend(DataBackend):
 
     @lru_cache()
     def get_order_book_id_list(self, code_type="stock") -> list:
-
         """获取股票代码列表
         Args:
             code_type (str): 代码类型;取值范围： "stock, "etf", "index", "all";
@@ -150,7 +154,6 @@ class QuantaxisDataBackend(DataBackend):
         ]
         return order_book_id_list
 
-
     @lru_cache(maxsize=100)
     def get_trading_dates(self, start, end, order_book_id="000001.XSHG") -> list:
         """获取所有的交易日
@@ -168,7 +171,6 @@ class QuantaxisDataBackend(DataBackend):
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 
-
     @lru_cache(maxsize=6000)
     def symbol(self, order_book_id):
         """获取order_book_id对应的名字
@@ -180,4 +182,10 @@ class QuantaxisDataBackend(DataBackend):
         # todo 转化etf index
         return f'{self.code_name_map.get(order_book_id)}'
         # return f'{self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh")))}'
-        # return "{}[{}]".format(order_book_id, self.code_name_map.get((code, "sz"), self.code_name_map.get((code, "sh"))))
+        # return "{}[{}]".format(order_book_id, self.code_name_map.get((code,
+        # "sz"), self.code_name_map.get((code, "sh"))))
+
+    def finacial(self, n: int):
+        res = QA.QA_fetch_financial_report(['000001', '600100'], [
+                                           '2017-03-31', '2017-06-30', '2017-09-31', '2017-12-31', '2018-03-31'])
+        return res
