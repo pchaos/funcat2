@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-__updated__ = "2021-06-11"
+__updated__ = "2021-06-15"
 
 
 class FuncatTestCase(unittest.TestCase):
@@ -60,6 +60,7 @@ class FuncatTestCase(unittest.TestCase):
         return obj
 
     def show(self, x, y):
+        """x,y画图"""
         from ..api import DATETIME
 
         def prepare_plt(var):
