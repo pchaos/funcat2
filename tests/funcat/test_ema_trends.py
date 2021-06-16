@@ -25,8 +25,14 @@ def condition_ema_ema2(n: int=13, m: int=55):
     return (CLOSE > EMA(CLOSE, n)) & (EMA(CLOSE, m) > REF(EMA(CLOSE, m), n))
 
 
-def condition_kama_ema2(n: int=10, m: int=55):
+def condition_kama_ema(n: int=10, m: int=21):
     return (CLOSE > KAMA(CLOSE, n)) & (EMA(CLOSE, m) > REF(EMA(CLOSE, m), n))
+
+
+def condition_kama_ema2(n: int=10, m: float =0.1):
+    kman = KAMA(CLOSE, n)
+    amastd = STD(kman, 20)
+    return (CLOSE > kman) & (CLOSE > kman + m * amastd)
 
 
 class Test_ema_trend(FuncatTestCase):
@@ -144,6 +150,54 @@ class Test_ema_trend(FuncatTestCase):
         print(f"percent:{result}")
         result = np.array(result)
         print(f"percent {result.shape}:{np.array(result)}")
+
+    def test_condition_kama_ema(self):
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        data = self.select_conditions(codes, func=condition_kama_ema)
+        lastdata = self.show_last(data)
+        lastcodes = []
+        for i, item in enumerate(lastdata):
+            lastcodes.append(item['code'])
+        n = 13
+        result = []
+        if len(lastcodes) > 0:
+            for i, item in enumerate(lastcodes):
+                S(item)
+                try:
+                    c = CLOSE / REF(CLOSE, n)
+                    result.append([item, np.round(c.value, 3)])
+                except Exception as e:
+                    print(f"{item}计算错误！")
+        print(f"percent:{result}")
+        result = np.array(result)
+        print(f"percent {result.shape}:{np.array(result)}")
+
+    def test_condition_kama_ema2(self):
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        data = self.select_conditions(codes, func=condition_kama_ema2)
+        lastdata = self.show_last(data)
+        lastcodes = []
+        for i, item in enumerate(lastdata):
+            lastcodes.append(item['code'])
+        n = 20
+        result = []
+        if len(lastcodes) > 0:
+            for i, item in enumerate(lastcodes):
+                S(item)
+                try:
+                    c = CLOSE / REF(CLOSE, n)
+                    result.append((item, np.round(c.value, 3)))
+                except Exception as e:
+                    print(f"{item}计算错误！")
+        print(f"percent:{result}")
+        dtype = [('code', 'S10'), ('percent', float)]
+        result_np = np.array(result, dtype=dtype)
+        print(f"percent numpy: {result_np.shape}:{result_np}")
+        sorted_result = np.sort(result_np, order='percent')
+        print(
+            f"percent ordered: {sorted_result.shape}:{sorted_result}")
 
 
 if __name__ == '__main__':

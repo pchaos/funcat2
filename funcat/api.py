@@ -12,7 +12,9 @@
 """
 import numpy as np
 
-from .time_series import MarketDataSeries, NumericSeries   
+__updated__ = "2021-06-16"
+
+from .time_series import MarketDataSeries, NumericSeries
 
 from .func import (
     SumSeries,
@@ -65,7 +67,8 @@ from .helper import select, select2, selectAsync, backtest, zig_helper
 for name in ["open", "high", "low", "close", "volume", "datetime"]:
     # dtype = np.float64 if name != "datetime" else np.uint64
     dtype = float if name != "datetime" else int
-    cls = type("{}Series".format(name.capitalize()), (MarketDataSeries,), {"name": name, "dtype": dtype})
+    cls = type("{}Series".format(name.capitalize()),
+               (MarketDataSeries,), {"name": name, "dtype": dtype})
     obj = cls(dynamic_update=True)
     for var in [name[0], name[0].upper(), name.upper()]:
         globals()[var] = obj
@@ -121,6 +124,7 @@ __all__ = [
     "MA",
     "EMA",
     "WMA",
+    "KAMA",
 
     "SUM",
     "ABS",
