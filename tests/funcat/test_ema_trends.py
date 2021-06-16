@@ -3,12 +3,14 @@ import unittest
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+from functools import lru_cache
 from funcat import *
 from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-15"
+__updated__ = "2021-06-16"
 
 
 def condition_ema(n: int=13):
@@ -23,28 +25,48 @@ def condition_ema_ema2(n: int=13, m: int=55):
     return (CLOSE > EMA(CLOSE, n)) & (EMA(CLOSE, m) > REF(EMA(CLOSE, m), n))
 
 
+def condition_kama_ema2(n: int=10, m: int=55):
+    return (CLOSE > KAMA(CLOSE, n)) & (EMA(CLOSE, m) > REF(EMA(CLOSE, m), n))
+
+
 class Test_ema_trend(FuncatTestCase):
+    @classmethod
+    def loadFromFile(cls):
+        filename = "etf.txt"
+        currDir = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".")
+        fullname = os.path.join(f"{currDir}", filename)
+        print(fullname)
+        if os.path.exists(fullname):
+            with open(fullname, "r") as f:
+                cls.codes = f.readlines()  # print(cls.codes[:10])
+        for i, item in enumerate(cls.codes):
+            cls.codes[i] = f"{ item[:6] }.etf"
+        return cls.codes
+
     @classmethod
     def setUpClass(cls)->None:
         super(Test_ema_trend, cls).setUpClass()
         cls.codes = ['510500', '159915', '510300',
-                     "512400", "512800", "002124"]
+                     "512400", "512800", "512760", "515050"]
         for i, item in enumerate(cls.codes):
-            cls.codes[i] = f"{item}.etf"
+            cls.codes[i] = f"{ item[:6] }.etf"
 
-    def show_last(self, arr):
+    def show_last(self, arr: np.array, last_n=-1):
         from funcat import get_start_date, get_current_date, get_current_security
         from funcat.context import ExecutionContext
         current_date = get_current_date()
         start_date = current_date - 10000
         trading_dates = ExecutionContext.get_data_backend(
         ).get_trading_dates(start=start_date, end=current_date)
-        lastday = trading_dates[-1]
+        lastday = trading_dates[last_n]
         result = []
         for i, item in enumerate(arr):
             if item['date'] == lastday:
                 result.append(i)
-        return arr[result]
+        if arr.shape[0] > 0:
+            return arr[result]
+        else:
+            return np.array([])
 
     def test_condition_ema(self):
         data = selectV(condition_ema,
@@ -75,13 +97,53 @@ class Test_ema_trend(FuncatTestCase):
         print(f"condition_ema_ema results:{data}")
         print(f"last day status:{self.show_last(data)}")
 
-    def test_condition_ema_ema3(self):
-        data = selectV(condition_ema_ema2,
-                       start_date=20210101,
+    def select_conditions(self, codes, last_n=-1, func=condition_ema_ema2):
+        data = selectV(func, start_date=20210101,
                        end_date=20210704,
-                       order_book_id_list=self.codes)
-        print(f"condition_ema_ema results:{data}")
-        print(f"last day status:{self.show_last(data)}")
+                       order_book_id_list=codes)
+        # print(f"condition_ema_ema results:{data}")
+        print(f"total:{len(codes)}")
+        print(
+            f"last day status {self.show_last(data, last_n).shape[0]} :{self.show_last(data, last_n)}")
+        return data
+
+    def test_condition_ema_ema3(self):
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        self.select_conditions(codes)
+
+    def test_condition_ema_ema3_2(self):
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        self.select_conditions(codes)
+        self.select_conditions(codes, last_n=-2)
+
+    def test_condition_ema_ema4(self):
+        codes = ["501078.etf"]
+        # codes = ["588000.etf"]
+        self.select_conditions(codes)
+
+    def test_condition_ema_ema5(self):
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        data = self.select_conditions(codes)
+        lastdata = self.show_last(data)
+        lastcodes = []
+        for i, item in enumerate(lastdata):
+            lastcodes.append(item['code'])
+        n = 13
+        result = []
+        if len(lastcodes) > 0:
+            for i, item in enumerate(lastcodes):
+                S(item)
+                try:
+                    c = CLOSE / REF(CLOSE, n)
+                    result.append([item, np.round(c.value, 3)])
+                except Exception as e:
+                    print(f"{item}计算错误！")
+        print(f"percent:{result}")
+        result = np.array(result)
+        print(f"percent {result.shape}:{np.array(result)}")
 
 
 if __name__ == '__main__':
