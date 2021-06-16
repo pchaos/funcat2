@@ -47,7 +47,7 @@ class RQDataBackend(DataBackend):
 
     @lru_cache()
     def get_order_book_id_list(self):
-        order_book_id_list = sorted(self.rqdatac.all_instruments("CS").order_book_id.tolist())
+        order_book_id_list = sorted(self.rqdatac.all_instruments("CS").order_book_id.to_list())
         return order_book_id_list
 
     @lru_cache()

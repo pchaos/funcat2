@@ -49,7 +49,7 @@ class TencentDataBackend(DataBackend):
         now = datetime.date.today().strftime("%Y%m%d")
         pro = self.ts.pro_api()
         df = pro.query('trade_cal', start_date="20100808", end_date=now, is_open=1)
-        trading_dates = [get_int_date(date) for date in df['cal_date'].tolist()]
+        trading_dates = [get_int_date(date) for date in df['cal_date'].to_list()]
         return trading_dates
 
     def convert_code(self, order_book_id):
@@ -138,7 +138,7 @@ class TencentDataBackend(DataBackend):
         """
         pro = self.ts.pro_api()
         info = pro.query('stock_basic', exchange='', list_status='L', field='ts_code')
-        order_book_id_list = info['ts_code'].tolist()
+        order_book_id_list = info['ts_code'].to_list()
         return order_book_id_list
 
     @lru_cache(maxsize=4096)

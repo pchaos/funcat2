@@ -173,6 +173,25 @@ class Test_ema_trend(FuncatTestCase):
         result = np.array(result)
         print(f"percent {result.shape}:{np.array(result)}")
 
+    def show_result(self, codes, n):
+        result = []
+        if len(codes) > 0:
+            for i, item in enumerate(codes):
+                S(item)
+                try:
+                    c = CLOSE / REF(CLOSE, n)
+                    result.append((item, np.round(c.value, 3)))
+                except Exception as e:
+                    print(f"{item}计算错误！")
+
+        print(f"percent:{result}")
+        dtype = [('code', 'S10'), ('percent', float)]
+        result_np = np.array(result, dtype=dtype)
+        # print(f"percent numpy: {result_np.shape}:{result_np}")
+        sorted_result = np.sort(result_np, order='percent')
+        print(
+            f"percent ordered: {sorted_result.shape}:{sorted_result}")
+
     def test_condition_kama_ema2(self):
         # 从本地文件读取etf代码列表
         codes = self.loadFromFile()
@@ -181,23 +200,10 @@ class Test_ema_trend(FuncatTestCase):
         lastcodes = []
         for i, item in enumerate(lastdata):
             lastcodes.append(item['code'])
-        n = 20
-        result = []
-        if len(lastcodes) > 0:
-            for i, item in enumerate(lastcodes):
-                S(item)
-                try:
-                    c = CLOSE / REF(CLOSE, n)
-                    result.append((item, np.round(c.value, 3)))
-                except Exception as e:
-                    print(f"{item}计算错误！")
-        print(f"percent:{result}")
-        dtype = [('code', 'S10'), ('percent', float)]
-        result_np = np.array(result, dtype=dtype)
-        print(f"percent numpy: {result_np.shape}:{result_np}")
-        sorted_result = np.sort(result_np, order='percent')
-        print(
-            f"percent ordered: {sorted_result.shape}:{sorted_result}")
+        n = 10
+        self.show_result(lastcodes, n)
+        n = 5
+        self.show_result(lastcodes, n)
 
 
 if __name__ == '__main__':

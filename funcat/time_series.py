@@ -244,14 +244,14 @@ class NumericSeries(TimeSeries):
     def series(self):
         return self._series
 
-    def tolist(self):
+    def to_list(self):
         """返回list"""
         if self.series is not None:
-            return self.series.tolist()
+            return self.series.to_list()
         else:
             return []
 
-    def todf(self):
+    def to_df(self):
         """返回pd.Dataframe"""
         if self.series is not None:
             return pd.DataFrame(self.series)
@@ -347,9 +347,9 @@ class MarketDataSeries(NumericSeries):
     def name(self):
         raise NotImplementedError
 
-    def todf(self):
+    def to_df(self):
         """返回pd.Dataframe"""
-        df = super().todf()
+        df = super().to_df()
         df.columns = [self.name]
         return df
 

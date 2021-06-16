@@ -75,7 +75,7 @@ class QuantaxisDataBackend(DataBackend):
                 lambda row: int(row["date"].split(" ")[0].replace("-", "")) * 1000000 + int(
                     row["date"].split(" ")[1].replace(":", "")) * 100, axis=1)
         elif freq in ("1d", "W", "M"):
-            dt = df.index.levels[0].tolist()
+            dt = df.index.levels[0].to_list()
             df["date"] = pd.DataFrame(
                 {"datetime": [f"{dt[i]:%Y-%m-%d}" for i in range(len(dt))]}, index=df.index)
             df["datetime"] = pd.DataFrame({"datetime": [1000000 * (10000 * dt[i].year + 100 * dt[i].month + dt[i].day)
@@ -148,7 +148,7 @@ class QuantaxisDataBackend(DataBackend):
         if code_type:
             info = info[info["code"].apply(code_types.get(code_type.lower(),
                                                           code_types.get("none")))]
-        code_list = info.index.sort_values().tolist()
+        code_list = info.index.sort_values().to_list()
         order_book_id_list = [
             code for code in code_list
         ]
@@ -168,7 +168,7 @@ class QuantaxisDataBackend(DataBackend):
         end = get_str_date_from_int(end)
         df = self.get_price(order_book_id, start, end, "1d")
         # df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day(order_book_id, start, end)
-        trading_dates = [get_int_date(date) for date in df.date.tolist()]
+        trading_dates = [get_int_date(date) for date in df.date.to_list()]
         return trading_dates
 
     @lru_cache(maxsize=6000)

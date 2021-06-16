@@ -79,7 +79,7 @@ class TushareDataBackend(DataBackend):
         """获取所有的股票代码列表
         """
         info = self.ts.get_stock_basics()
-        code_list = info.index.sort_values().tolist()
+        code_list = info.index.sort_values().to_list()
         order_book_id_list = [
             (code + ".XSHG" if code.startswith("6") else code + ".XSHE")
             for code in code_list
@@ -96,7 +96,7 @@ class TushareDataBackend(DataBackend):
         start = get_str_date_from_int(start)
         end = get_str_date_from_int(end)
         df = self.ts.get_k_data("000001", index=True, start=start, end=end)
-        trading_dates = [get_int_date(date) for date in df.date.tolist()]
+        trading_dates = [get_int_date(date) for date in df.date.to_list()]
         return trading_dates
 
     @lru_cache(maxsize=4096)

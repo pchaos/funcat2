@@ -68,7 +68,7 @@ class RQAlphaDataBackend(DataBackend):
         insts = self.data_proxy.all_instruments("CS")
         if isinstance(insts, pd.DataFrame):
             # for old version of RQAlpha
-            return sorted(insts.order_book_id.tolist())
+            return sorted(insts.order_book_id.to_list())
         else:
             # for new version fo RQAlpha
             return sorted([inst.order_book_id for inst in insts])
@@ -89,6 +89,6 @@ class RQAlphaDataBackend(DataBackend):
         """
         start = get_date_from_int(start)
         end = get_date_from_int(end)
-        trading_dates = self.data_proxy.get_trading_dates(start, end).tolist()
+        trading_dates = self.data_proxy.get_trading_dates(start, end).to_list()
         trading_dates = [get_int_date(dt.date()) for dt in trading_dates]
         return trading_dates
