@@ -6,7 +6,7 @@ from functools import lru_cache
 from .backend import DataBackend
 from ..utils import get_str_date_from_int, get_int_date
 
-__updated__ = "2021-06-15"
+__updated__ = "2021-06-16"
 
 
 class QuantaxisDataBackend(DataBackend):
@@ -168,7 +168,7 @@ class QuantaxisDataBackend(DataBackend):
         end = get_str_date_from_int(end)
         df = self.get_price(order_book_id, start, end, "1d")
         # df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day(order_book_id, start, end)
-        trading_dates = [get_int_date(date) for date in df.date.to_list()]
+        trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 
     @lru_cache(maxsize=6000)

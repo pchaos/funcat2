@@ -10,7 +10,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-16"
+__updated__ = "2021-06-17"
 
 
 def condition_ema(n: int=13):
@@ -107,10 +107,11 @@ class Test_ema_trend(FuncatTestCase):
         data = selectV(func, start_date=20210101,
                        end_date=20210704,
                        order_book_id_list=codes)
-        # print(f"condition_ema_ema results:{data}")
-        print(f"total:{len(codes)}")
-        print(
-            f"last day status {self.show_last(data, last_n).shape[0]} :{self.show_last(data, last_n)}")
+        print(f"condition_ema_ema results {len(data)}:{data}")
+        print(f"total:{len(codes)} codes")
+        if last_n != 0:
+            print(
+                f"last day status {self.show_last(data, last_n).shape[0]} :{self.show_last(data, last_n)}")
         return data
 
     def test_condition_ema_ema3(self):
@@ -123,6 +124,19 @@ class Test_ema_trend(FuncatTestCase):
         codes = self.loadFromFile()
         self.select_conditions(codes)
         self.select_conditions(codes, last_n=-2)
+
+    def test_condition_ema_ema3_3(self):
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        self.select_conditions(codes)
+        data = self.select_conditions(codes)
+        n = 10
+        for i in range(n):
+            x = self.show_last(data, -i - 1)
+            print(x)
+            filename = f"/tmp/outfile{i}.txt"
+            np.savetxt(filename, x, fmt=['%s'])
+            print(f"save to {filename}")
 
     def test_condition_ema_ema4(self):
         codes = ["501078.etf"]
