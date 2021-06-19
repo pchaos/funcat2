@@ -5,12 +5,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from functools import lru_cache
+import json
 from funcat import *
 from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-17"
+__updated__ = "2021-06-18"
 
 
 def condition_ema(n: int=13):
@@ -126,6 +127,7 @@ class Test_ema_trend(FuncatTestCase):
         self.select_conditions(codes, last_n=-2)
 
     def test_condition_ema_ema3_3(self):
+        """站上13日ema 并且ema55向上"""
         # 从本地文件读取etf代码列表
         codes = self.loadFromFile()
         self.select_conditions(codes)
@@ -150,7 +152,8 @@ class Test_ema_trend(FuncatTestCase):
         lastdata = self.show_last(data)
         lastcodes = []
         for i, item in enumerate(lastdata):
-            lastcodes.append(item['code'])
+            l
+            astcodes.append(item['code'])
         n = 13
         result = []
         if len(lastcodes) > 0:
@@ -187,26 +190,78 @@ class Test_ema_trend(FuncatTestCase):
         result = np.array(result)
         print(f"percent {result.shape}:{np.array(result)}")
 
-    def show_result(self, codes, n):
+    def show_result(self, codes, n, topn=5):
         result = []
         if len(codes) > 0:
             for i, item in enumerate(codes):
                 S(item)
                 try:
                     c = CLOSE / REF(CLOSE, n)
-                    result.append((item, np.round(c.value, 3)))
+                    result.append((item, np.round(100 * c.value, 2)))
                 except Exception as e:
                     print(f"{item}计算错误！")
 
-        print(f"percent:{result}")
+        # print(f"percent:{result}")
         dtype = [('code', 'S10'), ('percent', float)]
         result_np = np.array(result, dtype=dtype)
         # print(f"percent numpy: {result_np.shape}:{result_np}")
         sorted_result = np.sort(result_np, order='percent')
         print(
-            f"percent ordered: {sorted_result.shape}:{sorted_result}")
+            f"{n} day percent ordered %: {sorted_result.shape}:{sorted_result}")
+        sorted_result.tofile('/tmp/kama.csv', sep=',')
+        jsfile = f"/tmp/kama{n}.json"
+        # calculate row and column numbers
+        row_count = sorted_result.shape[0]
+        # neglect first row and get new row numbers
+        row_count = row_count - 1
+        npMatrix = sorted_result.transpose()
+        # transfer numpy array to list
+        matrix = npMatrix.tolist()
+        # transfer list to that JSON file
+        result = {}
+
+        for index, item in enumerate(matrix):
+            if index + topn > row_count:
+                result[item[0].decode()] = item[1]
+        # print(f"json:{result}")
+        return {f"{n} day percent": result}
+
+    def dict_to_json(self, value):
+        # When parsing JSON anything can go wrong
+        # So we need to handle exceptions. For example
+        # If the JSON fails validation, the exception
+        # is triggered
+        try:
+            # Load JSON data from a string to Python object
+            if isinstance(value, str):
+                o_json = json.loads(value)
+            elif isinstance(value, dict):
+                o_json = value
+            elif isinstance(value, list):
+                o_json = value
+            # Convert the JSON Python object back to string
+            # Also format it in a nice way. That is what
+            # this article is all about. The indent parameter
+            # specifies the width of the indentation which is
+            # self explanatory. The sorted_keys parameter
+            # specifies if we want to keep the input JSON
+            # as is or sort the key. In this case we are not
+            f_json = json.dumps(o_json, indent=1, sort_keys=False)
+
+            # Print the beautified JSON
+            # print(f_json)
+            return f_json
+        # Catch any exceptions
+        except Exception as ex:
+            # repr is used to print more information about
+            # the object which is handy when debugging
+            print(repr(ex))
+        return json.dumps({})
 
     def test_condition_kama_ema2(self):
+        """kman=10日卡夫曼自适应均线，
+        close > kamn 并且 close > kamn+0.1×STD(kman, 20)
+        """
         # 从本地文件读取etf代码列表
         codes = self.loadFromFile()
         data = self.select_conditions(codes, func=condition_kama_ema2)
@@ -214,10 +269,15 @@ class Test_ema_trend(FuncatTestCase):
         lastcodes = []
         for i, item in enumerate(lastdata):
             lastcodes.append(item['code'])
+        # 与n天前的比值
         n = 10
-        self.show_result(lastcodes, n)
+        j1 = self.show_result(lastcodes, n)
         n = 5
-        self.show_result(lastcodes, n)
+        j2 = self.show_result(lastcodes, n)
+        # print(j1, j2)
+        print(self.dict_to_json([j1, j2]))
+        print(lastdata)
+        # print(self.dict_to_json(list(enumerate(lastdata))))
 
 
 if __name__ == '__main__':
