@@ -12,7 +12,7 @@ from datetime import datetime
 # 正常显示画图时出现的中文和负号
 from pylab import mpl
 
-__updated__ = "2021-06-12"
+__updated__ = "2021-06-16"
 
 
 class my_strategy1(bt.Strategy):
@@ -64,7 +64,7 @@ def get_data(code, start='2010-01-01', end='2020-03-31'):
 dataframe = get_data('600000')
 
 # 回测期间
-start = datetime(2010, 3, 31)
+start = datetime(2010, 1, 31)
 end = datetime(2020, 3, 31)
 # 加载数据
 data = bt.feeds.PandasData(dataname=dataframe, fromdate=start, todate=end)
