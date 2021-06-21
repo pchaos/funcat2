@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+"""https://programtalk.com/vs2/python/8277/backtrader/docs2/quickstart/quickstart09.py/
+"""
 import datetime
 import pandas as pd
 import numpy as np
 import backtrader as bt
 
-__updated__ = "2021-06-19"
+__updated__ = "2021-06-21"
 
 
 class TestStrategy(bt.Strategy):
@@ -66,6 +68,32 @@ class TestStrategy(bt.Strategy):
 
         self.order = None
 
+    def next(self):
+        # Simply log the closing price of the series from the reference
+        self.log('Close, %.2f' % self.dataclose[0])
+
+        # Check if an order is pending ... if yes, we cannot send a 2nd one
+        if self.order:
+            return
+
+        # Check if we are in the market
+        if not self.position:
+            # Not yet ... we MIGHT BUY if ...
+            if self.dataclose[0] > self.sma[0]:
+
+                # BUY, BUY, BUY!!! (with all possible default parameters)
+                self.log('BUY CREATE, %.2f' % self.dataclose[0])
+
+                # Keep track of the created order to avoid a 2nd order
+                self.order = self.buy()
+        else:
+            if self.dataclose[0] < self.sma[0]:
+                # SELL, SELL, SELL!!! (with all possible default parameters)
+                self.log('SELL CREATE, %.2f' % self.dataclose[0])
+
+                # Keep track of the created order to avoid a 2nd order
+                self.order = self.sell()
+
 
 if __name__ == '__main__':
     # Create a cerebro entity
@@ -88,7 +116,7 @@ if __name__ == '__main__':
         parse_dates=True,
         index_col=0,
     )
-    dataframe['openinterest'] = 0
+    # dataframe['openinterest'] = 0
     data = bt.feeds.PandasData(dataname=dataframe,
                                fromdate=datetime.datetime(2006, 1, 1),
                                todate=datetime.datetime(2006, 12, 31)
@@ -100,7 +128,7 @@ if __name__ == '__main__':
     # 设置每笔交易交易的股票数量
     cerebro.addsizer(bt.sizers.FixedSize, stake=10)
     # Set the commission
-    cerebro.broker.setcommission(commission=0.0)
+    cerebro.broker.setcommission(commission=0.0002)
     # Print out the starting conditions
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
     # Run over everything
