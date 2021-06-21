@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-18"
+__updated__ = "2021-06-21"
 
 
 def condition_ema(n: int=13):
@@ -48,6 +48,11 @@ class Test_ema_trend(FuncatTestCase):
                 cls.codes = f.readlines()  # print(cls.codes[:10])
         for i, item in enumerate(cls.codes):
             cls.codes[i] = f"{ item[:6] }.etf"
+            if cls.codes[i].startswith("000"):
+                # 指数替换
+                cls.codes[i] = "588000.etf"
+        if cls.codes[0].startswith("代码"):
+            del cls.codes[0]
         return cls.codes
 
     @classmethod
@@ -246,7 +251,7 @@ class Test_ema_trend(FuncatTestCase):
             # self explanatory. The sorted_keys parameter
             # specifies if we want to keep the input JSON
             # as is or sort the key. In this case we are not
-            f_json = json.dumps(o_json, indent=1, sort_keys=False)
+            f_json = json.dumps(o_json, indent=2, sort_keys=False)
 
             # Print the beautified JSON
             # print(f_json)
@@ -276,7 +281,11 @@ class Test_ema_trend(FuncatTestCase):
         j2 = self.show_result(lastcodes, n)
         # print(j1, j2)
         print(self.dict_to_json([j1, j2]))
-        print(lastdata)
+        print(f"{len(lastdata)}/{len(codes)},{lastdata}")
+        if len(lastdata) > 0:
+            with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
+                f.write(f"备选etf：\n{codes}\n" +
+                        f"{str(self.dict_to_json([j1, j2]))}\n{len(lastdata)}/{len(codes)},{lastdata}\n")
         # print(self.dict_to_json(list(enumerate(lastdata))))
 
 
