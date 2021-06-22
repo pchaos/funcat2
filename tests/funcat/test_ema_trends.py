@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-21"
+__updated__ = "2021-06-22"
 
 
 def condition_ema(n: int=13):
@@ -63,6 +63,22 @@ class Test_ema_trend(FuncatTestCase):
         for i, item in enumerate(cls.codes):
             cls.codes[i] = f"{ item[:6] }.etf"
 
+    def sort_arr(self, arr: np.array, sort=''):
+        result = []
+        for i, item in enumerate(arr):
+            try:
+                result.append(
+                    (item['date'], item['code'], item['cname']))
+            except Exception as e:
+                print(f"{item}计算错误！")
+
+        # print(f"percent:{result}")
+        # dtype = [(('date', int), ('code', 'U'), ('cname', 'U'))]
+        dtype = [('date', int), ('code', (np.str_, 10)),
+                 ('cname', (np.str_, 10))]
+        arr_sorted = np.array(result, dtype=dtype)
+        return np.sort(arr_sorted, order='code')
+
     def show_last(self, arr: np.array, last_n=-1):
         from funcat import get_start_date, get_current_date, get_current_security
         from funcat.context import ExecutionContext
@@ -76,7 +92,7 @@ class Test_ema_trend(FuncatTestCase):
             if item['date'] == lastday:
                 result.append(i)
         if arr.shape[0] > 0:
-            return arr[result]
+            return self.sort_arr(arr[result])
         else:
             return np.array([])
 
@@ -228,8 +244,7 @@ class Test_ema_trend(FuncatTestCase):
         for index, item in enumerate(matrix):
             if index + topn > row_count:
                 result[item[0].decode()] = item[1]
-        # print(f"json:{result}")
-        return {f"{n} day percent": result}
+        return {f"{n} day (CLOSE/REF(CLOSE, {n}) percent %)": result}
 
     def dict_to_json(self, value):
         # When parsing JSON anything can go wrong
@@ -284,9 +299,34 @@ class Test_ema_trend(FuncatTestCase):
         print(f"{len(lastdata)}/{len(codes)},{lastdata}")
         if len(lastdata) > 0:
             with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
-                f.write(f"备选etf：\n{codes}\n" +
+                f.write(f"{lastdata[0]['date']}\n" + f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" + f"备选etf：\n{codes}\n" +
                         f"{str(self.dict_to_json([j1, j2]))}\n{len(lastdata)}/{len(codes)},{lastdata}\n")
         # print(self.dict_to_json(list(enumerate(lastdata))))
+
+    def test_condition_kama_ema3(self):
+        """kman=10日卡夫曼自适应均线，
+        close > kamn 并且 close > kamn+0.1×STD(kman, 20)
+        """
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+        data = self.select_conditions(codes, func=condition_kama_ema2)
+        lastdata = self.show_last(data)
+        lastcodes = []
+        for i, item in enumerate(lastdata):
+            lastcodes.append(item['code'])
+        # 与n天前的比值
+        nlist = [5, 10, 20]
+        jlist = []
+        for n in nlist:
+            j1 = self.show_result(lastcodes, n)
+            jlist.append(j1)
+        # print(j1, j2)
+        print(self.dict_to_json(jlist))
+        print(f"{len(lastdata)}/{len(codes)},{lastdata}")
+        if len(lastdata) > 0:
+            with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
+                f.write(f"{lastdata[0]['date']}\n" + f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" + f"标的etf：\n{codes}\n" +
+                        f"{str(self.dict_to_json(jlist))}\n{len(lastdata)}/{len(codes)},{lastdata}\n")
 
 
 if __name__ == '__main__':
