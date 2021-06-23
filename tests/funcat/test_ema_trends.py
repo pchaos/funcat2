@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-22"
+__updated__ = "2021-06-23"
 
 
 def condition_ema(n: int=13):
@@ -39,7 +39,7 @@ def condition_kama_ema2(n: int=10, m: float =0.1):
 class Test_ema_trend(FuncatTestCase):
     @classmethod
     def loadFromFile(cls):
-        filename = "etf.txt"
+        filename = "../datas/etf.txt"
         currDir = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".")
         fullname = os.path.join(f"{currDir}", filename)
         print(fullname)
@@ -229,7 +229,7 @@ class Test_ema_trend(FuncatTestCase):
         sorted_result = np.sort(result_np, order='percent')
         print(
             f"{n} day percent ordered %: {sorted_result.shape}:{sorted_result}")
-        sorted_result.tofile('/tmp/kama.csv', sep=',')
+        # sorted_result.tofile('/tmp/kama.csv', sep=',')
         jsfile = f"/tmp/kama{n}.json"
         # calculate row and column numbers
         row_count = sorted_result.shape[0]
@@ -266,7 +266,8 @@ class Test_ema_trend(FuncatTestCase):
             # self explanatory. The sorted_keys parameter
             # specifies if we want to keep the input JSON
             # as is or sort the key. In this case we are not
-            f_json = json.dumps(o_json, indent=2, sort_keys=False)
+            f_json = json.dumps(
+                o_json, indent=2, sort_keys=False, ensure_ascii=False)
 
             # Print the beautified JSON
             # print(f_json)
@@ -323,10 +324,20 @@ class Test_ema_trend(FuncatTestCase):
         # print(j1, j2)
         print(self.dict_to_json(jlist))
         print(f"{len(lastdata)}/{len(codes)},{lastdata}")
+        # code出现的次数
+        codes_count = {}
+        for item_dict in jlist:
+            print(item_dict)
+            for item in item_dict.values():
+                for key in item.keys():
+                    codes_count[key] = codes_count.get(key, 0) + 1
+        codes_count = {"排名靠前出现的次数": codes_count}
         if len(lastdata) > 0:
             with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
                 f.write(f"{lastdata[0]['date']}\n" + f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" + f"标的etf：\n{codes}\n" +
-                        f"{str(self.dict_to_json(jlist))}\n{len(lastdata)}/{len(codes)},{lastdata}\n")
+                        f"{str(self.dict_to_json(jlist))}\n" +
+                        f"{self.dict_to_json(codes_count)}\n" +
+                        f"{len(lastdata)}/{len(codes)},{lastdata}\n")
 
 
 if __name__ == '__main__':
