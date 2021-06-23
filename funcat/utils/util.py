@@ -183,7 +183,8 @@ def fft_denoiser(x, n_components, to_real=True):
 
 
 def getStringWithDecodedUnicode(value):
-    """import re
+    """convert a dict to a unicode JSON string
+    import re
     import json
     getStringWithDecodedUnicode = lambda str : re.sub( '\\\\u([\da-f]{4})', (lambda x : chr( int( x.group(1), 16 ) )), str )
 
