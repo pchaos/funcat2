@@ -7,7 +7,7 @@ import functools
 import numpy as np
 from .singletion import FuncCounter
 
-__updated__ = "2021-06-11"
+__updated__ = "2021-06-23"
 
 
 class FormulaException(Exception):
@@ -180,3 +180,26 @@ def fft_denoiser(x, n_components, to_real=True):
         clean_data = clean_data.real
 
     return clean_data
+
+
+def getStringWithDecodedUnicode(value):
+    """import re
+    import json
+    getStringWithDecodedUnicode = lambda str : re.sub( '\\\\u([\da-f]{4})', (lambda x : chr( int( x.group(1), 16 ) )), str )
+
+    data = {"Japan":"日本"}
+    jsonString = json.dumps( data )
+    print( "json.dumps({0}) = {1}".format( data, jsonString ) )
+    jsonString = getStringWithDecodedUnicode( jsonString )
+    print( "Decoded Unicode: %s" % jsonString )
+
+    Output
+    json.dumps({'Japan': '日本'}) = {"Japan": "\u65e5\u672c"}
+    Decoded Unicode: {"Japan": "日本"}
+    """
+    findUnicodeRE = re.compile('\\\\u([\da-f]{4})')
+
+    def getParsedUnicode(x):
+        return chr(int(x.group(1), 16))
+
+    return findUnicodeRE.sub(getParsedUnicode, str(value))
