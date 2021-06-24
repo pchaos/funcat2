@@ -4,3 +4,4 @@
 #
 # python setup.py bdist_wheel --universal upload -r pypitest
 python setup.py bdist_wheel --universal upload -r pypi
+rm -rf build
