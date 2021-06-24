@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-23"
+__updated__ = "2021-06-24"
 
 
 def condition_ema(n: int=13):
@@ -52,7 +52,12 @@ class Test_ema_trend(FuncatTestCase):
                 # 指数替换
                 cls.codes[i] = "588000.etf"
         if cls.codes[0].startswith("代码"):
+            print(f"del 代码")
             del cls.codes[0]
+        for i in reversed(range(len(cls.codes))):
+            # 删除空行
+            if (len(cls.codes[i].strip()) != 10):
+                del cls.codes[i]
         return cls.codes
 
     @classmethod
@@ -334,7 +339,9 @@ class Test_ema_trend(FuncatTestCase):
         codes_count = {"排名靠前出现的次数": codes_count}
         if len(lastdata) > 0:
             with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
-                f.write(f"{lastdata[0]['date']}\n" + f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" + f"标的etf：\n{codes}\n" +
+                f.write(f"{lastdata[0]['date']}\n" +
+                        f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" +
+                        f"标的etf：\n{codes}\n" +
                         f"{str(self.dict_to_json(jlist))}\n" +
                         f"{self.dict_to_json(codes_count)}\n" +
                         f"{len(lastdata)}/{len(codes)},{lastdata}\n")
