@@ -20,6 +20,8 @@ from .helper import zig_helper
 #  ignore pandas warning
 import warnings
 
+__updated__ = "2021-06-24"
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
@@ -136,6 +138,12 @@ class StdSeries(OneArgumentSeries):
 
     def getFunc(self):
         return talib.STDDEV
+
+    def __init__(self, series, arg):
+        super().__init__(series, arg)
+        if arg > 1:
+            a = (arg / (arg - 1)) ** 0.5
+            self._series = self.series * a
 
 
 class TwoArgumentSeries(ArgumentSeriesBase):
@@ -332,7 +340,7 @@ def hhv(s, n):
     else:
         result = np.array([np.max(series)])
         if n > 0:
-             result = np.append(np.array([np.nan] * (len(series) - 1)), result)
+            result = np.append(np.array([np.nan] * (len(series) - 1)), result)
 
     return NumericSeries(result)
 
@@ -358,7 +366,7 @@ def llv(s, n):
     else:
         result = np.array([np.min(series)])
         if n > 0:
-             result = np.append(np.array([np.nan] * (len(series) - 1)), result)
+            result = np.append(np.array([np.nan] * (len(series) - 1)), result)
 
     return NumericSeries(result)
 
@@ -415,7 +423,8 @@ IFF 逻辑判断 根据条件求不同的值。
     n = len(condition)
     series1 = get_series(true_statement, n)
     series2 = get_series(false_statement, n)
-    cond_series, series1, series2 = fit_series(condition.series, series1, series2)
+    cond_series, series1, series2 = fit_series(
+        condition.series, series1, series2)
 
     series = series2.copy()
     series[cond_series] = series1[cond_series]
@@ -547,11 +556,11 @@ def nday(s1, s2, m: int):
      """
     return every(s1 > s2, m)
 
-def codelike(s:str):
+
+def codelike(s: str):
     """品种代码是否以参数开头.
 用法:
  if(CODELIKE('600'),x,y);
  """
-    # todo 
+    # todo
     raise Exception("not implemented")
-    

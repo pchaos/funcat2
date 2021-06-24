@@ -5,6 +5,8 @@ import talib
 import matplotlib.pyplot as plt
 from funcat.utils import handle_numpy_warning
 
+__updated__ = "2021-06-24"
+
 
 @handle_numpy_warning
 def f(x):
@@ -44,6 +46,23 @@ class MyTestCase(unittest.TestCase):
 
         plt.plot(x, f2(x))
         plt.show()
+
+    def test_stddev(self):
+        """方差偏差
+        https://www.cnblogs.com/citycomputing/p/10447657.html
+        """
+        alist = [3606.86, 3580.15, 3411.49]
+        arr = np.array(alist)
+        print(arr)
+        n = len(arr)
+        a = (n / (n - 1)) ** 0.5  # [n/(n-1)]的平方根
+        astd = talib.STDDEV(arr, len(arr))
+        print(f"talib.STDDEV:{astd}")
+        print(f"这个是正确 talib.STDDEV * {a}:{astd*a}")
+        astd2 = talib.STDDEV(arr * (n / (n - 1)), n)
+        print(f"talib.STDDEV:{astd2}")
+        astd3 = talib.STDDEV(arr, n) * (n / (n - 1))
+        print(f"talib.STDDEV:{astd3}")
 
 
 if __name__ == '__main__':
