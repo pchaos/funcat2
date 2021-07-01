@@ -6,7 +6,7 @@ from functools import lru_cache
 from .backend import DataBackend
 from ..utils import get_str_date_from_int, get_int_date
 
-__updated__ = "2021-06-16"
+__updated__ = "2021-06-30"
 
 
 class QuantaxisDataBackend(DataBackend):
@@ -68,7 +68,7 @@ class QuantaxisDataBackend(DataBackend):
                 df = data.month.rename(columns={"vol": "volume"})
             else:
                 df = data.data
-        except:
+        except Exception:
             return pd.DataFrame().to_records()
         if freq[-1] == "m":
             df["datetime"] = df.apply(
@@ -160,14 +160,16 @@ class QuantaxisDataBackend(DataBackend):
         Args:
             start: 20160101
             end: 20160201
-            order_book_id: stock code; 
+            order_book_id: stock code;默认为上证指数 "000001.XSHG"
         Returns:
             股票（order_book_id）start~end时间段内交易日期列表
         """
         start = get_str_date_from_int(start)
         end = get_str_date_from_int(end)
         df = self.get_price(order_book_id, start, end, "1d")
-        # df = self.backend.QAFetch.QATdx.QA_fetch_get_index_day(order_book_id, start, end)
+        if len(df) == 0:
+              # 提示数据库可能无数据
+            print(f"maybe your data is empty, please check it. {order_book_id}:{start}~{end}")
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 
@@ -187,7 +189,7 @@ class QuantaxisDataBackend(DataBackend):
 
     def finacial(self, n: int):
         """todo 获取专业金融数据
-        """
+         """
         res = self.backend().QA_fetch_financial_report(['000001', '600100'], [
             '2017-03-31', '2017-06-30', '2017-09-31', '2017-12-31', '2018-03-31'])
         return res
