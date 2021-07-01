@@ -8,3 +8,4 @@ cached-property
 tqdm
 py-singleton
 backtrader
+ipython
