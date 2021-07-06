@@ -142,6 +142,7 @@ class StdSeries(OneArgumentSeries):
     def __init__(self, series, arg):
         super().__init__(series, arg)
         if arg > 1:
+            # 使用样本方差
             a = (arg / (arg - 1)) ** 0.5
             self._series = self.series * a
 

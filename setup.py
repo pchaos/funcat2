@@ -25,7 +25,7 @@ except:
 setup(
     name='funcat2',
     version=version,
-    description='funcat2',
+    description='Funcat2保持与funcat兼容;Funcat 将同花顺、通达信、文华财经等的公式移植到了 Python 中。同花顺、通达信、文华财经麦语言等公式的表达十分简洁，适合做技术分析。苦于 Python 缺乏这种领域特定语言的表达能力，所以用 Python 基于 numpy 实现了一套。Funcat2增加QUANTAXIS的支持',
     packages=find_packages(exclude=[]),
     author='Hua Liang, p19992003',
     url='https://github.com/pchaos/funcat2',
