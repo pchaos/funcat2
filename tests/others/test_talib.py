@@ -48,7 +48,7 @@ class MyTestCase(unittest.TestCase):
         plt.show()
 
     def test_stddev(self):
-        """方差偏差
+        """样本标准偏差
         https://www.cnblogs.com/citycomputing/p/10447657.html
         """
         alist = [3606.86, 3580.15, 3411.49]
@@ -63,6 +63,12 @@ class MyTestCase(unittest.TestCase):
         print(f"talib.STDDEV:{astd2}")
         astd3 = talib.STDDEV(arr, n) * (n / (n - 1))
         print(f"talib.STDDEV:{astd3}")
+        astd31 = talib.STDDEV(arr, n, nbdev=1)
+        print(f"talib.STDDEV nbdev=1:{astd31}")
+        astd4 = np.std(arr)
+        print(f"np.std也不是样本方差:{astd4}")
+        astd5 = np.std(arr, ddof=1)
+        print(f"np.std 参数ddof=1是样本方差:{astd5}")
 
 
 if __name__ == '__main__':
