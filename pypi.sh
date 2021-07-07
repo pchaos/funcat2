@@ -11,5 +11,7 @@ python setup.py sdist
 python setup.py bdist_wheel
 
 twine upload --repository funcat2 dist/funcat2-*-py3-none-any.whl -r pypi  --verbose
+# twine upload --repository funcat2 dist/funcat2-*-py3-none-any.whl -r pypi  --verbose --skip-existing
 
 rm -rf build
+rm -rf dist
