@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-06-24"
+__updated__ = "2021-07-07"
 
 
 def condition_ema(n: int=13):
@@ -34,6 +34,15 @@ def condition_kama_ema2(n: int=10, m: float =0.1):
     kman = KAMA(CLOSE, n)
     amastd = STD(kman, 20)
     return (CLOSE > kman) & (CLOSE > kman + m * amastd)
+
+
+def condition_llv(n: int=20):
+    def atr(time_period: int):
+        import talib
+        atr = talib.ATR(HIGH.series, LOW.series, CLOSE.series, timeperiod=time_period)
+        return atr
+
+    return CLOSE >= (LLV(LOW, n) + 2 * atr(n))
 
 
 class Test_ema_trend(FuncatTestCase):
@@ -132,7 +141,7 @@ class Test_ema_trend(FuncatTestCase):
 
     def select_conditions(self, codes, last_n=-1, func=condition_ema_ema2):
         data = selectV(func, start_date=20210101,
-                       end_date=20210704,
+                       end_date=20310704,
                        order_book_id_list=codes)
         print(f"condition_ema_ema results {len(data)}:{data}")
         print(f"total:{len(codes)} codes")
@@ -286,7 +295,7 @@ class Test_ema_trend(FuncatTestCase):
 
     def test_condition_kama_ema2(self):
         """kman=10日卡夫曼自适应均线，
-        close > kamn 并且 close > kamn+0.1×STD(kman, 20)
+        close > kman 并且 close > kman+0.1×STD(kman, 20)
         """
         # 从本地文件读取etf代码列表
         codes = self.loadFromFile()
@@ -305,13 +314,13 @@ class Test_ema_trend(FuncatTestCase):
         print(f"{len(lastdata)}/{len(codes)},{lastdata}")
         if len(lastdata) > 0:
             with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
-                f.write(f"{lastdata[0]['date']}\n" + f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" + f"备选etf：\n{codes}\n" +
+                f.write(f"{lastdata[0]['date']}\n" + f"""kman=10日卡夫曼自适应均线，\n close > kman 并且 close > kman+0.1×STD(kman, 20)\n""" + f"备选etf：\n{codes}\n" +
                         f"{str(self.dict_to_json([j1, j2]))}\n{len(lastdata)}/{len(codes)},{lastdata}\n")
         # print(self.dict_to_json(list(enumerate(lastdata))))
 
     def test_condition_kama_ema3(self):
         """kman=10日卡夫曼自适应均线，
-        close > kamn 并且 close > kamn+0.1×STD(kman, 20)
+        close > kman 并且 close > kman+0.1×STD(kman, 20)
         """
         # 从本地文件读取etf代码列表
         codes = self.loadFromFile()
@@ -340,7 +349,46 @@ class Test_ema_trend(FuncatTestCase):
         if len(lastdata) > 0:
             with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
                 f.write(f"{lastdata[0]['date']}\n" +
-                        f"""kman=10日卡夫曼自适应均线，\n close > kamn 并且 close > kamn+0.1×STD(kman, 20)\n""" +
+                        f"""kman=10日卡夫曼自适应均线，\n close > kman 并且 close > kman+0.1×STD(kman, 20)\n""" +
+                        f"标的etf：\n{codes}\n" +
+                        f"{str(self.dict_to_json(jlist))}\n" +
+                        f"{self.dict_to_json(codes_count)}\n" +
+                        f"{len(lastdata)}/{len(codes)},{lastdata}\n")
+
+    def test_condition_kama_ema_llv(self):
+        """kman=10日卡夫曼自适应均线，
+        close > kman 并且 close > kman+0.1×STD(kman, 20)
+        """
+        # 从本地文件读取etf代码列表
+        codes = self.loadFromFile()
+
+        def f(): return condition_kama_ema2() & condition_llv(20)
+        data = self.select_conditions(codes, func=f)
+        lastdata = self.show_last(data)
+        lastcodes = []
+        for i, item in enumerate(lastdata):
+            lastcodes.append(item['code'])
+        # 与n天前的比值
+        nlist = [5, 10, 20]
+        jlist = []
+        for n in nlist:
+            j1 = self.show_result(lastcodes, n)
+            jlist.append(j1)
+        # print(j1, j2)
+        print(self.dict_to_json(jlist))
+        print(f"{len(lastdata)}/{len(codes)},{lastdata}")
+        # code出现的次数
+        codes_count = {}
+        for item_dict in jlist:
+            print(item_dict)
+            for item in item_dict.values():
+                for key in item.keys():
+                    codes_count[key] = codes_count.get(key, 0) + 1
+        codes_count = {"排名靠前出现的次数": codes_count}
+        if len(lastdata) > 0:
+            with open(f"/tmp/kama_ema_{lastdata[0]['date']}.txt", 'w') as f:
+                f.write(f"{lastdata[0]['date']}\n" +
+                        f"""kman=10日卡夫曼自适应均线，\n close > kman 并且 close > kman+0.1×STD(kman, 20)\n""" +
                         f"标的etf：\n{codes}\n" +
                         f"{str(self.dict_to_json(jlist))}\n" +
                         f"{self.dict_to_json(codes_count)}\n" +
