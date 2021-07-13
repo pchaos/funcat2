@@ -8,4 +8,7 @@ cached-property
 tqdm
 py-singleton
 backtrader
+matplotlib
+pymongo
 ipython
+akshare
