@@ -22,7 +22,8 @@ try:
         str(ir.requirement)
         for ir in parse_requirements("requirements.txt", session=False)
     ],
-    with open(join(dirname(__file__), 'README.md'), 'r', encoding='utf-8') as f:
+    with open(join(dirname(__file__), 'README.md'), 'r',
+              encoding='utf-8') as f:
         long_description = f.read()
 except:
     req = [
@@ -30,12 +31,24 @@ except:
         for ir in parse_requirements("requirements.txt", session=False)
     ],
 
+classifiers = [
+    'Programming Language :: Python',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: Unix',
+    "Operating System :: MacOS :: MacOS X",
+    #  'Programming Language :: Python :: 3.6',
+    #  'Programming Language :: Python :: 3.7',
+    #  'Programming Language :: Python :: 3.8',
+    #  'Programming Language :: Python :: 3.9',
+] + [("Programming Language :: Python :: %s" % x)
+     for x in "3.6 3.7 3.8 3.9".split()]
+
 setup(
     name='funcat2',
     version=version,
     description=
     'Funcat2保持与funcat兼容;Funcat 将同花顺、通达信、文华财经等的公式移植到了 Python 中。同花顺、通达信、文华财经麦语言等公式的表达十分简洁，适合做技术分析。苦于 Python 缺乏这种领域特定语言的表达能力，所以用 Python 基于 numpy 实现了一套。Funcat2增加QUANTAXIS的支持',
-    long_description_content_type="text/markdown", 
+    long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(exclude=[]),
     author='Hua Liang, p19992003',
@@ -45,13 +58,5 @@ setup(
     package_data={'': ['*.*']},
     install_requires=req,
     zip_safe=False,
-    classifiers=[
-        'Programming Language :: Python',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: Unix',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-    ],
+    classifiers=classifiers,
 )
