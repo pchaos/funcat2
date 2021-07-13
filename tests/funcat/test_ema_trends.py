@@ -76,6 +76,7 @@ class Test_ema_trend(FuncatTestCase):
                      "512400", "512800", "512760", "515050"]
         for i, item in enumerate(cls.codes):
             cls.codes[i] = f"{ item[:6] }.etf"
+        print(os.environ['CONDA_DEFAULT_ENV'])
 
     def sort_arr(self, arr: np.array, sort=''):
         result = []
