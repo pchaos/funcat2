@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-07-07"
+__updated__ = "2021-07-13"
 
 
 def condition_ema(n: int=13):
@@ -172,7 +172,7 @@ class Test_ema_trend(FuncatTestCase):
             x = self.show_last(data, -i - 1)
             print(x)
             filename = f"/tmp/outfile{i}.txt"
-            np.savetxt(filename, x, fmt=['%s'])
+            np.savetxt(filename, x, fmt='%s')
             print(f"save to {filename}")
 
     def test_condition_ema_ema4(self):
@@ -187,8 +187,7 @@ class Test_ema_trend(FuncatTestCase):
         lastdata = self.show_last(data)
         lastcodes = []
         for i, item in enumerate(lastdata):
-            l
-            astcodes.append(item['code'])
+            lastcodes.append(item['code'])
         n = 13
         result = []
         if len(lastcodes) > 0:
@@ -358,6 +357,7 @@ class Test_ema_trend(FuncatTestCase):
     def test_condition_kama_ema_llv(self):
         """kman=10日卡夫曼自适应均线，
         close > kman 并且 close > kman+0.1×STD(kman, 20)
+
         """
         # 从本地文件读取etf代码列表
         codes = self.loadFromFile()
