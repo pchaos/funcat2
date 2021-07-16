@@ -1,3 +1,34 @@
 #!/bin/bash
+# 自用
 # 10日卡夫曼自适应均线选股
-pytest -v  "../tests/funcat/test_ema_trends.py"::Test_ema_trend::test_condition_kama_ema3 && vim /tmp/kama_ema_*.txt
+funcatenv="funcat"
+if [ $CONDA_DEFAULT_ENV != "${funcatenv}" ]; then
+  echo "not in env ${funcatenv}"
+
+  FILE=~/.bashrc
+  if test -f "$FILE"; then
+      # echo "$FILE exists."
+      . $FILE
+      conda activate funcat
+      echo conda env $CONDA_DEFAULT_ENV
+  fi
+fi
+pytest -v  "../tests/funcat/test_ema_trends.py"::Test_ema_trend::test_condition_kama_ema3
+conda deactivate
+echo conda env $CONDA_DEFAULT_ENV
+FILE=/tmp/kama*.txt
+# [ -n"$(find /tmp -name '${FILE}' | head -1)" ] && vim /tmp/${FILE}
+files=$(ls ${FILE} 2> /dev/null | wc -l); 
+ 
+echo $files
+if [ "$files" != "0" ] ;then  #如果存在文件
+  # echo "$FILE exists."
+  if type nvim > /dev/null 2>&1; then
+    alias vim='nvim'
+    nvim ${FILE}
+  else
+    type vim
+    vim ${FILE}
+  fi
+fi 
+
