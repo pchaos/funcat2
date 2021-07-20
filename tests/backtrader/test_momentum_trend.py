@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""“动量+趋势跟踪”策略作为示例。策略思路为：计算24只股票过去30日的收益率并进行排序，选择前10只股票加入选股池（动量），逐日滚动计算和判断：如果选股池中某只个股满足股价位于20均线以上且没有持仓时买入（以20日均线为生命线跟踪趋势）；如果某只个股已持仓但判断不在选股池中或股价位于20均线以下则卖出。每次交易根据十只个股平均持仓（注意：最多交易10只个股）。
+"""“动量+趋势跟踪”策略作为示例。策略思路为：计算N只股票过去30日的收益率并进行排序，选择前10只股票加入选股池（动量），逐日滚动计算和判断：如果选股池中某只个股满足股价位于20均线以上且没有持仓时买入（以20日均线为生命线跟踪趋势）；如果某只个股已持仓但判断不在选股池中或股价位于20均线以下则卖出。每次交易根据十只个股平均持仓（注意：最多交易10只个股）。
 https://zhuanlan.zhihu.com/p/144390882
 """
 import unittest
@@ -144,15 +144,19 @@ class MyStrategy(bt.Strategy):
 class TestMovemtum(FuncatTestCase):
     @classmethod
     def setUp(cls) -> None:
-        T("20210906")
+        T("20310906")
         S("000001.XSHG")
 
     def test_movementum(self):
         cerebro = bt.Cerebro()
-        for s in get_code_list():
-            feed = bt.feeds.PandasData(dataname=get_data(s))
-            if len(feed) > 0:
+        for s in get_code_list()[:]:
+            data = get_data(s)
+            if len(data) > 30:
+                feed = bt.feeds.PandasData(dataname=data)
                 cerebro.adddata(feed, name=s)
+            else:
+                # 太短的数据，会报错
+                print(f"{s} data is too short")
 
         # 回测设置
         startcash = 100000.0
