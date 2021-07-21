@@ -14,7 +14,7 @@ from funcat.utils import FuncatTestCase
 from funcat.context import ExecutionContext
 from funcat.time_series import get_bars
 
-__updated__ = "2021-07-20"
+__updated__ = "2021-07-21"
 
 
 def get_data(code):
@@ -72,6 +72,7 @@ class MyStrategy(bt.Strategy):
         # 遍历所有股票,计算20日均线
         for data in self.datas:
             self.mas[data._name] = bt.ind.SMA(data.close, period=self.p.period)
+            print(f"{data._name}:{data.close.array[-10:]}")
 
     def next(self):
         # 计算截面收益率
