@@ -30,6 +30,7 @@ https://backtest-rookies.com/2017/08/22/backtrader-multiple-data-feeds-indicator
 from datetime import datetime
 import unittest
 import numpy as np
+from matplotlib import pyplot as plt
 import backtrader as bt
 from funcat.api import *
 from funcat.conditional_selection import *
@@ -153,8 +154,16 @@ class Test_multi_feeds_indicator(FuncatTestCase):
         print('P/L: ${}'.format(pnl))
 
         #Finally plot the end results
+        # plt.rcParams['font.sans-serif']=['SimHei']
+        plt.rcParams['axes.unicode_minus']=False
+        plt.rcParams['figure.figsize']=[18, 16]
+        plt.rcParams['figure.dpi']=300
+        plt.rcParams['figure.facecolor']='w'
+        plt.rcParams['figure.edgecolor']='k'
         cerebro.plot(style='candlestick')
 
-
+        # Store the figures returned by cerebro.plot() and plot them w/plotly
+        # result = cerebro.plot()
+        # plotly.offline.plot_mpl(result[0][0], filename='simple_candlestick.html')
 if __name__ == '__main__':
     unittest.main()
