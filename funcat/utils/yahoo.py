@@ -40,7 +40,7 @@ def save_sp500_tickers():
     tickers = []
     for row in table.findAll('tr')[1:]:
         ticker = row.findAll('td')[0].text
-        tickers.append(ticker)
+        tickers.append(ticker.replace("\n", ""))
     with open(symbol_filename, "wb") as f:
         pickle.dump(tickers, f)
     return tickers
@@ -67,11 +67,12 @@ def get_data_from_yahoo(reload_sp500=False):
         csv_file = f'{stock_dfs}/{ticker}.csv'
         if not os.path.exists(csv_file):
             try:
-                print(ticker)
+                print(f"fetching {ticker}")
                 df = web.DataReader(ticker, "yahoo", start, end)
                 df.to_csv(csv_file)
             except:
                 print("No timeseries available for " + ticker)
+                df = None
         else:
             pass  # print('Already have {}'.format(ticker))
 
