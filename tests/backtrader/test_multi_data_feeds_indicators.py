@@ -165,5 +165,6 @@ class Test_multi_feeds_indicator(FuncatTestCase):
         # Store the figures returned by cerebro.plot() and plot them w/plotly
         # result = cerebro.plot()
         # plotly.offline.plot_mpl(result[0][0], filename='simple_candlestick.html')
+
 if __name__ == '__main__':
     unittest.main()
