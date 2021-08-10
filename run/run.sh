@@ -13,7 +13,12 @@ if [ $CONDA_DEFAULT_ENV != "${funcatenv}" ]; then
       echo conda env $CONDA_DEFAULT_ENV
   fi
 fi
-pytest -v  "../tests/funcat/test_ema_trends.py"::Test_ema_trend::test_condition_kama_ema3
+testfile=tests/funcat/test_ema_trends.py
+if [ -f ${testfile} ] ;then 
+  pytest -v  "${testfile}"::Test_ema_trend::test_condition_kama_ema3
+else
+  pytest -v  "../${testfile}"::Test_ema_trend::test_condition_kama_ema3
+fi
 conda deactivate
 echo conda env $CONDA_DEFAULT_ENV
 FILE=/tmp/kama*.txt
@@ -25,7 +30,7 @@ if [ "$files" != "0" ] ;then  #如果存在文件
   # echo "$FILE exists."
   if type nvim > /dev/null 2>&1; then
     alias vim='nvim'
-    nvim ${FILE}
+    vim ${FILE}
   else
     type vim
     vim ${FILE}
