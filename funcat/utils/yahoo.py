@@ -12,7 +12,7 @@ import pickle
 import requests
 from dotenv import load_dotenv
 
-__updated__ = "2021-08-09"
+__updated__ = "2021-08-10"
 
 # proxy servers for internet connection
 env_path = f"{Path(__file__).parent}/.env"
@@ -63,15 +63,15 @@ def get_data_from_yahoo(reload_sp500=False):
                       dt.date.today().day)
 
     for ticker in tickers:
-        ticker = ticker.replace("\n", "")
+        # ticker = ticker.replace("\n", "")
         csv_file = f'{stock_dfs}/{ticker}.csv'
         if not os.path.exists(csv_file):
             try:
                 print(f"fetching {ticker}")
                 df = web.DataReader(ticker, "yahoo", start, end)
                 df.to_csv(csv_file)
-            except:
-                print("No timeseries available for " + ticker)
+            except Exception as e:
+                print(f"No timeseries available for {ticker}; Exception:{e}")
                 df = None
         else:
             pass  # print('Already have {}'.format(ticker))

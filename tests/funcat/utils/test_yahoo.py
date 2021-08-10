@@ -24,9 +24,6 @@ class TestYahoo(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_name(self):
-        pass
-
     def test_save_sp500_tickers(self):
         sp500 = save_sp500_tickers()
         self.assertTrue(len(sp500) >= 500,
