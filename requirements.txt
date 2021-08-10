@@ -12,3 +12,4 @@ matplotlib
 pymongo
 ipython
 akshare
+python-dotenv
