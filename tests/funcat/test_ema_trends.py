@@ -11,7 +11,7 @@ from funcat.api import *
 from funcat.helper import selectV
 from funcat.utils import FuncatTestCase
 
-__updated__ = "2021-07-13"
+__updated__ = "2021-08-12"
 
 
 def condition_ema(n: int=13):
@@ -39,7 +39,8 @@ def condition_kama_ema2(n: int=10, m: float =0.1):
 def condition_llv(n: int=20):
     def atr(time_period: int):
         import talib
-        atr = talib.ATR(HIGH.series, LOW.series, CLOSE.series, timeperiod=time_period)
+        atr = talib.ATR(HIGH.series, LOW.series,
+                        CLOSE.series, timeperiod=time_period)
         return atr
 
     return CLOSE >= (LLV(LOW, n) + 2 * atr(n))
@@ -344,6 +345,8 @@ class Test_ema_trend(FuncatTestCase):
             print(item_dict)
             for item in item_dict.values():
                 for key in item.keys():
+                    # 增加中文名称
+                    key = f"{key} {symbol(key)}"
                     codes_count[key] = codes_count.get(key, 0) + 1
         codes_count = {"排名靠前出现的次数": codes_count}
         if len(lastdata) > 0:
