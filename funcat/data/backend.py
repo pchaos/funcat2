@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-#
+import pandas as pd
+import numpy as np
+
+__updated__ = "2021-08-29"
 
 
 class DataBackend(object):
@@ -36,3 +39,15 @@ class DataBackend(object):
         :rtype: str
         """
         raise NotImplementedError
+
+    def get_dataFrames(self, codes, start, end, freq):
+        """返回pd.dataFrame格式
+        """
+        if not isinstance(codes, list):
+            codes = [codes]
+        dfs = []
+        for code in codes:
+            data = self.get_price(code, start, end, freq)
+            dfs.append(pd.DataFrame(data)[[
+                       'open', 'close', 'high', 'low', 'volume', 'datetime']])
+        return dfs
