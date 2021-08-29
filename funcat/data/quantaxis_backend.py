@@ -6,11 +6,10 @@ from functools import lru_cache
 from .backend import DataBackend
 from ..utils import get_str_date_from_int, get_int_date
 
-__updated__ = "2021-06-30"
+__updated__ = "2021-08-29"
 
 
 class QuantaxisDataBackend(DataBackend):
-
     @cached_property
     def backend(self):
         try:
@@ -30,7 +29,8 @@ class QuantaxisDataBackend(DataBackend):
         df_etf = self.backend.QA_fetch_etf_list()
         df_etf["code"] = df_etf["code"].apply(lambda x: f"{x}.etf")
 
-        return pd.concat([self.backend.QA_fetch_stock_list_adv(), df_index, df_etf])
+        return pd.concat(
+            [self.backend.QA_fetch_stock_list_adv(), df_index, df_etf])
         # return self.backend.QAFetch.QATdx.QA_fetch_get_stock_list('stock')
 
     @cached_property
@@ -42,25 +42,40 @@ class QuantaxisDataBackend(DataBackend):
         return order_book_id.split(".")[0]
 
     @lru_cache(maxsize=6000)
-    def get_price(self, order_book_id, start, end, freq, is_index=False):
+    def get_price(self, order_book_id, start, end, freq, is_dataframe=0):
         """
         :param order_book_id: e.g. 000002
         :param start: 20160101
         :param end: 20160201
-        :param is_index: 默认为False：查询股票
+        :param is_dataframe: 默认为0：返回record
         :returns:
         :rtype: numpy.rec.array
         """
+        df = self.get_price_dataframe(order_book_id, start, end, freq,
+                                      is_dataframe)
+        result_records = df.to_records()
+        return result_records
+
+    def get_price_dataframe(self,
+                            order_book_id,
+                            start,
+                            end,
+                            freq,
+                            is_dataframe=0):
+
         # if order_book_id.endswith(".XSHG") or
         # order_book_id.endswith(".XSHE"):
+        is_index = False
         if len(order_book_id) > 6:
             # 判断指数
             is_index = True
         try:
             if is_index:
-                data = self.get_index_price(order_book_id, start, end, freq)
+                data = self.get_index_price(order_book_id, start, end,
+                                            freq)
             else:
-                data = self.get_stock_price(order_book_id, start, end, freq)
+                data = self.get_stock_price(order_book_id, start, end,
+                                            freq)
 
             if freq == "W":
                 df = data.week.rename(columns={"vol": "volume"})
@@ -69,26 +84,58 @@ class QuantaxisDataBackend(DataBackend):
             else:
                 df = data.data
         except Exception:
-            return pd.DataFrame().to_records()
-        if freq[-1] == "m":
-            df["datetime"] = df.apply(
-                lambda row: int(row["date"].split(" ")[0].replace("-", "")) * 1000000 + int(
-                    row["date"].split(" ")[1].replace(":", "")) * 100, axis=1)
-        elif freq in ("1d", "W", "M"):
-            dt = df.index.levels[0].to_list()
-            df["date"] = pd.DataFrame(
-                {"datetime": [f"{dt[i]:%Y-%m-%d}" for i in range(len(dt))]}, index=df.index)
-            df["datetime"] = pd.DataFrame({"datetime": [1000000 * (10000 * dt[i].year + 100 * dt[i].month + dt[i].day)
-                                                        for i in range(len(dt))]}, index=df.index)
-            # df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
-            # df.reset_index(drop=False, inplace=True)
-            # del df["code"]
-            df = df[['date', 'open', 'close', 'high', 'low', 'volume', 'datetime']]
-            df.reset_index(drop=True, inplace=True)
-            # getprice字段：Index(['date', 'open', 'close', 'high', 'low', 'volume', 'datetime'], dtype='object')
-            # print(f"quantaxis getprice字段：{df.columns}")
-            result_records = df.to_records()
-        return result_records
+            return pd.DataFrame()
+        if is_dataframe == 0:
+            if freq[-1] == "m":
+                df["datetime"] = df.apply(lambda row: int(row["date"].split(
+                    " ")[0].replace("-", "")) * 1000000 + int(row[
+                        "date"].split(" ")[1].replace(":", "")) * 100,
+                    axis=1)
+            elif freq in ("1d", "W", "M"):
+                dt = df.index.levels[0].to_list()
+                df["date"] = pd.DataFrame(
+                    {
+                        "datetime":
+                        [f"{dt[i]:%Y-%m-%d}" for i in range(len(dt))]
+                    },
+                    index=df.index)
+                df["datetime"] = pd.DataFrame(
+                    {
+                        "datetime": [
+                            1000000 * (10000 * dt[i].year + 100 * dt[i].month +
+                                       dt[i].day) for i in range(len(dt))
+                        ]
+                    },
+                    index=df.index)
+                # df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
+                # df.reset_index(drop=False, inplace=True)
+            df = df[[
+                'date', 'open', 'close', 'high', 'low', 'volume',
+                'datetime'
+            ]]
+        # del df["code"]
+        else:
+            if freq[-1] == "m":
+                df["datetime"] = df.apply(lambda row: pd.to_datetime(row),
+                                          axis=1)
+            elif freq in ("1d", "W", "M"):
+                dt = df.index.levels[0].to_list()
+                df["datetime"] = pd.DataFrame(
+                    {
+                        "datetime": [
+                            pd.to_datetime(dt[i]) for i in range(len(dt))
+                        ]
+                    },
+                    index=df.index)
+                pass
+            df = df[[
+                'open', 'close', 'high', 'low', 'volume',
+                'datetime'
+            ]]
+        df.reset_index(drop=True, inplace=True)
+        # getprice字段：Index(['date', 'open', 'close', 'high', 'low', 'volume', 'datetime'], dtype='object')
+        # print(f"quantaxis getprice字段：{df.columns}")
+        return df
 
     # @lru_cache(maxsize=4096)
     def get_stock_price(self, order_book_id, start, end, freq):
@@ -139,23 +186,26 @@ class QuantaxisDataBackend(DataBackend):
             类型code_type对应的代码列表
         """
 
-        code_types = {"stock": lambda x: len(x) == 6,
-                      "etf": lambda x: x.endswith(".etf"),
-                      "index": lambda x: x.endswith(".XSH", 5, -1),
-                      "all": lambda x: True,
-                      "none": lambda x: False}
+        code_types = {
+            "stock": lambda x: len(x) == 6,
+            "etf": lambda x: x.endswith(".etf"),
+            "index": lambda x: x.endswith(".XSH", 5, -1),
+            "all": lambda x: True,
+            "none": lambda x: False
+        }
         info = self.stock_basics
         if code_type:
-            info = info[info["code"].apply(code_types.get(code_type.lower(),
-                                                          code_types.get("none")))]
+            info = info[info["code"].apply(
+                code_types.get(code_type.lower(), code_types.get("none")))]
         code_list = info.index.sort_values().to_list()
-        order_book_id_list = [
-            code for code in code_list
-        ]
+        order_book_id_list = [code for code in code_list]
         return order_book_id_list
 
     @lru_cache(maxsize=100)
-    def get_trading_dates(self, start, end, order_book_id="000001.XSHG") -> list:
+    def get_trading_dates(self,
+                          start,
+                          end,
+                          order_book_id="000001.XSHG") -> list:
         """获取所有的交易日
         Args:
             start: 20160101
@@ -168,8 +218,10 @@ class QuantaxisDataBackend(DataBackend):
         end = get_str_date_from_int(end)
         df = self.get_price(order_book_id, start, end, "1d")
         if len(df) == 0:
-              # 提示数据库可能无数据
-            print(f"maybe your data is empty, please check it. {order_book_id}:{start}~{end}")
+            # 提示数据库可能无数据
+            print(
+                f"maybe your data is empty, please check it. {order_book_id}:{start}~{end}"
+            )
         trading_dates = [get_int_date(date) for date in df.date.tolist()]
         return trading_dates
 
@@ -191,5 +243,19 @@ class QuantaxisDataBackend(DataBackend):
         """todo 获取专业金融数据
          """
         res = self.backend().QA_fetch_financial_report(['000001', '600100'], [
-            '2017-03-31', '2017-06-30', '2017-09-31', '2017-12-31', '2018-03-31'])
+            '2017-03-31', '2017-06-30', '2017-09-31', '2017-12-31',
+            '2018-03-31'
+        ])
         return res
+
+    def get_dataFrames(self, codes, start, end, freq):
+        """返回pd.dataFrame格式
+        """
+        if not isinstance(codes, list):
+            codes = [codes]
+        dfs = []
+        for code in codes:
+            data = self.get_price_dataframe(
+                code, start, end, freq, is_dataframe=1)
+            dfs.append(data)
+        return dfs
