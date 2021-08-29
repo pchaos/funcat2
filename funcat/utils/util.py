@@ -7,7 +7,7 @@ import functools
 import numpy as np
 from .singletion import FuncCounter
 
-__updated__ = "2021-06-23"
+__updated__ = "2021-08-28"
 
 
 class FormulaException(Exception):
@@ -198,6 +198,7 @@ def getStringWithDecodedUnicode(value):
     json.dumps({'Japan': '日本'}) = {"Japan": "\u65e5\u672c"}
     Decoded Unicode: {"Japan": "日本"}
     """
+    import re
     findUnicodeRE = re.compile('\\\\u([\da-f]{4})')
 
     def getParsedUnicode(x):
