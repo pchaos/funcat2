@@ -123,7 +123,7 @@ class QuantaxisDataBackend(DataBackend):
                 df["datetime"] = pd.DataFrame(
                     {
                         "datetime": [
-                            pd.to_datetime(dt[i]) for i in range(len(dt))
+                            dt[i] for i in range(len(dt))
                         ]
                     },
                     index=df.index)
