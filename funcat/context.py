@@ -8,6 +8,9 @@ from .utils import get_int_date
 # from . import strategy
 
 
+__updated__ = "2021-08-30"
+
+
 class ExecutionContext(object):
     stack = []
 
@@ -106,6 +109,10 @@ def set_data_backend(backend):
     ExecutionContext.set_data_backend(backend)
 
 
+def get_data_backend():
+    ExecutionContext.get_data_backend()
+
+
 def set_current_security(order_book_id):
     ExecutionContext.set_current_security(order_book_id)
 
@@ -138,7 +145,7 @@ def get_current_freq():
     return ExecutionContext.get_current_freq()
 
 
-def symbol(order_book_id:str) -> str:
+def symbol(order_book_id: str) -> str:
     """获取股票代码对应的名字
     Args:
         order_book_id: 代码

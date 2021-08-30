@@ -12,7 +12,7 @@
 """
 import numpy as np
 
-__updated__ = "2021-06-16"
+__updated__ = "2021-08-30"
 
 from .time_series import MarketDataSeries, NumericSeries
 
@@ -57,6 +57,7 @@ from .context import (
     set_start_date,
     get_start_date,
     set_data_backend,
+    get_data_backend,
     set_current_freq,
     get_current_freq,
 )
@@ -168,6 +169,7 @@ __all__ = [
     "set_start_date",
     "get_start_date",
     "set_data_backend",
+    "get_data_backend",
     "set_current_freq",
     "get_current_freq",
     "NumericSeries",
