@@ -110,7 +110,7 @@ def set_data_backend(backend):
 
 
 def get_data_backend():
-    ExecutionContext.get_data_backend()
+    return ExecutionContext.get_data_backend()
 
 
 def set_current_security(order_book_id):

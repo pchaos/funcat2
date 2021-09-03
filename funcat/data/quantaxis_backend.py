@@ -6,7 +6,7 @@ from functools import lru_cache
 from .backend import DataBackend
 from ..utils import get_str_date_from_int, get_int_date
 
-__updated__ = "2021-08-29"
+__updated__ = "2021-09-03"
 
 
 class QuantaxisDataBackend(DataBackend):
@@ -108,7 +108,7 @@ class QuantaxisDataBackend(DataBackend):
                     },
                     index=df.index)
                 # df["datetime"] = df["date"].apply(lambda x: int(x.replace("-", "")) * 1000000)
-                # df.reset_index(drop=False, inplace=True)
+                df.reset_index(drop=True, inplace=True)
             df = df[[
                 'date', 'open', 'close', 'high', 'low', 'volume',
                 'datetime'
@@ -119,20 +119,17 @@ class QuantaxisDataBackend(DataBackend):
                 df["datetime"] = df.apply(lambda row: pd.to_datetime(row),
                                           axis=1)
             elif freq in ("1d", "W", "M"):
-                dt = df.index.levels[0].to_list()
+                dt = df.index.to_list()
+                _dt = [dt[i][0] for i in range(len(dt))]
                 df["datetime"] = pd.DataFrame(
-                    {
-                        "datetime": [
-                            dt[i] for i in range(len(dt))
-                        ]
-                    },
-                    index=df.index)
-                pass
+                    _dt, columns=["datetime"], index=dt)
             df = df[[
                 'open', 'close', 'high', 'low', 'volume',
                 'datetime'
             ]]
-        df.reset_index(drop=True, inplace=True)
+            df.set_index("datetime", inplace=True)
+            df.to_pickle("/tmp/df.pickle")
+            # df.reindex(df['datetime'])
         # getprice字段：Index(['date', 'open', 'close', 'high', 'low', 'volume', 'datetime'], dtype='object')
         # print(f"quantaxis getprice字段：{df.columns}")
         return df

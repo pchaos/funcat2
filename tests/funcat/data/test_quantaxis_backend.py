@@ -3,6 +3,8 @@ import unittest
 from funcat import *
 from funcat.utils import getsourcelines, FormulaException, get_int_date
 
+__updated__ = "2021-08-30"
+
 
 class TestQuantaxisDataBackend(unittest.TestCase):
     @classmethod
