@@ -13,3 +13,4 @@ pymongo
 ipython
 akshare
 python-dotenv
+mock
