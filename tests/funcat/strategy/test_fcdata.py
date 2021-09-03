@@ -18,9 +18,10 @@ class MyStrategy(bt.Strategy):
         self.sma = bt.ind.SMA(period=10)
 
     def next(self):
-        if self.sma > self.data.close and self.data.pct > 0 or self.data.pct2 > 0:
+        if self.sma > self.data.close:
             print('BUY CREATE, %.2f' % self.data.close[0])
-        elif self.sma < self.data.close and self.data.pct < 0 or self.data.pct2 < 0:
+            self.order = self.buy()
+        elif self.sma < self.data.close:
             print('SELL CREATE, %.2f' % self.data.close[0])
             self.order = self.sell()
 
@@ -37,6 +38,7 @@ class TestFcdata(FuncatTestCase):
         end = datetime(2020, 8, 31)
         # 初始化cerebro回测系统设置
         cerebro = bt.Cerebro()
+        cerebro.addstrategy(MyStrategy)
         #  codes= ['000001', '000001.XSHG']
         codes = '000001'
         # 加载数据
