@@ -2,13 +2,13 @@
 """PandasData基类
 """
 
+import math
 import backtrader as bt
 import backtrader.feeds as btfeeds
 from .. import get_data_backend, get_current_freq, get_start_date, get_current_date
+#  from ..context import ExecutionContext as fec
 
-from ..context import ExecutionContext as fec
-
-__updated__ = "2021-09-03"
+__updated__ = "2021-09-11"
 
 
 class PandasDataBase(btfeeds.PandasData):
@@ -37,7 +37,26 @@ class PandasDataBase(btfeeds.PandasData):
     )
 
 
+class MaxShares(bt.Sizer):
+    """计算最大可买、卖数量
+    用法： cerebro.addsizer(MaxShares)
+    """
+
+    def _getsizing(self, comminfo, cash, data, isbuy):
+        if isbuy:
+            self.p.stake = math.floor(cash / data.close[0])
+            return self.p.stake
+
+        position = self.broker.getposition(data)
+        if not position.size:
+            return 0  # do not sell if nothing is open
+
+        return self.p.stake
+
+
 def addPandasData(codes, cerebro: bt.Cerebro, pandas_data_type=PandasDataBase):
+    """将证券代码转换为对应的PandasData，并添加pandasData数据到cerebro
+    """
     be = get_data_backend()
     start = get_start_date()
     end = get_current_date()
@@ -48,12 +67,6 @@ def addPandasData(codes, cerebro: bt.Cerebro, pandas_data_type=PandasDataBase):
     dflist = []
     if hasattr(be, 'get_dataFrames'):
         dflist = be.get_dataFrames(codes, start, end, freq)
-    #  else:
-        #  todo 调用be.get_price
-        #  for code in codes:
-        #  data=be.get_price(codes, start, end, freq)
-        #  df= pd.Dataframe(data)
-        #  dflist.append(df)
 
     for i, data in enumerate(dflist):
         pdf = pandas_data_type(dataname=data)
