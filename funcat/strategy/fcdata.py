@@ -8,7 +8,7 @@ import backtrader.feeds as btfeeds
 from .. import get_data_backend, get_current_freq, get_start_date, get_current_date
 #  from ..context import ExecutionContext as fec
 
-__updated__ = "2021-09-11"
+__updated__ = "2021-09-16"
 
 
 class PandasDataBase(btfeeds.PandasData):
@@ -37,6 +37,25 @@ class PandasDataBase(btfeeds.PandasData):
     )
 
 
+class CSVDataBase(bt.feeds.GenericCSVData):
+    params = (
+        ('nullvalue', float('NaN')),
+        #  ('dtformat', '%Y-%m-%dT%H:%M:%S.%fZ'),
+        ('dtformat', '%Y-%m-%d'),
+        #  ('datetime', -1),
+        ('datetime', "Date"),
+        #  ('time', -1),
+        ('time', None),
+        ('open', -1),
+        ('high', -1),
+        ('low', -1),
+        ('close', -1),
+        ('volume', -1),
+        #  ('openinterest', -1),
+        ('openinterest', None),
+    )
+
+
 class MaxShares(bt.Sizer):
     """计算最大可买、卖数量
     用法： cerebro.addsizer(MaxShares)
@@ -44,7 +63,7 @@ class MaxShares(bt.Sizer):
 
     def _getsizing(self, comminfo, cash, data, isbuy):
         if isbuy:
-            self.p.stake = math.floor(cash / data.close[0])
+            self.p.stake = math.floor(cash / data.close[0] / 100) * 100
             return self.p.stake
 
         position = self.broker.getposition(data)
@@ -70,4 +89,4 @@ def addPandasData(codes, cerebro: bt.Cerebro, pandas_data_type=PandasDataBase):
 
     for i, data in enumerate(dflist):
         pdf = pandas_data_type(dataname=data)
-        cerebro.adddata(pdf)
+        cerebro.adddata(pdf, name=codes[i])

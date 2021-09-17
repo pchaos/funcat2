@@ -4,9 +4,10 @@
 严格来说，「量化择时」是一个很模糊的概念。因为从一个很大的范围来看，形态交易是择时，趋势交易是择时，统计套利是择时，市场情绪量化是择时、盘口交易也是一种择时，都是设置定量条件，然后观察价格或价差在何时突破这个条件，触发建仓和平仓信号。
 """
 
-from .fcdata import PandasDataBase, addPandasData, MaxShares
+from .fcdata import PandasDataBase, addPandasData, MaxShares, CSVDataBase
 
 __all__ = ["PandasDataBase",
            "addPandasData",
            "MaxShares",
+           "CSVDataBase",
            ]

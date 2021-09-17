@@ -4,11 +4,12 @@ import datetime
 import os.path
 import sys
 import math
+import pandas as pd
 
 import backtrader as bt
-from funcat.strategy import MaxShares
+from funcat.strategy import PandasDataBase, MaxShares, CSVDataBase
 
-__updated__ = "2021-09-11"
+__updated__ = "2021-09-17"
 
 
 class TestStrategy(bt.Strategy):
@@ -86,7 +87,7 @@ class MaxShares(bt.Sizer):
     def _getsizing(self, comminfo, cash, data, isbuy):
         if isbuy:
             self.p.stake = math.floor(cash / data.close[0])
-            return self.p.stake
+            return self.p.stake - 100
 
         position = self.broker.getposition(data)
         if not position.size:
@@ -106,6 +107,28 @@ class DegiroCommission(bt.CommInfoBase):
         return self.p.flat + size * self.p.per_share
 
 
+class PandasData(PandasDataBase):
+    params = (
+        # Possible values for datetime (must always be present)
+        #  None : datetime is the "index" in the Pandas Dataframe
+        #  -1 : autodetect position or case-wise equal name
+        #  >= 0 : numeric index to the colum in the pandas dataframe
+        #  string : column name (as index) in the pandas dataframe
+        ('datetime', "datetime"),
+        # Possible values below:
+        #  None : column not present
+        #  -1 : autodetect position or case-wise equal name
+        #  >= 0 : numeric index to the colum in the pandas dataframe
+        #  string : column name (as index) in the pandas dataframe
+        ('open', 'open'),
+        ('high', 'high'),
+        ('low', 'low'),
+        ('close', 'adj close'),
+        ('volume', 'volume'),
+        ('openinterest', None),
+    )
+
+
 if __name__ == '__main__':
     cerebro = bt.Cerebro()
     cerebro.addstrategy(TestStrategy)
@@ -118,16 +141,22 @@ if __name__ == '__main__':
 
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
     datapath = os.path.join(modpath, '../../datas/stock_dfs/AMD.csv')
+    #  data = CSVDataBase(dataname=datapath)
+    df = pd.read_csv(datapath)
+    df.columns = [col.lower() for col in df.columns]
+    df['datetime'] = df['date'].apply(lambda x: pd.to_datetime(x))
+    data = PandasData(dataname=df)
+    cerebro.adddata(data, name="AMD")
 
-    data = bt.feeds.YahooFinanceCSVData(
-        dataname=datapath,
-        # Do not pass values before this date
-        fromdate=datetime.datetime(2000, 1, 1),
-        # Do not pass values before this date
-        todate=datetime.datetime(2000, 12, 31),
-        # Do not pass values after this date
-        reverse=False)
-    cerebro.adddata(data)
+    # data = bt.feeds.YahooFinanceCSVData(
+    #     dataname=datapath,
+    #     # Do not pass values before this date
+    #     fromdate=datetime.datetime(2000, 1, 1),
+    #     # Do not pass values before this date
+    #     todate=datetime.datetime(2000, 12, 31),
+    #     # Do not pass values after this date
+    #     reverse=False)
+    # cerebro.adddata(data)
 
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
     cerebro.run()
