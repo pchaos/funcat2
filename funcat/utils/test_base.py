@@ -38,7 +38,8 @@ class FuncatTestCase(unittest.TestCase):
     def tearDownClass(cls):
         from funcat.utils import FuncCounter
         super(FuncatTestCase, cls).tearDownClass()
-        print(f"调用记录：{FuncCounter()}")
+        if len(FuncCounter.instance().counter) > 0:
+            print(f"调用记录：{FuncCounter()}")
 
     def fakeMarketData(self, arr=None):
         """产生模拟交易数据,便于校验数据

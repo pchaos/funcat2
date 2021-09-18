@@ -15,14 +15,15 @@ class FuncCounter(object):
         FuncCounter.counter = {}
 
     def update(self, value):
-        self.counter[value] = self.counter.get(value) + 1 if self.counter.get(value, 0) > 0 else 1
+        self.counter[value] = self.counter.get(
+            value) + 1 if self.counter.get(value, 0) > 0 else 1
 
     def get(self, value):
         return self.counter[value]
 
     def __str__(self):
         return f"Counter:{self.counter}"
-    
+
     def __repr__(self):
         return f"Counter:{self.counter}; length:{len(self.counter)}"
 
@@ -46,10 +47,12 @@ if __name__ == '__main__':
     a2 = FuncCounter()
     a3 = FuncCounter.instance()
 
+    print(f"{len(FuncCounter.counter)}")
     for i in range(10):
         FuncCounter.instance().update("a")
     assert FuncCounter.counter["a"] == 10
     print(FuncCounter.counter)
+    print(f"{len(FuncCounter.counter)}")
     print(FuncCounter.instance().get("a"))
     assert a1 is a2
     assert a1 is a3
