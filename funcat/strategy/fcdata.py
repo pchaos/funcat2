@@ -8,7 +8,7 @@ import backtrader.feeds as btfeeds
 from .. import get_data_backend, get_current_freq, get_start_date, get_current_date
 #  from ..context import ExecutionContext as fec
 
-__updated__ = "2021-09-16"
+__updated__ = "2021-09-28"
 
 
 class PandasDataBase(btfeeds.PandasData):
@@ -63,7 +63,17 @@ class MaxShares(bt.Sizer):
 
     def _getsizing(self, comminfo, cash, data, isbuy):
         if isbuy:
-            self.p.stake = math.floor(cash / data.close[0] / 100) * 100
+            if hasattr(comminfo.p, "per_share"):
+                self.p.stake = math.floor(
+                    cash / data.close[0] / (1 + comminfo.p.per_share) / 100) * 100
+            elif hasattr(comminfo.p, "commision"):
+                self.p.stake = math.floor(
+                    cash / data.close[0] / (1 + comminfo.p.commission) / 100) * 100
+            else:
+                #  self.p.stake = math.floor(cash / data.close[0] / 101) * 100
+                self.p.stake = math.floor(cash / data.close[0] / 105) * 100
+            #  while (cash < self.p.stake * (1+ comminfo.commission))
+            print(f"get Sizer {data._name} {self.p.stake=} {data.close[0]=}")
             return self.p.stake
 
         position = self.broker.getposition(data)
@@ -90,3 +100,4 @@ def addPandasData(codes, cerebro: bt.Cerebro, pandas_data_type=PandasDataBase):
     for i, data in enumerate(dflist):
         pdf = pandas_data_type(dataname=data)
         cerebro.adddata(pdf, name=codes[i])
+        print(f"code:{codes[i]}")

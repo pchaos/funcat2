@@ -30,7 +30,7 @@ class FuncatTestCase(unittest.TestCase):
             trading_dates = ExecutionContext.get_data_backend(
             ).get_trading_dates(start=start_date, end=current_date)
             print(
-                f"|| --> {get_current_security()},trading dates:{trading_dates[0]}~{trading_dates[-1]}")
+                f"||--> {get_current_security()},trading dates:{trading_dates[0]}~{trading_dates[-1]}")
         except Exception:
             pass
 
