@@ -11,7 +11,7 @@ from funcat.conditional_selection import *
 from funcat.utils import FuncatTestCase
 from funcat.strategy import addPandasData, MaxShares
 
-__updated__ = "2021-10-01"
+__updated__ = "2021-10-02"
 
 
 def condition_kama_ema2(n: int = 10, m: float = 0.1):
@@ -113,13 +113,19 @@ class UpDownStrategy(bt.Strategy):
             #  self.signal = max(self.signal, updown0)
 
             #  dt, dn = self.datetime.date(), d._name
-            pos = self.getposition(d).size  # current size of the position
+            pos = self.getposition(d)  # current size of the position
             #  pos = self.getposition().size  # current size of the position
             #  pos = self.positions
             #  print(f'{i} {d._name} {pos=}')
             #  print('{} {} Position {}'.format(dt, dn, pos))
             #  print(f"{i=} {d=}")
 
+            if len(pos):
+                self.log('{}, 持仓:{}, 成本价:{}, 当前价:{}, 盈亏:{:.2f}'.format(
+                    d._name, pos.size, pos.price, pos.adjbase,
+                    pos.size * (pos.adjbase - pos.price)))
+
+            pos = self.getposition(d).size  # current size of the position
             # 最
             # j = 1
             #  signal = self.inds[1][len(self)]
@@ -155,7 +161,7 @@ class UpDownStrategy(bt.Strategy):
                     self.sell(data=self.o[d._name])
                     #  self.o[d._name] = None
                     del self.o[d._name]
-            print(f"{self.datetime.date()} order: {self.o}")
+            #  print(f"{self.datetime.date()} order: {self.o}")
 
 
 class MyStrategy(bt.Strategy):
@@ -270,8 +276,10 @@ class TestFcdata(FuncatTestCase):
         print('P/L: ${}'.format(pnl))
 
         # Finally plot the end results
-        # plt.rcParams['font.sans-serif']=['SimHei']
-        plt.rcParams['axes.unicode_minus'] = True
+        plt.rcParams["font.family"] = "FangSong"
+        plt.rcParams['font.sans-serif'] = ['SimHei']
+        #  plt.rcParams['axes.unicode_minus'] = True
+        plt.rcParams['axes.unicode_minus'] = False
         plt.rcParams['figure.figsize'] = [18, 16]
         plt.rcParams['figure.dpi'] = 300
         plt.rcParams['figure.facecolor'] = 'w'
