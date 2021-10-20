@@ -27,6 +27,11 @@ files=$(ls ${FILE} 2> /dev/null | wc -l);
  
 echo $files
 if [ "$files" != "0" ] ;then  #如果存在文件
+  python run/upload2dpast.py
+  # cont=$(cat ${FILE})
+  # echo ${cont}
+  # Set expiry (1–365 days)
+  # curl -s -F "expiry_days=10" -F "${cont}" https://dpaste.com/api/v2/
   # echo "$FILE exists."
   if type nvim > /dev/null 2>&1; then
     alias vim='nvim'

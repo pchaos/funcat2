@@ -5,9 +5,13 @@
 """
 
 from .fcdata import PandasDataBase, addPandasData, MaxShares, CSVDataBase
+from .fcIndicator import MQNIndicator, UpdownIndicator
 
 __all__ = ["PandasDataBase",
            "addPandasData",
            "MaxShares",
            "CSVDataBase",
+
+           "MQNIndicator",
+           "UpdownIndicator",
            ]

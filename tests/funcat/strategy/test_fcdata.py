@@ -121,9 +121,10 @@ class UpDownStrategy(bt.Strategy):
             #  print(f"{i=} {d=}")
 
             if len(pos):
-                self.log('{}, 持仓:{}, 成本价:{}, 当前价:{}, 盈亏:{:.2f}'.format(
-                    d._name, pos.size, pos.price, pos.adjbase,
-                    pos.size * (pos.adjbase - pos.price)))
+                #  self.log('{}, 持仓:{}, 成本价:{}, 当前价:{}, 盈亏:{:.2f}'.format(
+                    #  d._name, pos.size, pos.price, pos.adjbase,
+                    #  pos.size * (pos.adjbase - pos.price)))
+                self.log(f'{d._name}, 持仓:{pos.size}, {self.broker.getvalue():.2f}, 成本价:{pos.price}, 当前价:{pos.adjbase}, 盈亏:{pos.size * (pos.adjbase - pos.price):.2f}')
 
             pos = self.getposition(d).size  # current size of the position
             # 最
@@ -136,7 +137,7 @@ class UpDownStrategy(bt.Strategy):
             #  for k in range(20):
             #  print(f"{len(self)} {self.inds[1][-k]}", end=", ")
             #  print("")
-            if not pos and self.broker.cash > 10000:
+            if not pos and self.broker.cash > 30000:
                 #  if len(pos) == 0:
                 #  if not self.o.get(d, None):
                 j = 1 if i == 0 else i
@@ -157,7 +158,7 @@ class UpDownStrategy(bt.Strategy):
                 }).keys()) and ((i == 1 and not signal) or
                                 ((i == 0) and signal)):
                     #  if (self.inds[j][0] - self.inds[j][-1] < 0):
-                    self.log(f'SELL CREATE, {self.datas[i][0]:8.3f}')
+                    self.log(f'SELL CREATE, {self.datas[i][0]:8.3f} {d._name}')
                     self.sell(data=self.o[d._name])
                     #  self.o[d._name] = None
                     del self.o[d._name]
@@ -236,6 +237,7 @@ class TestFcdata(FuncatTestCase):
         # 回测期间
         start = datetime(2013, 1, 31)
         end = datetime(2020, 8, 31)
+        end = datetime(2020, 9, 30)
         set_start_date(start)
         # 初始化cerebro回测系统设置
         cerebro = bt.Cerebro()
@@ -280,7 +282,7 @@ class TestFcdata(FuncatTestCase):
         plt.rcParams['font.sans-serif'] = ['SimHei']
         #  plt.rcParams['axes.unicode_minus'] = True
         plt.rcParams['axes.unicode_minus'] = False
-        plt.rcParams['figure.figsize'] = [18, 16]
+        plt.rcParams['figure.figsize'] = [16, 14]
         plt.rcParams['figure.dpi'] = 300
         plt.rcParams['figure.facecolor'] = 'w'
         plt.rcParams['figure.edgecolor'] = 'k'
